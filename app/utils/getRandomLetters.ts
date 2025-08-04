@@ -1,0 +1,36 @@
+import getRandomIndex from "./getRandomIndex"
+
+
+export default function getRandomLetters(numberOfTiles: number) {
+    const arrayOfLetters = [
+        'E','E','E','E','E','E','E','E','E','E','E','E',
+        'A','A','A','A','A','A','A','A','A',
+        'I','I','I','I','I','I','I','I','I',
+        'O','O','O','O','O','O','O','O',
+        'N','N','N','N','N','N',
+        'R','R','R','R','R','R',
+        'T','T','T','T','T','T',
+        'L','L','L','L',
+        'S','S','S','S',
+        'U','U','U','U',
+        'D','D','D','D',
+        'G','G','G',
+        'B','B',
+        'C','C',
+        'M','M',
+        'P','P',
+        'F','F',
+        'H','H',
+        'V','V',
+        'W','W',
+        'Y','Y',
+        'K',
+        'J',
+        'X',
+        'Q',
+        'Z'
+      ]
+      
+      const arrayOfRandomLetters = Array.from({length: numberOfTiles}, () =>  arrayOfLetters[getRandomIndex(arrayOfLetters)] )
+      return arrayOfRandomLetters
+    }
