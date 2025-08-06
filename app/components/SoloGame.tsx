@@ -9,20 +9,16 @@ import { useEffect, useState } from "react"
 import getRandomLetters from "../utils/getRandomLetters"
 import TileRack from "./TileRack"
 
-
 export default function SoloGame() {
+  const [tiles, setTiles] = useState<string[]>([])
+  const [currentWord, setCurrentWord] = useState<string>("")
 
-    const [tiles, setTiles] = useState<string[]>([])
-    const [currentWord, setCurrentWord] = useState<string>('')
+  useEffect(() => {
+    setTiles(getRandomLetters(7))
+  }, [])
 
-    useEffect(() => {
-        setTiles(getRandomLetters(7))
-    }, [])
-
-    if (tiles.length === 0) {
-        return <div>Loading...</div>
-    }
-    return (
-        <TileRack tiles={tiles}/>
-    )
+  if (tiles.length === 0) {
+    return <div>Loading...</div>
+  }
+  return <TileRack tiles={tiles} />
 }

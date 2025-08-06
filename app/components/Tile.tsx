@@ -1,5 +1,5 @@
 interface TileProps {
-  letter: string;
+  letter: string
 }
 
 export default function Tile({ letter }: TileProps) {
@@ -12,5 +12,5 @@ export default function Tile({ letter }: TileProps) {
     >
       {letter}
     </div>
-  );
+  )
 }
