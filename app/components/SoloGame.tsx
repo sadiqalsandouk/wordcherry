@@ -7,7 +7,7 @@
 // - "Submit" button: on click, clear currentWord and return letters to tiles
 import { useEffect, useState } from "react"
 import getRandomLetters from "../utils/getRandomLetters"
-import Tile from "./Tile"
+import TileRack from "./TileRack"
 
 
 export default function SoloGame() {
@@ -23,10 +23,6 @@ export default function SoloGame() {
         return <div>Loading...</div>
     }
     return (
-        <div>
-            {tiles.map((letter, index) => (
-                <Tile letter={letter}/>
-            ))}
-        </div>
+        <TileRack tiles={tiles}/>
     )
 }
