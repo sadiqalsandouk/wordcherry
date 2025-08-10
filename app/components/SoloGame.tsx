@@ -1,24 +1,40 @@
 "use client"
-// // In your game page component:
-// - Initialize state: tiles (random letters), currentWord (empty)
-// - Render tiles as buttons
-// - On tile click: move letter to currentWord
-// - Render currentWord
-// - "Submit" button: on click, clear currentWord and return letters to tiles
+
 import { useEffect, useState } from "react"
 import getRandomLetters from "../utils/getRandomLetters"
 import TileRack from "./TileRack"
+import CurrentWord from "./CurrentWord"
 
 export default function SoloGame() {
   const [tiles, setTiles] = useState<string[]>([])
-  const [currentWord, setCurrentWord] = useState<string>("")
+  const [currentWord, setCurrentWord] = useState<string[]>([])
+
+  const handleTileClick = (letter: string, index: number) => {
+    setCurrentWord((prev) => [...prev, letter])
+    setTiles(tiles.filter((_, currentPosition) => currentPosition !== index))
+  }
+
+  const handleCurrentWordClick = (letter: string, index: number) => {
+    setTiles((prev) => [...prev, letter])
+    setCurrentWord(currentWord.filter((_, currentPosition) => currentPosition !== index))
+  }
 
   useEffect(() => {
     setTiles(getRandomLetters(7))
   }, [])
 
-  if (tiles.length === 0) {
-    return <div>Loading...</div>
-  }
-  return <TileRack tiles={tiles} />
+  return (
+    <>
+      <div className="space-y-4">
+        <div className="bg-gray-100 p-6 rounded-lg">
+          Current Word:
+          <CurrentWord onTileClick={handleCurrentWordClick} currentWord={currentWord} />
+        </div>
+
+        <div className="bg-teal-200 p-6 rounded-lg">
+          <TileRack onTileClick={handleTileClick} tiles={tiles} />
+        </div>
+      </div>
+    </>
+  )
 }
