@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import getRandomLetters from "../utils/getRandomLetters"
 import TileRack from "./TileRack"
 import CurrentWord from "./CurrentWord"
+import SubmitButton from "./SubmitButton"
 
 export default function SoloGame() {
   const [tiles, setTiles] = useState<string[]>([])
@@ -30,7 +31,7 @@ export default function SoloGame() {
           Current Word:
           <CurrentWord onTileClick={handleCurrentWordClick} currentWord={currentWord} />
         </div>
-
+        <SubmitButton currentWord={currentWord} />
         <div className="bg-teal-200 p-6 rounded-lg">
           <TileRack onTileClick={handleTileClick} tiles={tiles} />
         </div>
