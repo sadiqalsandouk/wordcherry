@@ -5,6 +5,7 @@ import getRandomLetters from "../utils/getRandomLetters"
 import TileRack from "./TileRack"
 import CurrentWord from "./CurrentWord"
 import SubmitButton from "./SubmitButton"
+import { validateWord } from "../utils/wordValidation"
 
 export default function SoloGame() {
   const [tiles, setTiles] = useState<string[]>([])
@@ -20,6 +21,16 @@ export default function SoloGame() {
     setCurrentWord(currentWord.filter((_, currentPosition) => currentPosition !== index))
   }
 
+  const handleSubmitButton = async () => {
+    const currentWordString = currentWord.join("")
+    const isValid = await validateWord(currentWordString)
+    if (isValid) {
+      console.log("valid")
+    } else {
+      console.log("invalid")
+    }
+  }
+
   useEffect(() => {
     setTiles(getRandomLetters(7))
   }, [])
@@ -33,7 +44,7 @@ export default function SoloGame() {
             <CurrentWord onTileClick={handleCurrentWordClick} currentWord={currentWord} />
           </div>
         </div>
-        <SubmitButton currentWord={currentWord} />
+        <SubmitButton onSubmitClick={handleSubmitButton} currentWord={currentWord} />
         <div className="bg-teal-200 p-6 rounded-lg min-h-[100px] flex items-center justify-center">
           <TileRack onTileClick={handleTileClick} tiles={tiles} />
         </div>
