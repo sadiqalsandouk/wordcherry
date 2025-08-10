@@ -27,12 +27,14 @@ export default function SoloGame() {
   return (
     <>
       <div className="space-y-4">
-        <div className="bg-gray-100 p-6 rounded-lg">
-          Current Word:
-          <CurrentWord onTileClick={handleCurrentWordClick} currentWord={currentWord} />
+        <div className="bg-gray-100 p-6 rounded-lg min-h-[120px] flex flex-col">
+          <div className="mb-2 font-medium text-gray-700">Current Word:</div>
+          <div className="flex-1 flex items-center justify-center">
+            <CurrentWord onTileClick={handleCurrentWordClick} currentWord={currentWord} />
+          </div>
         </div>
         <SubmitButton currentWord={currentWord} />
-        <div className="bg-teal-200 p-6 rounded-lg">
+        <div className="bg-teal-200 p-6 rounded-lg min-h-[100px] flex items-center justify-center">
           <TileRack onTileClick={handleTileClick} tiles={tiles} />
         </div>
       </div>
