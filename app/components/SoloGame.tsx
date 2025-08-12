@@ -6,6 +6,7 @@ import TileRack from "./TileRack"
 import CurrentWord from "./CurrentWord"
 import SubmitButton from "./SubmitButton"
 import { validateWord } from "../utils/wordValidation"
+import { calculateFinalScore } from "../utils/wordScoringSystem"
 
 export default function SoloGame() {
   const [tiles, setTiles] = useState<string[]>([])
@@ -23,11 +24,12 @@ export default function SoloGame() {
 
   const handleSubmitButton = async () => {
     const currentWordString = currentWord.join("")
+    const score = calculateFinalScore(currentWordString)
     const isValid = await validateWord(currentWordString)
     if (isValid) {
-      console.log("valid")
+      console.log("valid", score)
     } else {
-      console.log("invalid")
+      console.log("invalid", score)
     }
   }
 
