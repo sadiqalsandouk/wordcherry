@@ -30,6 +30,7 @@ export default function SoloGame() {
     const isValid = await validateWord(currentWordString)
     if (isValid) {
       setScore((prevScore) => prevScore + wordScore)
+      setCurrentWord([])
       setTiles(getRandomLetters(7))
     } else {
       return
