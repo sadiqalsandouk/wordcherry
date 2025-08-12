@@ -5,12 +5,14 @@ import getRandomLetters from "../utils/getRandomLetters"
 import TileRack from "./TileRack"
 import CurrentWord from "./CurrentWord"
 import SubmitButton from "./SubmitButton"
+import Score from "./Score"
 import { validateWord } from "../utils/wordValidation"
 import { calculateFinalScore } from "../utils/wordScoringSystem"
 
 export default function SoloGame() {
   const [tiles, setTiles] = useState<string[]>([])
   const [currentWord, setCurrentWord] = useState<string[]>([])
+  const [score, setScore] = useState(0)
 
   const handleTileClick = (letter: string, index: number) => {
     setCurrentWord((prev) => [...prev, letter])
@@ -24,12 +26,13 @@ export default function SoloGame() {
 
   const handleSubmitButton = async () => {
     const currentWordString = currentWord.join("")
-    const score = calculateFinalScore(currentWordString)
+    const wordScore = calculateFinalScore(currentWordString)
     const isValid = await validateWord(currentWordString)
     if (isValid) {
-      console.log("valid", score)
+      setScore((prevScore) => prevScore + wordScore)
+      setTiles(getRandomLetters(7))
     } else {
-      console.log("invalid", score)
+      return
     }
   }
 
@@ -40,6 +43,7 @@ export default function SoloGame() {
   return (
     <>
       <div className="space-y-4">
+        <Score currentScore={score} />
         <div className="bg-gray-100 p-6 rounded-lg min-h-[120px] flex flex-col">
           <div className="mb-2 font-medium text-gray-700">Current Word:</div>
           <div className="flex-1 flex items-center justify-center">
