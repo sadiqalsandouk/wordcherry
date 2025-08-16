@@ -10,6 +10,7 @@ import { validateWord } from "../utils/wordValidation"
 import { calculateFinalScore } from "../utils/wordScoringSystem"
 import { GameState } from "../types/types"
 import PreStartScreen from "./PreStartScreen"
+import GameOver from "./GameOver"
 
 interface TileState {
   letter: string
@@ -73,13 +74,6 @@ export default function SoloGame() {
     setGameState(GameState.ENDED)
   }
 
-  const handlePlay = () => {
-    setGameState(GameState.IDLE)
-    setScore(0)
-    setCurrentWord([])
-    setTiles([])
-  }
-
   return (
     <>
       <div className="space-y-4">
@@ -115,28 +109,7 @@ export default function SoloGame() {
         )}
 
         {gameState === GameState.ENDED && (
-          <div className="text-center space-y-6">
-            <div className="bg-gray-100 p-8 rounded-lg">
-              <h2 className="text-2xl font-bold text-gray-800 mb-4">Game Over!</h2>
-              <p className="text-lg text-gray-600 mb-6">
-                Final Score: <span className="font-bold text-blue-600">{score}</span>
-              </p>
-              <div className="space-x-4">
-                <button
-                  onClick={handlePlay}
-                  className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg transition-colors"
-                >
-                  Play Again
-                </button>
-                <button
-                  onClick={() => (window.location.href = "/")}
-                  className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg transition-colors"
-                >
-                  Back to Menu
-                </button>
-              </div>
-            </div>
-          </div>
+          <GameOver score={score} handleStartGame={handleStartGame} />
         )}
       </div>
     </>
