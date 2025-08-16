@@ -11,30 +11,55 @@ import { calculateFinalScore } from "../utils/wordScoringSystem"
 import { GameState } from "../types/types"
 import PreStartScreen from "./PreStartScreen"
 
+interface TileState {
+  letter: string
+  isUsed: boolean
+  usedInWordIndex?: number
+}
+
 export default function SoloGame() {
-  const [tiles, setTiles] = useState<string[]>([])
-  const [currentWord, setCurrentWord] = useState<string[]>([])
+  const [tiles, setTiles] = useState<TileState[]>([])
+  const [currentWord, setCurrentWord] = useState<{ letter: string; tileIndex: number }[]>([])
   const [score, setScore] = useState(0)
   const [gameState, setGameState] = useState<GameState>(GameState.IDLE)
 
   const handleTileClick = (letter: string, index: number) => {
-    setCurrentWord((prev) => [...prev, letter])
-    setTiles(tiles.filter((_, currentPosition) => currentPosition !== index))
+    // Only add if tile is not already used
+    if (tiles[index].isUsed) return
+
+    setCurrentWord((prev) => [...prev, { letter, tileIndex: index }])
+    setTiles((prev) =>
+      prev.map((tile, i) =>
+        i === index ? { ...tile, isUsed: true, usedInWordIndex: currentWord.length } : tile
+      )
+    )
   }
 
   const handleCurrentWordClick = (letter: string, index: number) => {
-    setTiles((prev) => [...prev, letter])
-    setCurrentWord(currentWord.filter((_, currentPosition) => currentPosition !== index))
+    const wordTile = currentWord[index]
+    const tileIndex = wordTile.tileIndex
+
+    // Mark tile as available again
+    setTiles((prev) =>
+      prev.map((tile, i) =>
+        i === tileIndex ? { ...tile, isUsed: false, usedInWordIndex: undefined } : tile
+      )
+    )
+
+    // Remove from current word
+    setCurrentWord((prev) => prev.filter((_, currentPosition) => currentPosition !== index))
   }
 
   const handleSubmitButton = async () => {
-    const currentWordString = currentWord.join("")
+    const currentWordString = currentWord.map((tile) => tile.letter).join("")
     const wordScore = calculateFinalScore(currentWordString)
     const isValid = await validateWord(currentWordString)
     if (isValid) {
       setScore((prevScore) => prevScore + wordScore)
       setCurrentWord([])
-      setTiles(getRandomLetters(7))
+      // Generate new tiles and reset all states
+      const newLetters = getRandomLetters(7)
+      setTiles(newLetters.map((letter) => ({ letter, isUsed: false })))
     } else {
       return
     }
@@ -44,7 +69,8 @@ export default function SoloGame() {
     setGameState(GameState.PLAYING)
     setScore(0)
     setCurrentWord([])
-    setTiles(getRandomLetters(7))
+    const newLetters = getRandomLetters(7)
+    setTiles(newLetters.map((letter) => ({ letter, isUsed: false })))
   }
 
   const handleEndGame = () => {
@@ -70,10 +96,16 @@ export default function SoloGame() {
             <div className="bg-gray-100 p-6 rounded-lg min-h-[120px] flex flex-col">
               <div className="mb-2 font-medium text-gray-700">Current Word:</div>
               <div className="flex-1 flex items-center justify-center">
-                <CurrentWord onTileClick={handleCurrentWordClick} currentWord={currentWord} />
+                <CurrentWord
+                  onTileClick={handleCurrentWordClick}
+                  currentWord={currentWord.map((tile) => tile.letter)}
+                />
               </div>
             </div>
-            <SubmitButton onSubmitClick={handleSubmitButton} currentWord={currentWord} />
+            <SubmitButton
+              onSubmitClick={handleSubmitButton}
+              currentWord={currentWord.map((tile) => tile.letter)}
+            />
             <div className="bg-teal-200 p-6 rounded-lg min-h-[100px] flex items-center justify-center">
               <TileRack onTileClick={handleTileClick} tiles={tiles} />
             </div>

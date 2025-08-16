@@ -16,7 +16,12 @@ export default function CurrentWord({
         style={{ minWidth: "392px", justifyContent: "center" }}
       >
         {currentWord.map((letter, index) => (
-          <Tile key={index} letter={letter} onClick={() => onTileClick(letter, index)} />
+          <Tile
+            key={index}
+            letter={letter}
+            isInTileRack={false}
+            onClick={() => onTileClick(letter, index)}
+          />
         ))}
       </div>
     </div>
