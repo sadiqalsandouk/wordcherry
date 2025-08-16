@@ -87,12 +87,10 @@ export default function SoloGame() {
   return (
     <>
       <div className="space-y-4">
-        {gameState !== GameState.IDLE && (
-          <Score handleEndGame={handleEndGame} currentScore={score} />
-        )}
         {gameState === GameState.IDLE && <PreStartScreen handleStartGame={handleStartGame} />}
         {gameState === GameState.PLAYING && (
           <>
+            <Score handleEndGame={handleEndGame} currentScore={score} />
             <div className="bg-gray-100 p-6 rounded-lg min-h-[120px] flex flex-col">
               <div className="mb-2 font-medium text-gray-700">Current Word:</div>
               <div className="flex-1 flex items-center justify-center">
