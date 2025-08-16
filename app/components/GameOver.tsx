@@ -62,13 +62,13 @@ export default function GameOver({ handleStartGame, score }: GameOverProps) {
           onClick={handleStartGame}
           className="cursor-pointer w-full bg-applegramYellow text-applegramBlue font-bold text-lg py-4 rounded-xl transition-all hover:scale-101 shadow-[2px_2px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(0,0,0,0.1)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-applegramYellow"
         >
-          Try Again
+          TRY AGAIN
         </button>
         <button
           onClick={() => (window.location.href = "/")}
           className="mt-3 cursor-pointer w-full bg-applegramBlue text-applegramYellow font-bold text-lg py-4 rounded-xl transition-all hover:scale-101 shadow-[2px_2px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(0,0,0,0.1)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-applegramYellow"
         >
-          Return Home
+          HOME
         </button>
       </div>
     </div>

@@ -7,12 +7,18 @@ export default function SubmitButton({
   currentWord: string[]
   onSubmitClick: () => void
 }) {
+  const isDisabled = currentWord.length === 0
+
   return (
     <div className="mx-auto max-w-sm px-2 mt-2">
       <button
-        disabled={currentWord.length === 0}
+        disabled={isDisabled}
         onClick={onSubmitClick}
-        className="cursor-pointer w-full bg-applegramYellow text-applegramBlue font-bold text-lg py-4 rounded-xl shadow-[2px_2px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(0,0,0,0.1)] hover:bg-applegramYellow/90 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-applegramYellow"
+        className={`w-full font-bold text-lg py-4 rounded-xl shadow-[2px_2px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(0,0,0,0.1)] transition-all duration-200 ease-out ${
+          isDisabled
+            ? "bg-gray-300 text-gray-500 cursor-not-allowed opacity-60"
+            : "bg-applegramYellow text-applegramBlue hover:bg-applegramYellow/90 active:scale-95"
+        }`}
       >
         Submit
       </button>
