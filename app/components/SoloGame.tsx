@@ -23,6 +23,7 @@ export default function SoloGame() {
   const [currentWord, setCurrentWord] = useState<{ letter: string; tileIndex: number }[]>([])
   const [score, setScore] = useState(0)
   const [gameState, setGameState] = useState<GameState>(GameState.IDLE)
+  const [gameKey, setGameKey] = useState(0) // Used to force timer reset
 
   const handleTileClick = (letter: string, index: number) => {
     if (tiles[index].isUsed) return
@@ -68,6 +69,7 @@ export default function SoloGame() {
     setCurrentWord([])
     const newLetters = getRandomLetters(7)
     setTiles(newLetters.map((letter) => ({ letter, isUsed: false })))
+    setGameKey((prev) => prev + 1) // Increment to force timer reset
   }
 
   const handleEndGame = () => {
@@ -80,7 +82,7 @@ export default function SoloGame() {
         {gameState === GameState.IDLE && <PreStartScreen handleStartGame={handleStartGame} />}
         {gameState === GameState.PLAYING && (
           <>
-            <Score handleEndGame={handleEndGame} currentScore={score} />
+            <Score key={gameKey} handleEndGame={handleEndGame} currentScore={score} />
             <div className="bg-gray-100 p-6 rounded-lg min-h-[120px] flex flex-col">
               <div className="mb-2 font-medium text-gray-700">Current Word:</div>
               <div className="flex-1 flex items-center justify-center">
