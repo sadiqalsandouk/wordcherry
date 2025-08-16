@@ -24,7 +24,6 @@ export default function SoloGame() {
   const [gameState, setGameState] = useState<GameState>(GameState.IDLE)
 
   const handleTileClick = (letter: string, index: number) => {
-    // Only add if tile is not already used
     if (tiles[index].isUsed) return
 
     setCurrentWord((prev) => [...prev, { letter, tileIndex: index }])
@@ -39,14 +38,12 @@ export default function SoloGame() {
     const wordTile = currentWord[index]
     const tileIndex = wordTile.tileIndex
 
-    // Mark tile as available again
     setTiles((prev) =>
       prev.map((tile, i) =>
         i === tileIndex ? { ...tile, isUsed: false, usedInWordIndex: undefined } : tile
       )
     )
 
-    // Remove from current word
     setCurrentWord((prev) => prev.filter((_, currentPosition) => currentPosition !== index))
   }
 
@@ -57,7 +54,6 @@ export default function SoloGame() {
     if (isValid) {
       setScore((prevScore) => prevScore + wordScore)
       setCurrentWord([])
-      // Generate new tiles and reset all states
       const newLetters = getRandomLetters(7)
       setTiles(newLetters.map((letter) => ({ letter, isUsed: false })))
     } else {
