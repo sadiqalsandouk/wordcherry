@@ -10,6 +10,7 @@ import { validateWord } from "../utils/wordValidation"
 import { calculateFinalScore } from "../utils/wordScoringSystem"
 import { GameState } from "../types/types"
 import PreStartScreen from "./PreStartScreen"
+import GameTimer from "./GameTimer"
 
 export default function SoloGame() {
   const [tiles, setTiles] = useState<string[]>([])
@@ -65,6 +66,7 @@ export default function SoloGame() {
         {gameState === GameState.IDLE && <PreStartScreen handleStartGame={handleStartGame} />}
         {gameState === GameState.PLAYING && (
           <>
+            <GameTimer handleEndGame={handleEndGame} />
             <div className="bg-gray-100 p-6 rounded-lg min-h-[120px] flex flex-col">
               <div className="mb-2 font-medium text-gray-700">Current Word:</div>
               <div className="flex-1 flex items-center justify-center">
