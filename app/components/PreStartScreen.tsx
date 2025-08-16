@@ -2,7 +2,7 @@ interface PreStartScreenProps {
   handleStartGame: () => void
 }
 
-export const PreStartScreen = ({ handleStartGame }: PreStartScreenProps) => {
+export default function PreStartScreen({ handleStartGame }: PreStartScreenProps) {
   return (
     <div className="text-center space-y-6">
       <div className="bg-gray-100 p-8 rounded-lg">

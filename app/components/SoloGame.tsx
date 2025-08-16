@@ -9,7 +9,7 @@ import Score from "./Score"
 import { validateWord } from "../utils/wordValidation"
 import { calculateFinalScore } from "../utils/wordScoringSystem"
 import { GameState } from "../types/types"
-import { PreStartScreen } from "./PreStartScreen"
+import PreStartScreen from "./PreStartScreen"
 
 export default function SoloGame() {
   const [tiles, setTiles] = useState<string[]>([])
