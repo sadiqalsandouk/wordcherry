@@ -6,8 +6,22 @@ export const PreStartScreen = ({ handleStartGame }: PreStartScreenProps) => {
   return (
     <div className="text-center space-y-6">
       <div className="bg-gray-100 p-8 rounded-lg">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">Ready to Play?</h2>
-        <p className="text-gray-600 mb-6">Create words from your letter tiles and earn points!</p>
+        <h1 className="text-6xl font-bold text-gray-800 mb-4">🍎</h1>
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-gray-800 mb-4">
+            Welcome to
+            <br />
+            Applegrams!
+          </h2>
+
+          <div className="space-y-2 text-gray-700 text-lg leading-relaxed">
+            <p>
+              You have <span className="font-semibold text-applegramBlue">60 seconds</span>.
+            </p>
+            <p>Build words. Score big.</p>
+            <p>Beat your best!</p>
+          </div>
+        </div>
         <button
           onClick={handleStartGame}
           className="cursor-pointer w-full bg-applegramYellow text-applegramBlue font-bold text-lg py-4 rounded-xl shadow-[2px_2px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(0,0,0,0.1)] hover:bg-applegramYellow/90 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-applegramYellow"
