@@ -10,5 +10,5 @@ export default function Title() {
         Build words. Score points. Have fun!
       </p>
     </div>
-  );
+  )
 }
