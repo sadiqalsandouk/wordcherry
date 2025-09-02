@@ -56,7 +56,7 @@ export default function SoloGame() {
     if (isValid) {
       setScore((prevScore) => prevScore + wordScore)
       setCurrentWord([])
-      const newLetters = getRandomLetters(7)
+      const newLetters = getRandomLetters(10)
       setTiles(newLetters.map((letter) => ({ letter, isUsed: false })))
     } else {
       return
@@ -67,7 +67,7 @@ export default function SoloGame() {
     setGameState(GameState.PLAYING)
     setScore(0)
     setCurrentWord([])
-    const newLetters = getRandomLetters(7)
+    const newLetters = getRandomLetters(10)
     setTiles(newLetters.map((letter) => ({ letter, isUsed: false })))
     setGameKey((prev) => prev + 1)
   }
