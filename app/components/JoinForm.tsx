@@ -6,14 +6,11 @@ export default function JoinForm() {
   const [playerName, setPlayerName] = useState("")
   const [mode, setMode] = useState("join")
   const isFormComplete =
-    mode === "join"
-      ? gameCode.trim() !== "" && playerName.trim() !== ""
-      : playerName.trim() !== ""
+    mode === "join" ? gameCode.trim() !== "" && playerName.trim() !== "" : playerName.trim() !== ""
 
   return (
-    <div className="mx-auto max-w-sm px-4 mt-2 mb-8">
-      {/* Mode selector pills */}
-      <div className="bg-applegramBlue/30 backdrop-blur-sm p-1.5 rounded-full flex mb-3 max-w-xs mx-auto shadow-inner">
+    <div>
+      <div className="bg-applegramBlue/30 backdrop-blur-sm rounded-full flex mb-3 shadow-inner mx-12 ">
         <button
           className={`flex-1 py-1.5 px-4 text-center font-bold rounded-full transition-all duration-200 ${
             mode === "join"
@@ -66,20 +63,11 @@ export default function JoinForm() {
         <button
           disabled={!isFormComplete}
           className={`w-full py-4 text-2xl font-bold 
-            ${
-              !isFormComplete
-                ? "bg-gray-400 text-gray-200"
-                : "bg-applegramRed text-white"
-            }`}
+            ${!isFormComplete ? "bg-gray-400 text-gray-200" : "bg-applegramRed text-white"}`}
           onClick={() => {
             if (isFormComplete) {
               if (mode === "join") {
-                console.log(
-                  "Joining game with code:",
-                  gameCode,
-                  "and name:",
-                  playerName
-                )
+                console.log("Joining game with code:", gameCode, "and name:", playerName)
               } else {
                 console.log("Creating new game with host:", playerName)
               }
