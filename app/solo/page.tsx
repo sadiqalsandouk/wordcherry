@@ -52,7 +52,7 @@ export default function SoloGame() {
   const handleSubmitButton = async () => {
     const currentWordString = currentWord.map((tile) => tile.letter).join("")
     const wordScore = calculateFinalScore(currentWordString)
-    const isValid = await validateWord(currentWordString)
+    const isValid = validateWord(currentWordString)
     if (isValid) {
       setScore((prevScore) => prevScore + wordScore)
       setCurrentWord([])
