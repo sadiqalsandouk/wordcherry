@@ -79,7 +79,6 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
             <div className="space-y-3 text-gray-700 text-lg leading-relaxed">
               <p>
                 You scored: <span className="font-semibold text-applegramBlue">{score}</span>
-                {score >= 50 && <span className="text-yellow-600 ml-2">⭐ Excellent!</span>}
               </p>
 
               {bestWord.word && (
