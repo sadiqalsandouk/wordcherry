@@ -4,33 +4,51 @@ import { Timer } from "../types/types"
 
 interface TimerProps {
   handleEndGame: () => void
+  timerState?: Timer
+  secondsLeft?: number
+  onTimeUpdate?: (seconds: number) => void
 }
 
-export default function GameTimer({ handleEndGame }: TimerProps) {
+export default function GameTimer({
+  handleEndGame,
+  timerState: externalTimerState,
+  secondsLeft: externalSecondsLeft,
+  onTimeUpdate,
+}: TimerProps) {
   const [timerState, setTimerState] = useState<Timer>(Timer.RUNNING)
-  const [secondsLeft, setSecondsLeft] = useState(60)
+  const [internalSecondsLeft, setInternalSecondsLeft] = useState(60)
+
+  // Use external timer state and seconds if provided, otherwise use internal state
+  const currentTimerState = externalTimerState || timerState
+  const secondsLeft = externalSecondsLeft !== undefined ? externalSecondsLeft : internalSecondsLeft
 
   useEffect(() => {
-    if (timerState !== Timer.RUNNING) return
+    if (currentTimerState !== Timer.RUNNING) return
 
     const interval = setInterval(() => {
-      setSecondsLeft((prev) => {
-        if (prev <= 1) {
-          setTimerState(Timer.STOPPED)
-          return 0
-        }
-        return prev - 1
-      })
+      if (onTimeUpdate) {
+        // If external time management, update parent
+        onTimeUpdate(secondsLeft - 1)
+      } else {
+        // If internal time management
+        setInternalSecondsLeft((prev) => {
+          if (prev <= 1) {
+            setTimerState(Timer.STOPPED)
+            return 0
+          }
+          return prev - 1
+        })
+      }
     }, 1000)
 
     return () => clearInterval(interval)
-  }, [timerState])
+  }, [currentTimerState, onTimeUpdate, secondsLeft])
 
   useEffect(() => {
-    if (timerState === Timer.STOPPED && secondsLeft === 0) {
+    if (currentTimerState === Timer.STOPPED && secondsLeft === 0) {
       handleEndGame()
     }
-  }, [timerState, secondsLeft, handleEndGame])
+  }, [currentTimerState, secondsLeft, handleEndGame])
 
   const isUrgent = secondsLeft <= 10
   const isCritical = secondsLeft <= 5

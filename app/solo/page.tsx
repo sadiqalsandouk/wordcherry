@@ -4,13 +4,14 @@ import { useState, useEffect, useCallback } from "react"
 import getRandomLetters from "../utils/getRandomLetters"
 import { validateWord } from "../utils/wordValidation"
 import { calculateFinalScore } from "../utils/wordScoringSystem"
-import { GameState } from "../types/types"
+import { GameState, Timer } from "../types/types"
 import TileRack from "../components/TileRack"
 import CurrentWord from "../components/CurrentWord"
 import SubmitButton from "../components/SubmitButton"
 import Score from "../components/Score"
 import PreStartScreen from "../components/PreStartScreen"
 import GameOver from "../components/GameOver"
+import PauseMenu from "../components/PauseMenu"
 
 interface TileState {
   letter: string
@@ -23,6 +24,8 @@ export default function SoloGame() {
   const [currentWord, setCurrentWord] = useState<{ letter: string; tileIndex: number }[]>([])
   const [score, setScore] = useState(0)
   const [gameState, setGameState] = useState<GameState>(GameState.IDLE)
+  const [timerState, setTimerState] = useState<Timer>(Timer.RUNNING)
+  const [secondsLeft, setSecondsLeft] = useState(60)
   const [gameKey, setGameKey] = useState(0) // Used to force timer reset
   const [feedback, setFeedback] = useState<string>("")
   const [showFeedback, setShowFeedback] = useState(false)
@@ -126,6 +129,8 @@ export default function SoloGame() {
 
   const handleStartGame = () => {
     setGameState(GameState.PLAYING)
+    setTimerState(Timer.RUNNING)
+    setSecondsLeft(60) // Reset timer to 60 seconds
     setScore(0)
     setCurrentWord([])
     setFeedback("")
@@ -139,13 +144,46 @@ export default function SoloGame() {
 
   const handleEndGame = () => {
     setGameState(GameState.ENDED)
+    setTimerState(Timer.STOPPED)
+  }
+
+  const handleTimeUpdate = (newSecondsLeft: number) => {
+    setSecondsLeft(newSecondsLeft)
+    if (newSecondsLeft <= 0) {
+      handleEndGame()
+    }
+  }
+
+  const handlePauseGame = () => {
+    setGameState(GameState.PAUSED)
+    setTimerState(Timer.PAUSED)
+  }
+
+  const handleResumeGame = () => {
+    setGameState(GameState.PLAYING)
+    setTimerState(Timer.RUNNING)
+  }
+
+  const handleQuitToHome = () => {
+    window.location.href = "/"
   }
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (gameState === GameState.PAUSED) {
+        if (event.key === "Escape") {
+          event.preventDefault()
+          handleResumeGame()
+        }
+        return
+      }
+
       if (gameState !== GameState.PLAYING) return
 
-      if (event.key === "Backspace") {
+      if (event.key === "Escape") {
+        event.preventDefault()
+        handlePauseGame()
+      } else if (event.key === "Backspace") {
         event.preventDefault()
         handleBackspace()
       } else if (event.key === "Enter") {
@@ -163,66 +201,88 @@ export default function SoloGame() {
     return () => {
       window.removeEventListener("keydown", handleKeyDown)
     }
-  }, [gameState, handleBackspace, handleLetterType, handleSubmitButton, currentWord])
+  }, [
+    gameState,
+    handleBackspace,
+    handleLetterType,
+    handleSubmitButton,
+    currentWord,
+    handlePauseGame,
+    handleResumeGame,
+  ])
 
   return (
     <div className="w-full max-w-3xl mx-auto">
       {gameState === GameState.IDLE && <PreStartScreen handleStartGame={handleStartGame} />}
       {gameState === GameState.PLAYING && (
-        <div className="space-y-4 md:space-y-6">
-          <Score key={gameKey} handleEndGame={handleEndGame} currentScore={score} />
-          <div
-            className={`bg-gray-100 p-4 md:p-6 rounded-lg min-h-[120px] flex flex-col ${
-              isShaking ? "animate-shake" : ""
-            }`}
-          >
-            <div className="mb-2 font-medium text-gray-700">Current Word:</div>
-            <div className="flex-1 flex items-center justify-center">
-              <CurrentWord
-                onTileClick={handleCurrentWordClick}
-                currentWord={currentWord.map((tile) => tile.letter)}
-              />
-            </div>
-          </div>
-
-          <div className="h-12 flex items-center justify-center">
-            {showFeedback && (
-              <div
-                className={`px-6 py-2 rounded-lg font-bold text-white text-sm shadow-lg animate-fade-out ${
-                  feedback === "Valid word!" ? "bg-green-500" : "bg-red-500"
-                }`}
-              >
-                {feedback}
-              </div>
-            )}
-          </div>
-
-          <SubmitButton
-            onSubmitClick={handleSubmitButton}
-            currentWord={currentWord.map((tile) => tile.letter)}
-          />
-          <div className="p-4 md:p-6 rounded-lg min-h-[100px] flex items-center justify-center">
-            <TileRack onTileClick={handleTileClick} tiles={tiles} />
-          </div>
-          <div className="flex justify-center">
-            <button
-              onClick={handleStartGame}
-              className="w-full max-w-md bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold text-lg py-4 px-6 rounded-xl shadow-lg hover:shadow-2xl border-2 border-red-400 hover:border-red-500 transform hover:scale-101 active:scale-95 transition-all duration-200 ease-out"
+        <div className="relative">
+          <div className="space-y-4 md:space-y-6">
+            <Score
+              key={gameKey}
+              handleEndGame={handleEndGame}
+              currentScore={score}
+              timerState={timerState}
+              secondsLeft={secondsLeft}
+              onTimeUpdate={handleTimeUpdate}
+            />
+            <div
+              className={`bg-gray-100 p-4 md:p-6 rounded-lg min-h-[120px] flex flex-col ${
+                isShaking ? "animate-shake" : ""
+              }`}
             >
-              <span className="flex items-center justify-center gap-2">
+              <div className="mb-2 font-medium text-gray-700">Current Word:</div>
+              <div className="flex-1 flex items-center justify-center">
+                <CurrentWord
+                  onTileClick={handleCurrentWordClick}
+                  currentWord={currentWord.map((tile) => tile.letter)}
+                />
+              </div>
+            </div>
+
+            <div className="h-12 flex items-center justify-center">
+              {showFeedback && (
+                <div
+                  className={`px-6 py-2 rounded-lg font-bold text-white text-sm shadow-lg animate-fade-out ${
+                    feedback === "Valid word!" ? "bg-green-500" : "bg-red-500"
+                  }`}
+                >
+                  {feedback}
+                </div>
+              )}
+            </div>
+
+            <SubmitButton
+              onSubmitClick={handleSubmitButton}
+              currentWord={currentWord.map((tile) => tile.letter)}
+            />
+            <div className="relative p-4 md:p-6 rounded-lg min-h-[100px] flex items-center justify-center">
+              <TileRack onTileClick={handleTileClick} tiles={tiles} />
+
+              {/* Pause Button near tiles */}
+              <button
+                onClick={handlePauseGame}
+                className="absolute bottom-4 right-4 bg-gray-600 hover:bg-gray-700 text-white p-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110 active:scale-95"
+                title="Pause game (ESC)"
+              >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                    d="M10 9v6m4-6v6"
                   />
                 </svg>
-                Restart Game
-              </span>
-            </button>
+              </button>
+            </div>
           </div>
         </div>
+      )}
+      {gameState === GameState.PAUSED && (
+        <PauseMenu
+          onResume={handleResumeGame}
+          onRestart={handleStartGame}
+          onQuit={handleQuitToHome}
+        />
       )}
       {gameState === GameState.ENDED && (
         <GameOver score={score} handleStartGame={handleStartGame} bestWord={bestWord} />

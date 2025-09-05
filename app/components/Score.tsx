@@ -7,9 +7,19 @@ interface ScoreProps {
   currentScore: number
   className?: string
   handleEndGame: () => void
+  timerState?: import("../types/types").Timer
+  secondsLeft?: number
+  onTimeUpdate?: (seconds: number) => void
 }
 
-export default function Score({ currentScore, className = "", handleEndGame }: ScoreProps) {
+export default function Score({
+  currentScore,
+  className = "",
+  handleEndGame,
+  timerState,
+  secondsLeft,
+  onTimeUpdate,
+}: ScoreProps) {
   const [previousScore, setPreviousScore] = useState(currentScore)
   const [isAnimating, setIsAnimating] = useState(false)
   const [scoreIncrease, setScoreIncrease] = useState(0)
@@ -35,7 +45,12 @@ export default function Score({ currentScore, className = "", handleEndGame }: S
   return (
     <div className={`relative bg-applegramBlue p-4 rounded-lg ${className}`}>
       <div className="flex justify-between items-center">
-        <GameTimer handleEndGame={handleEndGame} />
+        <GameTimer
+          handleEndGame={handleEndGame}
+          timerState={timerState}
+          secondsLeft={secondsLeft}
+          onTimeUpdate={onTimeUpdate}
+        />
         <div className="relative">
           <div className="text-white font-bold text-2xl">{currentScore}</div>
 
