@@ -11,7 +11,7 @@ export default function CurrentWord({
 }) {
   return (
     <div className="text-2xl font-black flex flex-row gap-x-2 justify-center w-full">
-      <div className="flex flex-row gap-x-2 justify-center min-w-0 max-w-full overflow-x-auto">
+      <div className="flex flex-row gap-x-2 justify-center flex-wrap">
         {currentWord.map((letter, index) => (
           <Tile
             key={index}
