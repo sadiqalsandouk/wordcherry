@@ -50,7 +50,7 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
       setShowConfetti(true)
       const timer = setTimeout(() => {
         setShowConfetti(false)
-      }, 4000)
+      }, 10000)
 
       return () => clearTimeout(timer)
     }
@@ -64,7 +64,7 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
           height={window.innerHeight}
           recycle={false}
           numberOfPieces={300}
-          gravity={0.2}
+          gravity={0.5}
         />
       )}
 
