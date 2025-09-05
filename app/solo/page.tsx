@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useCallback } from "react"
 import getRandomLetters from "../utils/getRandomLetters"
 import { validateWord } from "../utils/wordValidation"
 import { calculateFinalScore } from "../utils/wordScoringSystem"
@@ -52,6 +52,21 @@ export default function SoloGame() {
 
     setCurrentWord((prev) => prev.filter((_, currentPosition) => currentPosition !== index))
   }
+
+  const handleBackspace = useCallback(() => {
+    if (currentWord.length === 0) return
+
+    const lastWordTile = currentWord[currentWord.length - 1]
+    const tileIndex = lastWordTile.tileIndex
+
+    setTiles((prev) =>
+      prev.map((tile, i) =>
+        i === tileIndex ? { ...tile, isUsed: false, usedInWordIndex: undefined } : tile
+      )
+    )
+
+    setCurrentWord((prev) => prev.slice(0, -1))
+  }, [currentWord])
 
   const handleSubmitButton = async () => {
     const currentWordString = currentWord.map((tile) => tile.letter).join("")
@@ -111,6 +126,21 @@ export default function SoloGame() {
   const handleEndGame = () => {
     setGameState(GameState.ENDED)
   }
+
+  // Add keyboard event listener for backspace
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (gameState === GameState.PLAYING && event.key === "Backspace") {
+        event.preventDefault()
+        handleBackspace()
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown)
+    }
+  }, [gameState, handleBackspace])
 
   return (
     <div className="w-full max-w-3xl mx-auto">
