@@ -7,9 +7,19 @@ interface PauseMenuProps {
 }
 
 export default function PauseMenu({ onResume, onRestart, onQuit }: PauseMenuProps) {
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    // Only resume if clicking the backdrop, not the modal content
+    if (e.target === e.currentTarget) {
+      onResume()
+    }
+  }
+
   return (
-    <div className="fixed inset-0 backdrop-blur-lg bg-black/10 flex items-center justify-center z-50">
-      <div className="bg-white p-8 rounded-2xl shadow-2xl max-w-md w-full mx-4 transform transition-all duration-300 scale-100 border border-gray-200/50">
+    <div
+      className="fixed inset-0 backdrop-blur-lg bg-black/10 flex items-center justify-center z-50 cursor-pointer"
+      onClick={handleBackdropClick}
+    >
+      <div className="bg-white p-8 rounded-2xl shadow-2xl max-w-md w-full mx-4 transform transition-all duration-300 scale-100 border border-gray-200/50 cursor-default">
         <div className="text-center space-y-6">
           <h2 className="text-3xl font-bold text-gray-800 mb-6">Game Paused</h2>
 
