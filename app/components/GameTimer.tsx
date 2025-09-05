@@ -8,7 +8,7 @@ interface TimerProps {
 
 export default function GameTimer({ handleEndGame }: TimerProps) {
   const [timerState, setTimerState] = useState<Timer>(Timer.RUNNING)
-  const [secondsLeft, setSecondsLeft] = useState(5)
+  const [secondsLeft, setSecondsLeft] = useState(60)
 
   useEffect(() => {
     if (timerState !== Timer.RUNNING) return
