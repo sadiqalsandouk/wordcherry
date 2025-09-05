@@ -94,20 +94,20 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
               <p>{score >= 50 ? "You're a word master!" : subtitle}</p>
             </div>
           </div>
-          <div className="space-y-4">
+          <div className="space-y-3">
             <button
               onClick={handleStartGame}
-              className="cursor-pointer w-full bg-gradient-to-r from-applegramYellow to-orange-300 text-applegramBlue font-bold text-2xl py-6 rounded-xl transition-all hover:scale-102 active:scale-95 shadow-[4px_4px_0_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.1)] hover:shadow-[6px_6px_0_rgba(0,0,0,0.2),0_4px_8px_rgba(0,0,0,0.15)] border-2 border-applegramBlue/20"
+              className="cursor-pointer w-full bg-applegramYellow text-applegramBlue font-bold text-xl py-4 rounded-xl shadow-[2px_2px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(0,0,0,0.1)] hover:bg-applegramYellow/90 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-applegramYellow active:scale-95 transition-all duration-200"
             >
-              <span className="flex items-center justify-center gap-3">
-                <span className="text-3xl">🎮</span>
+              <span className="flex items-center justify-center gap-2">
+                <span className="text-2xl">🎮</span>
                 PLAY AGAIN
               </span>
             </button>
 
             <button
               onClick={() => (window.location.href = "/")}
-              className="cursor-pointer w-full bg-applegramBlue text-applegramYellow font-bold text-lg py-4 rounded-xl transition-all hover:scale-101 shadow-[2px_2px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(0,0,0,0.1)] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-applegramBlue/90"
+              className="cursor-pointer w-full bg-applegramBlue text-applegramYellow font-bold text-lg py-4 rounded-xl shadow-[2px_2px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(0,0,0,0.1)] hover:bg-applegramBlue/90 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-applegramBlue active:scale-95 transition-all duration-200"
             >
               🏠 Back to Home
             </button>
