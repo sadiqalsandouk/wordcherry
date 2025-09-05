@@ -20,7 +20,6 @@ export default function Score({ currentScore, className = "", handleEndGame }: S
       setScoreIncrease(increase)
       setIsAnimating(true)
 
-      // Reset animation and update previous score after it completes
       const timer = setTimeout(() => {
         setIsAnimating(false)
         setScoreIncrease(0)
@@ -29,20 +28,17 @@ export default function Score({ currentScore, className = "", handleEndGame }: S
 
       return () => clearTimeout(timer)
     } else if (currentScore === 0) {
-      // Reset when game restarts
       setPreviousScore(0)
     }
   }, [currentScore, previousScore])
 
   return (
     <div className={`relative bg-applegramBlue p-4 rounded-lg ${className}`}>
-      {/* Timer and Score in one integrated component */}
       <div className="flex justify-between items-center">
         <GameTimer handleEndGame={handleEndGame} />
         <div className="relative">
           <div className="text-white font-bold text-2xl">{currentScore}</div>
 
-          {/* Simple green +X indicator that fades */}
           {isAnimating && (
             <div className="absolute -top-6 -right-2 text-green-400 font-bold text-lg animate-fade-out">
               +{scoreIncrease}

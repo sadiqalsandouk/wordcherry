@@ -27,6 +27,7 @@ export default function SoloGame() {
   const [feedback, setFeedback] = useState<string>("")
   const [showFeedback, setShowFeedback] = useState(false)
   const [isShaking, setIsShaking] = useState(false)
+  const [bestWord, setBestWord] = useState<{ word: string; score: number }>({ word: "", score: 0 })
 
   const handleTileClick = (letter: string, index: number) => {
     if (tiles[index].isUsed) return
@@ -66,6 +67,11 @@ export default function SoloGame() {
         setFeedback("")
       }, 1000)
 
+      // Check if this is the best word so far
+      if (wordScore > bestWord.score) {
+        setBestWord({ word: currentWordString, score: wordScore })
+      }
+
       setScore((prevScore) => prevScore + wordScore)
       setCurrentWord([])
       const newLetters = getRandomLetters(10)
@@ -96,6 +102,7 @@ export default function SoloGame() {
     setFeedback("")
     setShowFeedback(false)
     setIsShaking(false)
+    setBestWord({ word: "", score: 0 })
     const newLetters = getRandomLetters(10)
     setTiles(newLetters.map((letter) => ({ letter, isUsed: false })))
     setGameKey((prev) => prev + 1)
@@ -166,7 +173,7 @@ export default function SoloGame() {
         </div>
       )}
       {gameState === GameState.ENDED && (
-        <GameOver score={score} handleStartGame={handleStartGame} />
+        <GameOver score={score} handleStartGame={handleStartGame} bestWord={bestWord} />
       )}
     </div>
   )

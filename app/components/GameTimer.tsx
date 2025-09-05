@@ -8,7 +8,7 @@ interface TimerProps {
 
 export default function GameTimer({ handleEndGame }: TimerProps) {
   const [timerState, setTimerState] = useState<Timer>(Timer.RUNNING)
-  const [secondsLeft, setSecondsLeft] = useState(60)
+  const [secondsLeft, setSecondsLeft] = useState(5)
 
   useEffect(() => {
     if (timerState !== Timer.RUNNING) return
@@ -49,7 +49,6 @@ export default function GameTimer({ handleEndGame }: TimerProps) {
 
   return (
     <>
-      {/* Time Display */}
       <div
         className={`
           text-white font-bold text-2xl
@@ -60,10 +59,8 @@ export default function GameTimer({ handleEndGame }: TimerProps) {
         {timeDisplay}
       </div>
 
-      {/* Progress Bar Container - spans full width */}
       <div className="absolute bottom-0 left-0 right-0 h-2">
         <div className="relative w-full h-full bg-gray-200/20 overflow-hidden">
-          {/* Progress Bar - shrinks from right to left */}
           <div
             className={`
                 absolute top-0 left-0 h-full transition-all duration-1000 ease-linear
