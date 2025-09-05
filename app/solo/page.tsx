@@ -29,16 +29,19 @@ export default function SoloGame() {
   const [isShaking, setIsShaking] = useState(false)
   const [bestWord, setBestWord] = useState<{ word: string; score: number }>({ word: "", score: 0 })
 
-  const handleTileClick = (letter: string, index: number) => {
-    if (tiles[index].isUsed) return
+  const handleTileClick = useCallback(
+    (letter: string, index: number) => {
+      if (tiles[index].isUsed) return
 
-    setCurrentWord((prev) => [...prev, { letter, tileIndex: index }])
-    setTiles((prev) =>
-      prev.map((tile, i) =>
-        i === index ? { ...tile, isUsed: true, usedInWordIndex: currentWord.length } : tile
+      setCurrentWord((prev) => [...prev, { letter, tileIndex: index }])
+      setTiles((prev) =>
+        prev.map((tile, i) =>
+          i === index ? { ...tile, isUsed: true, usedInWordIndex: currentWord.length } : tile
+        )
       )
-    )
-  }
+    },
+    [tiles, currentWord]
+  )
 
   const handleCurrentWordClick = (letter: string, index: number) => {
     const wordTile = currentWord[index]
@@ -68,7 +71,20 @@ export default function SoloGame() {
     setCurrentWord((prev) => prev.slice(0, -1))
   }, [currentWord])
 
-  const handleSubmitButton = async () => {
+  const handleLetterType = useCallback(
+    (letter: string) => {
+      const availableTileIndex = tiles.findIndex(
+        (tile) => tile.letter.toLowerCase() === letter.toLowerCase() && !tile.isUsed
+      )
+
+      if (availableTileIndex !== -1) {
+        handleTileClick(tiles[availableTileIndex].letter, availableTileIndex)
+      }
+    },
+    [tiles, handleTileClick]
+  )
+
+  const handleSubmitButton = useCallback(async () => {
     const currentWordString = currentWord.map((tile) => tile.letter).join("")
     const wordScore = calculateFinalScore(currentWordString)
     const isValid = validateWord(currentWordString)
@@ -82,7 +98,6 @@ export default function SoloGame() {
         setFeedback("")
       }, 1000)
 
-      // Check if this is the best word so far
       if (wordScore > bestWord.score) {
         setBestWord({ word: currentWordString, score: wordScore })
       }
@@ -101,14 +116,13 @@ export default function SoloGame() {
         setFeedback("")
       }, 1000)
 
-      // Stop shaking after animation completes
       setTimeout(() => {
         setIsShaking(false)
       }, 500)
 
       return
     }
-  }
+  }, [currentWord, bestWord.score])
 
   const handleStartGame = () => {
     setGameState(GameState.PLAYING)
@@ -127,12 +141,21 @@ export default function SoloGame() {
     setGameState(GameState.ENDED)
   }
 
-  // Add keyboard event listener for backspace
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (gameState === GameState.PLAYING && event.key === "Backspace") {
+      if (gameState !== GameState.PLAYING) return
+
+      if (event.key === "Backspace") {
         event.preventDefault()
         handleBackspace()
+      } else if (event.key === "Enter") {
+        event.preventDefault()
+        if (currentWord.length > 0) {
+          handleSubmitButton()
+        }
+      } else if (event.key.length === 1 && /^[a-zA-Z]$/.test(event.key)) {
+        event.preventDefault()
+        handleLetterType(event.key)
       }
     }
 
@@ -140,7 +163,7 @@ export default function SoloGame() {
     return () => {
       window.removeEventListener("keydown", handleKeyDown)
     }
-  }, [gameState, handleBackspace])
+  }, [gameState, handleBackspace, handleLetterType, handleSubmitButton, currentWord])
 
   return (
     <div className="w-full max-w-3xl mx-auto">
@@ -162,7 +185,6 @@ export default function SoloGame() {
             </div>
           </div>
 
-          {/* Feedback Area */}
           <div className="h-12 flex items-center justify-center">
             {showFeedback && (
               <div
