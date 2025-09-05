@@ -46,7 +46,7 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
     setTitle(getRandomMessage(gameOverTitles))
     setSubtitle(getRandomMessage(motivationalTexts))
 
-    if (score >= 50) {
+    if (score >= 150) {
       setShowConfetti(true)
       const timer = setTimeout(() => {
         setShowConfetti(false)
