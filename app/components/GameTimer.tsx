@@ -18,7 +18,6 @@ export default function GameTimer({
   const [timerState, setTimerState] = useState<Timer>(Timer.RUNNING)
   const [internalSecondsLeft, setInternalSecondsLeft] = useState(60)
 
-  // Use external timer state and seconds if provided, otherwise use internal state
   const currentTimerState = externalTimerState || timerState
   const secondsLeft = externalSecondsLeft !== undefined ? externalSecondsLeft : internalSecondsLeft
 
@@ -27,10 +26,8 @@ export default function GameTimer({
 
     const interval = setInterval(() => {
       if (onTimeUpdate) {
-        // If external time management, update parent
         onTimeUpdate(secondsLeft - 1)
       } else {
-        // If internal time management
         setInternalSecondsLeft((prev) => {
           if (prev <= 1) {
             setTimerState(Timer.STOPPED)
