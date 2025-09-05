@@ -40,65 +40,45 @@ export default function GameTimer({ handleEndGame }: TimerProps) {
     return null
   }
 
+  const progressPercentage = (secondsLeft / 60) * 100
+  const minutes = Math.floor(secondsLeft / 60)
+  const seconds = secondsLeft % 60
+  const timeDisplay = `${minutes.toString().padStart(2, "0")}:${seconds
+    .toString()
+    .padStart(2, "0")}`
+
   return (
-    <div className="hover:scale-101 transition-all flex flex-col items-center hover">
+    <>
+      {/* Time Display */}
       <div
         className={`
-        relative w-20 h-20 rounded-full flex items-center justify-center
-        ${isUrgent ? "animate-pulse" : ""}
-        ${isCritical ? "animate-bounce" : ""}
-        transition-all duration-300 ease-in-out
-      `}
+          text-white font-bold text-2xl
+          ${isCritical ? "text-red-300 animate-pulse" : ""}
+          ${isUrgent ? "text-orange-300" : ""}
+        `}
       >
-        <div
-          className={`
-          absolute inset-0 rounded-full
-          ${
-            isCritical
-              ? "bg-gradient-to-r from-red-500 to-pink-500 shadow-lg shadow-red-500/50"
-              : isUrgent
-              ? "bg-gradient-to-r from-orange-500 to-yellow-500 shadow-lg shadow-orange-500/30"
-              : "bg-applegramYellow shadow-xl shadow-applegramYellow/30"
-          }
-          transition-all duration-500
-        `}
-        />
+        {timeDisplay}
+      </div>
 
-        <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 80 80">
-          <circle
-            cx="40"
-            cy="40"
-            r="35"
-            stroke="rgba(255,255,255,0.2)"
-            strokeWidth="4"
-            fill="none"
+      {/* Progress Bar Container - spans full width */}
+      <div className="absolute bottom-0 left-0 right-0 h-2">
+        <div className="relative w-full h-full bg-gray-200/20 overflow-hidden">
+          {/* Progress Bar - shrinks from right to left */}
+          <div
+            className={`
+                absolute top-0 left-0 h-full transition-all duration-1000 ease-linear
+                ${
+                  isCritical
+                    ? "bg-gradient-to-r from-red-400 to-red-600"
+                    : isUrgent
+                    ? "bg-gradient-to-r from-orange-400 to-yellow-500"
+                    : "bg-gradient-to-r from-applegramYellow to-orange-400"
+                }
+              `}
+            style={{ width: `${progressPercentage}%` }}
           />
-          <circle
-            cx="40"
-            cy="40"
-            r="35"
-            stroke="white"
-            strokeWidth="2"
-            fill="none"
-            strokeLinecap="round"
-            strokeDasharray={`${2 * Math.PI * 35}`}
-            strokeDashoffset={`${2 * Math.PI * 35 * (1 - secondsLeft / 60)}`}
-            className="transition-all duration-1000 ease-linear"
-          />
-        </svg>
-
-        <div
-          className={`
-          relative z-10 text-white font-bold text-lg
-          ${isCritical ? "text-xl animate-pulse" : ""}
-          ${isUrgent ? "text-lg" : "text-base"}
-          transition-all duration-300
-          drop-shadow-lg
-        `}
-        >
-          {secondsLeft}
         </div>
       </div>
-    </div>
+    </>
   )
 }

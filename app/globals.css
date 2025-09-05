@@ -130,3 +130,20 @@
   }
 
 }
+
+@layer utilities {
+  .animate-fade-out {
+    animation: fadeOut 1s ease-out forwards;
+  }
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
