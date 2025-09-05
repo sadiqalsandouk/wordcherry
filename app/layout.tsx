@@ -26,9 +26,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-applegramBlue mx-4 md:mx-64 flex flex-col justify-center h-screen`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-applegramBlue min-h-screen flex flex-col justify-center`}
       >
-        {children}
+        <div className="w-full max-w-4xl mx-auto px-4 md:px-8 lg:px-12 py-8">{children}</div>
       </body>
     </html>
   )

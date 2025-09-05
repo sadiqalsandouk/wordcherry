@@ -13,7 +13,7 @@ interface TileRackProps {
 
 export default function TileRack({ tiles, onTileClick }: TileRackProps) {
   return (
-    <div className="text-2xl font-black flex flex-col gap-y-2 min-h-[6rem] items-center justify-center w-full">
+    <div className="text-2xl font-black flex flex-col gap-y-2 min-h-[6rem] items-center justify-center w-full max-w-lg mx-auto">
       <div className="flex flex-col gap-y-2">
         {/* First row of 5 tiles */}
         <div className="flex flex-row gap-x-2 justify-center">
