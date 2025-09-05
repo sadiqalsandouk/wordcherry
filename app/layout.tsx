@@ -13,9 +13,59 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "Applegrams",
+  title: "Applegrams - Fun Word Game",
   description:
-    "Applegrams is a word game where you can play solo or with friends. Build words to score points and have fun!",
+    "Applegrams is an exciting word game where you create words from letter tiles to score points. Play solo to challenge yourself or compete with friends in this engaging anagram puzzle game.",
+  keywords: [
+    "word game",
+    "anagram",
+    "puzzle",
+    "letters",
+    "vocabulary",
+    "multiplayer",
+    "solo game",
+    "tiles",
+    "words",
+    "spelling",
+  ],
+  authors: [{ name: "Applegrams Team" }],
+  creator: "Applegrams Team",
+  publisher: "Applegrams",
+  robots: "index, follow",
+  openGraph: {
+    title: "Applegrams - Fun Word Game",
+    description:
+      "Create words from letter tiles and score points in this exciting anagram puzzle game. Play solo or with friends!",
+    url: "https://applegrams.com",
+    siteName: "Applegrams",
+    type: "website",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Applegrams - Fun Word Game",
+    description:
+      "Create words from letter tiles and score points in this exciting anagram puzzle game. Play solo or with friends!",
+    creator: "@applegrams",
+  },
+  viewport: "width=device-width, initial-scale=1",
+  themeColor: "#3B82F6",
+  colorScheme: "light",
+  category: "games",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Applegrams",
+    startupImage: "/apple-touch-icon.png",
+  },
+  formatDetection: {
+    telephone: false,
+  },
+  other: {
+    "mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-capable": "yes",
+  },
 }
 
 export default function RootLayout({

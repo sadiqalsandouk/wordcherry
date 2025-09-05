@@ -1,6 +1,17 @@
 {
   "name": "applegrams",
   "version": "0.1.0",
+  "description": "A fun word game where you create words from letter tiles to score points. Play solo or challenge friends in this engaging anagram puzzle game.",
+  "author": "Applegrams Team",
+  "keywords": ["word game", "anagram", "puzzle", "letters", "vocabulary", "multiplayer", "solo game", "tiles"],
+  "homepage": "https://applegrams.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/applegrams.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/applegrams/issues"
+  },
   "private": true,
   "scripts": {
     "dev": "next dev",
