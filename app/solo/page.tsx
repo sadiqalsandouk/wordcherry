@@ -142,7 +142,7 @@ export default function SoloGame() {
             onSubmitClick={handleSubmitButton}
             currentWord={currentWord.map((tile) => tile.letter)}
           />
-          <div className="bg-teal-200 p-4 md:p-6 rounded-lg min-h-[100px] flex items-center justify-center">
+          <div className="p-4 md:p-6 rounded-lg min-h-[100px] flex items-center justify-center">
             <TileRack onTileClick={handleTileClick} tiles={tiles} />
           </div>
           <div className="flex justify-center">
