@@ -257,15 +257,18 @@ export default function SoloGame() {
               onSubmitClick={handleSubmitButton}
               currentWord={currentWord.map((tile) => tile.letter)}
             />
-            <div className="relative p-4 md:p-6 rounded-lg min-h-[100px] flex items-center justify-center">
+            <div className="p-4 md:p-6 rounded-lg min-h-[100px] flex items-center justify-center">
               <TileRack onTileClick={handleTileClick} tiles={tiles} />
+            </div>
 
+            {/* Pause button positioned outside tile area for better mobile UX */}
+            <div className="flex justify-end px-4">
               <button
                 onClick={handlePauseGame}
-                className="absolute bottom-4 right-4 bg-gray-600 hover:bg-gray-700 text-white p-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110 active:scale-95"
+                className="bg-gray-600 hover:bg-gray-700 text-white p-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110 active:scale-95 flex items-center gap-2"
                 title="Pause game (ESC)"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -273,6 +276,7 @@ export default function SoloGame() {
                     d="M10 9v6m4-6v6"
                   />
                 </svg>
+                <span className="text-sm font-medium">Pause</span>
               </button>
             </div>
           </div>
