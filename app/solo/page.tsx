@@ -24,6 +24,9 @@ export default function SoloGame() {
   const [score, setScore] = useState(0)
   const [gameState, setGameState] = useState<GameState>(GameState.IDLE)
   const [gameKey, setGameKey] = useState(0) // Used to force timer reset
+  const [feedback, setFeedback] = useState<string>("")
+  const [showFeedback, setShowFeedback] = useState(false)
+  const [isShaking, setIsShaking] = useState(false)
 
   const handleTileClick = (letter: string, index: number) => {
     if (tiles[index].isUsed) return
@@ -53,12 +56,35 @@ export default function SoloGame() {
     const currentWordString = currentWord.map((tile) => tile.letter).join("")
     const wordScore = calculateFinalScore(currentWordString)
     const isValid = validateWord(currentWordString)
+
     if (isValid) {
+      setFeedback("Valid word!")
+      setShowFeedback(true)
+
+      setTimeout(() => {
+        setShowFeedback(false)
+        setFeedback("")
+      }, 1000)
+
       setScore((prevScore) => prevScore + wordScore)
       setCurrentWord([])
       const newLetters = getRandomLetters(10)
       setTiles(newLetters.map((letter) => ({ letter, isUsed: false })))
     } else {
+      setFeedback("Invalid word!")
+      setShowFeedback(true)
+      setIsShaking(true)
+
+      setTimeout(() => {
+        setShowFeedback(false)
+        setFeedback("")
+      }, 1000)
+
+      // Stop shaking after animation completes
+      setTimeout(() => {
+        setIsShaking(false)
+      }, 500)
+
       return
     }
   }
@@ -67,6 +93,9 @@ export default function SoloGame() {
     setGameState(GameState.PLAYING)
     setScore(0)
     setCurrentWord([])
+    setFeedback("")
+    setShowFeedback(false)
+    setIsShaking(false)
     const newLetters = getRandomLetters(10)
     setTiles(newLetters.map((letter) => ({ letter, isUsed: false })))
     setGameKey((prev) => prev + 1)
@@ -82,7 +111,11 @@ export default function SoloGame() {
       {gameState === GameState.PLAYING && (
         <div className="space-y-4 md:space-y-6">
           <Score key={gameKey} handleEndGame={handleEndGame} currentScore={score} />
-          <div className="bg-gray-100 p-4 md:p-6 rounded-lg min-h-[120px] flex flex-col">
+          <div
+            className={`bg-gray-100 p-4 md:p-6 rounded-lg min-h-[120px] flex flex-col ${
+              isShaking ? "animate-shake" : ""
+            }`}
+          >
             <div className="mb-2 font-medium text-gray-700">Current Word:</div>
             <div className="flex-1 flex items-center justify-center">
               <CurrentWord
@@ -91,6 +124,20 @@ export default function SoloGame() {
               />
             </div>
           </div>
+
+          {/* Feedback Area */}
+          <div className="h-12 flex items-center justify-center">
+            {showFeedback && (
+              <div
+                className={`px-6 py-2 rounded-lg font-bold text-white text-sm shadow-lg animate-fade-out ${
+                  feedback === "Valid word!" ? "bg-green-500" : "bg-red-500"
+                }`}
+              >
+                {feedback}
+              </div>
+            )}
+          </div>
+
           <SubmitButton
             onSubmitClick={handleSubmitButton}
             currentWord={currentWord.map((tile) => tile.letter)}
