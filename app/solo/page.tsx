@@ -261,7 +261,6 @@ export default function SoloGame() {
               <TileRack onTileClick={handleTileClick} tiles={tiles} />
             </div>
 
-            {/* Pause button positioned outside tile area for better mobile UX */}
             <div className="flex justify-end px-4">
               <button
                 onClick={handlePauseGame}
@@ -276,7 +275,6 @@ export default function SoloGame() {
                     d="M10 9v6m4-6v6"
                   />
                 </svg>
-                <span className="text-sm font-medium">Pause</span>
               </button>
             </div>
           </div>
