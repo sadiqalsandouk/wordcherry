@@ -16,7 +16,7 @@ interface TileRackProps {
 export default function TileRack({ tiles, onTileClick, onBackspace, onPause }: TileRackProps) {
   return (
     <div className="text-2xl font-black flex flex-col gap-y-2 min-h-[6rem] items-center justify-center w-full max-w-lg mx-auto">
-      <div className="flex flex-col gap-y-3">
+      <div className="flex flex-col gap-y-4">
         <div className="flex flex-row gap-x-2 justify-center items-center">
           {tiles.slice(0, 5).map((tile, index) => (
             <Tile
