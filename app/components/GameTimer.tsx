@@ -77,16 +77,7 @@ export default function GameTimer({
       <div className="absolute bottom-0 left-0 right-0 h-2">
         <div className="relative w-full h-full bg-gray-200/20 overflow-hidden">
           <div
-            className={`
-                absolute top-0 left-0 h-full transition-all duration-1000 ease-linear
-                ${
-                  isCritical
-                    ? "bg-gradient-to-r from-red-400 to-red-600"
-                    : isUrgent
-                    ? "bg-gradient-to-r from-orange-400 to-yellow-500"
-                    : "bg-gradient-to-r from-applegramYellow to-orange-400"
-                }
-              `}
+            className="absolute top-0 left-0 h-full transition-all duration-1000 ease-linear bg-gradient-to-r from-red-500 to-yellow-400"
             style={{ width: `${progressPercentage}%` }}
           />
         </div>
