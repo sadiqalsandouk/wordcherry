@@ -26,21 +26,21 @@ export default function PauseMenu({ onResume, onRestart, onQuit }: PauseMenuProp
           <div className="space-y-3">
             <button
               onClick={onResume}
-              className="w-full bg-applegramYellow text-applegramBlue font-bold text-lg py-4 rounded-xl shadow-[2px_2px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(0,0,0,0.1)] hover:bg-applegramYellow/90 transition-all duration-200"
+              className="w-full bg-applegramYellow text-applegramBlue font-bold text-lg py-4 rounded-xl shadow-[2px_2px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(0,0,0,0.1)] hover:bg-applegramYellow/90 hover:scale-103 active:scale-95 transition-all duration-200"
             >
               ▶️ Resume Game
             </button>
 
             <button
               onClick={onRestart}
-              className="w-full bg-applegramBlue text-white font-bold text-lg py-4 rounded-xl shadow-[2px_2px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(0,0,0,0.1)] hover:bg-applegramBlue/90 transition-all duration-200"
+              className="w-full bg-applegramBlue text-white font-bold text-lg py-4 rounded-xl shadow-[2px_2px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(0,0,0,0.1)] hover:bg-applegramBlue/90 hover:scale-103 active:scale-95 transition-all duration-200"
             >
               🔄 Restart Game
             </button>
 
             <button
               onClick={onQuit}
-              className="w-full bg-gray-500 text-white font-bold text-lg py-4 rounded-xl shadow-[2px_2px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(0,0,0,0.1)] hover:bg-gray-600 transition-all duration-200"
+              className="w-full bg-gray-500 text-white font-bold text-lg py-4 rounded-xl shadow-[2px_2px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(0,0,0,0.1)] hover:bg-gray-600 hover:scale-103 active:scale-95 transition-all duration-200"
             >
               🏠 Quit to Home
             </button>
