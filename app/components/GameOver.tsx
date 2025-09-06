@@ -101,7 +101,7 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
             >
               <span className="flex items-center justify-center gap-2">
                 <span className="text-2xl">🎮</span>
-                PLAY AGAIN
+                Play Again
               </span>
             </button>
 

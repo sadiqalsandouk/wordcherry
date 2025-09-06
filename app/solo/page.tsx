@@ -264,10 +264,10 @@ export default function SoloGame() {
             <div className="flex justify-end px-4">
               <button
                 onClick={handlePauseGame}
-                className="bg-gray-600 hover:bg-gray-700 text-white p-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110 active:scale-95 flex items-center gap-2"
+                className="bg-white/20 hover:bg-white/30 text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110 active:scale-95 flex items-center justify-center"
                 title="Pause game (ESC)"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
