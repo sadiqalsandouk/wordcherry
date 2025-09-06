@@ -9,13 +9,15 @@ interface TileState {
 interface TileRackProps {
   tiles: TileState[]
   onTileClick: (letter: string, index: number) => void
+  onBackspace: () => void
+  onPause: () => void
 }
 
-export default function TileRack({ tiles, onTileClick }: TileRackProps) {
+export default function TileRack({ tiles, onTileClick, onBackspace, onPause }: TileRackProps) {
   return (
     <div className="text-2xl font-black flex flex-col gap-y-2 min-h-[6rem] items-center justify-center w-full max-w-lg mx-auto">
       <div className="flex flex-col gap-y-3">
-        <div className="flex flex-row gap-x-2 justify-center">
+        <div className="flex flex-row gap-x-2 justify-center items-center">
           {tiles.slice(0, 5).map((tile, index) => (
             <Tile
               key={index}
@@ -25,8 +27,23 @@ export default function TileRack({ tiles, onTileClick }: TileRackProps) {
               onClick={() => onTileClick(tile.letter, index)}
             />
           ))}
+          <div className="w-2"></div>
+          <button
+            onClick={onBackspace}
+            className="w-12 h-12 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-black border border-gray-300 shadow-[0_3px_0_0_#9ca3af] hover:shadow-[0_4px_0_0_#9ca3af] active:shadow-[0_1px_0_0_#9ca3af] active:translate-y-[2px] transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center select-none cursor-pointer"
+            title="Remove last letter (Backspace)"
+          >
+            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6.414 6.414a2 2 0 001.414.586H19a2 2 0 002-2V7a2 2 0 00-2-2h-8.172a2 2 0 00-1.414.586L3 12z"
+              />
+            </svg>
+          </button>
         </div>
-        <div className="flex flex-row gap-x-2 justify-center">
+        <div className="flex flex-row gap-x-2 justify-center items-center">
           {tiles.slice(5, 10).map((tile, index) => (
             <Tile
               key={index + 5}
@@ -36,6 +53,21 @@ export default function TileRack({ tiles, onTileClick }: TileRackProps) {
               onClick={() => onTileClick(tile.letter, index + 5)}
             />
           ))}
+          <div className="w-2"></div>
+          <button
+            onClick={onPause}
+            className="w-12 h-12 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-black border border-gray-300 shadow-[0_3px_0_0_#9ca3af] hover:shadow-[0_4px_0_0_#9ca3af] active:shadow-[0_1px_0_0_#9ca3af] active:translate-y-[2px] transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center select-none cursor-pointer"
+            title="Pause game (ESC)"
+          >
+            <svg className="w-20 h-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10 9v6m4-6v6"
+              />
+            </svg>
+          </button>
         </div>
       </div>
     </div>

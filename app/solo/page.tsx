@@ -258,24 +258,12 @@ export default function SoloGame() {
               currentWord={currentWord.map((tile) => tile.letter)}
             />
             <div className="p-4 md:p-6 rounded-lg min-h-[100px] flex items-center justify-center">
-              <TileRack onTileClick={handleTileClick} tiles={tiles} />
-            </div>
-
-            <div className="flex justify-end px-4">
-              <button
-                onClick={handlePauseGame}
-                className="bg-white/20 hover:bg-white/30 text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110 active:scale-95 flex items-center justify-center"
-                title="Pause game (ESC)"
-              >
-                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M10 9v6m4-6v6"
-                  />
-                </svg>
-              </button>
+              <TileRack
+                onTileClick={handleTileClick}
+                tiles={tiles}
+                onBackspace={handleBackspace}
+                onPause={handlePauseGame}
+              />
             </div>
           </div>
         </div>
