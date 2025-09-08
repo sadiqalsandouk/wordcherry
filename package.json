@@ -1,16 +1,16 @@
 {
-  "name": "applegrams",
+  "name": "wordcherry",
   "version": "0.1.0",
   "description": "A fun word game where you create words from letter tiles to score points. Play solo or challenge friends in this engaging anagram puzzle game.",
-  "author": "Applegrams Team",
+  "author": "Wordcherry Team",
   "keywords": ["word game", "anagram", "puzzle", "letters", "vocabulary", "multiplayer", "solo game", "tiles"],
-  "homepage": "https://applegrams.com",
+  "homepage": "https://wordcherry.com",
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-username/applegrams.git"
+    "url": "https://github.com/your-username/wordcherry.git"
   },
   "bugs": {
-    "url": "https://github.com/your-username/applegrams/issues"
+    "url": "https://github.com/your-username/wordcherry/issues"
   },
   "private": true,
   "scripts": {

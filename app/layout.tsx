@@ -20,9 +20,9 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  title: "Applegrams - Fun Word Game",
+  title: "Wordcherry - Fun Word Game",
   description:
-    "Applegrams is an exciting word game where you create words from letter tiles to score points. Play solo to challenge yourself or compete with friends in this engaging anagram puzzle game.",
+    "Wordcherry is an exciting word game where you create words from letter tiles to score points. Play solo to challenge yourself or compete with friends in this engaging anagram puzzle game.",
   keywords: [
     "word game",
     "anagram",
@@ -35,32 +35,32 @@ export const metadata: Metadata = {
     "words",
     "spelling",
   ],
-  authors: [{ name: "Applegrams Team" }],
-  creator: "Applegrams Team",
-  publisher: "Applegrams",
+  authors: [{ name: "Wordcherry Team" }],
+  creator: "Wordcherry Team",
+  publisher: "Wordcherry",
   robots: "index, follow",
   openGraph: {
-    title: "Applegrams - Fun Word Game",
+    title: "Wordcherry - Fun Word Game",
     description:
       "Create words from letter tiles and score points in this exciting anagram puzzle game. Play solo or with friends!",
-    url: "https://applegrams.com",
-    siteName: "Applegrams",
+    url: "https://wordcherry.com",
+    siteName: "Wordcherry",
     type: "website",
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Applegrams - Fun Word Game",
+    title: "Wordcherry - Fun Word Game",
     description:
       "Create words from letter tiles and score points in this exciting anagram puzzle game. Play solo or with friends!",
-    creator: "@applegrams",
+    creator: "@wordcherry",
   },
   category: "games",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Applegrams",
+    title: "Wordcherry",
     startupImage: "/apple-touch-icon.png",
   },
   formatDetection: {

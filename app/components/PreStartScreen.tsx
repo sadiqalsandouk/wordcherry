@@ -11,7 +11,7 @@ export default function PreStartScreen({ handleStartGame }: PreStartScreenProps)
           <h2 className="text-3xl font-bold text-gray-800 mb-4">
             Welcome to
             <br />
-            Applegrams!
+            Wordcherry!
           </h2>
 
           <div className="space-y-2 text-gray-700 text-lg leading-relaxed">

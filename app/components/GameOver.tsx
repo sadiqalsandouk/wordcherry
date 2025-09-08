@@ -12,7 +12,7 @@ const gameOverTitles = [
   "That's a Wrap!",
   "Great Effort!",
   "Time's Up!",
-  "Applegrams Complete!",
+  "Wordcherry Complete!",
   "Well Played!",
   "So Close!",
   "Good Run!",

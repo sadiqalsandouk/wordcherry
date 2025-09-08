@@ -1,6 +1,6 @@
 {
-  "name": "Applegrams - Fun Word Game",
-  "short_name": "Applegrams",
+  "name": "Wordcherry - Fun Word Game",
+  "short_name": "Wordcherry",
   "description": "Create words from letter tiles and score points in this exciting anagram puzzle game. Play solo or with friends!",
   "start_url": "/",
   "display": "standalone",
