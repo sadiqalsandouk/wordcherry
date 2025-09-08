@@ -1,4 +1,4 @@
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import "./globals.css"
 
@@ -11,6 +11,13 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 })
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  colorScheme: "light",
+  themeColor: "#3B82F6",
+}
 
 export const metadata: Metadata = {
   title: "Applegrams - Fun Word Game",
@@ -48,9 +55,6 @@ export const metadata: Metadata = {
       "Create words from letter tiles and score points in this exciting anagram puzzle game. Play solo or with friends!",
     creator: "@applegrams",
   },
-  viewport: "width=device-width, initial-scale=1",
-  themeColor: "#3B82F6",
-  colorScheme: "light",
   category: "games",
   manifest: "/manifest.json",
   appleWebApp: {
