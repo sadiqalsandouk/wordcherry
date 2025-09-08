@@ -78,13 +78,13 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
 
             <div className="space-y-3 text-gray-700 text-lg leading-relaxed">
               <p>
-                You scored: <span className="font-semibold text-applegramBlue">{score}</span>
+                You scored: <span className="font-semibold text-wordcherryBlue">{score}</span>
               </p>
 
               {bestWord.word && (
-                <div className="bg-white p-4 rounded-lg border-2 border-applegramBlue/20">
+                <div className="bg-white p-4 rounded-lg border-2 border-wordcherryBlue/20">
                   <p className="text-sm text-gray-600 mb-2">Best word:</p>
-                  <p className="text-2xl font-bold text-applegramBlue uppercase tracking-wider">
+                  <p className="text-2xl font-bold text-wordcherryBlue uppercase tracking-wider">
                     {bestWord.word}
                   </p>
                   <p className="text-sm text-gray-600 mt-1">(+{bestWord.score} points)</p>
@@ -97,7 +97,7 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
           <div className="space-y-3">
             <button
               onClick={handleStartGame}
-              className="cursor-pointer w-full bg-applegramYellow text-applegramBlue font-bold text-xl py-4 rounded-xl shadow-[2px_2px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(0,0,0,0.1)] hover:bg-applegramYellow/90 hover:scale-103 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-applegramYellow active:scale-95 transition-all duration-200"
+              className="cursor-pointer w-full bg-wordcherryYellow text-wordcherryBlue font-bold text-xl py-4 rounded-xl shadow-[2px_2px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(0,0,0,0.1)] hover:bg-wordcherryYellow/90 hover:scale-103 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-wordcherryYellow active:scale-95 transition-all duration-200"
             >
               <span className="flex items-center justify-center gap-2">
                 <span className="text-2xl">🎮</span>
@@ -107,7 +107,7 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
 
             <button
               onClick={() => (window.location.href = "/")}
-              className="cursor-pointer w-full bg-applegramBlue text-applegramYellow font-bold text-lg py-4 rounded-xl shadow-[2px_2px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(0,0,0,0.1)] hover:bg-applegramBlue/90 hover:scale-103 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-applegramBlue active:scale-95 transition-all duration-200"
+              className="cursor-pointer w-full bg-wordcherryBlue text-wordcherryYellow font-bold text-lg py-4 rounded-xl shadow-[2px_2px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(0,0,0,0.1)] hover:bg-wordcherryBlue/90 hover:scale-103 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-wordcherryBlue active:scale-95 transition-all duration-200"
             >
               🏠 Back to Home
             </button>

@@ -80,7 +80,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-applegramBlue min-h-screen flex flex-col justify-start md:justify-center`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-wordcherryBlue min-h-screen flex flex-col justify-start md:justify-center`}
       >
         <div className="w-full max-w-4xl mx-auto px-4 md:px-8 lg:px-12 py-4 md:py-8">
           {children}

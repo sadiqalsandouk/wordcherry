@@ -43,7 +43,7 @@ export default function Score({
   }, [currentScore, previousScore])
 
   return (
-    <div className={`relative bg-applegramBlue p-4 rounded-lg ${className}`}>
+    <div className={`relative bg-wordcherryBlue p-4 rounded-lg ${className}`}>
       <div className="flex justify-between items-center">
         <GameTimer
           handleEndGame={handleEndGame}

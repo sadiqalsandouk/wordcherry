@@ -10,11 +10,11 @@ export default function JoinForm() {
 
   return (
     <div>
-      <div className="bg-applegramBlue/30 backdrop-blur-sm rounded-full flex mb-6 shadow-inner mx-12 ">
+      <div className="bg-wordcherryBlue/30 backdrop-blur-sm rounded-full flex mb-6 shadow-inner mx-12 ">
         <button
           className={`flex-1 py-1.5 px-4 text-center font-bold rounded-full transition-all duration-200 hover:scale-103 active:scale-95 ${
             mode === "join"
-              ? "bg-applegramYellow text-applegramBlue shadow-sm"
+              ? "bg-wordcherryYellow text-wordcherryBlue shadow-sm"
               : "bg-transparent text-white"
           }`}
           onClick={() => setMode("join")}
@@ -24,7 +24,7 @@ export default function JoinForm() {
         <button
           className={`flex-1 py-1.5 px-4 text-center font-bold rounded-full transition-all duration-200 hover:scale-103 active:scale-95 ${
             mode === "create"
-              ? "bg-applegramYellow text-applegramBlue shadow-sm"
+              ? "bg-wordcherryYellow text-wordcherryBlue shadow-sm"
               : "bg-transparent text-white"
           }`}
           onClick={() => setMode("create")}
@@ -34,8 +34,8 @@ export default function JoinForm() {
       </div>
 
       <div className="overflow-hidden rounded-xl shadow-[2px_2px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(0,0,0,0.1)]">
-        <div className="bg-applegramYellow py-3 px-4 text-center">
-          <h2 className="text-2xl font-bold text-applegramBlue">
+        <div className="bg-wordcherryYellow py-3 px-4 text-center">
+          <h2 className="text-2xl font-bold text-wordcherryBlue">
             {mode === "join" ? "JOIN A GAME" : "HOST A GAME"}
           </h2>
         </div>
@@ -47,7 +47,7 @@ export default function JoinForm() {
               value={gameCode}
               onChange={(e) => setGameCode(e.target.value)}
               placeholder="Enter game code"
-              className="w-full p-3 text-center text-applegramBlue bg-[#fff7d6] placeholder:text-applegramBlue/70 outline-none border-b border-applegramYellow/30"
+              className="w-full p-3 text-center text-wordcherryBlue bg-[#fff7d6] placeholder:text-wordcherryBlue/70 outline-none border-b border-wordcherryYellow/30"
             />
           )}
 
@@ -56,7 +56,7 @@ export default function JoinForm() {
             value={playerName}
             onChange={(e) => setPlayerName(e.target.value)}
             placeholder="Enter name"
-            className="w-full p-3 text-center text-applegramBlue bg-[#fff7d6] placeholder:text-applegramBlue/70 outline-none border-b border-applegramYellow/30"
+            className="w-full p-3 text-center text-wordcherryBlue bg-[#fff7d6] placeholder:text-wordcherryBlue/70 outline-none border-b border-wordcherryYellow/30"
           />
         </div>
 
@@ -66,7 +66,7 @@ export default function JoinForm() {
             ${
               !isFormComplete
                 ? "bg-gray-400 text-gray-200"
-                : "bg-applegramRed text-white hover:scale-103 active:scale-95"
+                : "bg-wordcherryRed text-white hover:scale-103 active:scale-95"
             }`}
           onClick={() => {
             if (isFormComplete) {

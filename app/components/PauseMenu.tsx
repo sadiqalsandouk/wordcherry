@@ -26,14 +26,14 @@ export default function PauseMenu({ onResume, onRestart, onQuit }: PauseMenuProp
           <div className="space-y-3">
             <button
               onClick={onResume}
-              className="w-full bg-applegramYellow text-applegramBlue font-bold text-lg py-4 rounded-xl shadow-[2px_2px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(0,0,0,0.1)] hover:bg-applegramYellow/90 hover:scale-103 active:scale-95 transition-all duration-200"
+              className="w-full bg-wordcherryYellow text-wordcherryBlue font-bold text-lg py-4 rounded-xl shadow-[2px_2px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(0,0,0,0.1)] hover:bg-wordcherryYellow/90 hover:scale-103 active:scale-95 transition-all duration-200"
             >
               ▶️ Resume Game
             </button>
 
             <button
               onClick={onRestart}
-              className="w-full bg-applegramBlue text-white font-bold text-lg py-4 rounded-xl shadow-[2px_2px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(0,0,0,0.1)] hover:bg-applegramBlue/90 hover:scale-103 active:scale-95 transition-all duration-200"
+              className="w-full bg-wordcherryBlue text-white font-bold text-lg py-4 rounded-xl shadow-[2px_2px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(0,0,0,0.1)] hover:bg-wordcherryBlue/90 hover:scale-103 active:scale-95 transition-all duration-200"
             >
               🔄 Restart Game
             </button>
