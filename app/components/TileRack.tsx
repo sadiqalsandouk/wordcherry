@@ -57,7 +57,7 @@ export default function TileRack({ tiles, onTileClick, onBackspace, onPause }: T
             className="w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-black border border-gray-300 shadow-[0_3px_0_0_#9ca3af] hover:shadow-[0_4px_0_0_#9ca3af] active:shadow-[0_1px_0_0_#9ca3af] active:translate-y-[2px] transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center select-none cursor-pointer"
             title="Pause game (ESC)"
           >
-            <svg className="w-6 h-6 md:w-7 md:h-7 lg:w-8 lg:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-8 h-8 md:w-9 md:h-9 lg:w-10 lg:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
