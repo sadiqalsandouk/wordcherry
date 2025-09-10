@@ -12,7 +12,7 @@ export default function JoinForm() {
     <div>
       <div className="bg-wordcherryBlue/30 backdrop-blur-sm rounded-full flex mb-6 shadow-inner mx-12 ">
         <button
-          className={`flex-1 py-1.5 px-4 text-center font-bold rounded-full transition-all duration-200 hover:scale-103 active:scale-95 ${
+          className={`cursor-pointer flex-1 py-1.5 px-4 text-center font-bold rounded-full transition-all duration-200 hover:scale-103 active:scale-95 ${
             mode === "join"
               ? "bg-wordcherryYellow text-wordcherryBlue shadow-sm"
               : "bg-transparent text-white"
@@ -22,7 +22,7 @@ export default function JoinForm() {
           Join
         </button>
         <button
-          className={`flex-1 py-1.5 px-4 text-center font-bold rounded-full transition-all duration-200 hover:scale-103 active:scale-95 ${
+          className={`cursor-pointer flex-1 py-1.5 px-4 text-center font-bold rounded-full transition-all duration-200 hover:scale-103 active:scale-95 ${
             mode === "create"
               ? "bg-wordcherryYellow text-wordcherryBlue shadow-sm"
               : "bg-transparent text-white"
