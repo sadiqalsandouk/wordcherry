@@ -245,8 +245,8 @@ export default function SoloGame() {
               </div>
             </div>
 
-            <div className="flex items-center justify-center">
-              {showFeedback && (
+            {showFeedback && (
+              <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
                 <div
                   className={`px-6 py-2 rounded-lg font-bold text-white text-sm shadow-lg animate-fade-out ${
                     feedback === "Valid word!" ? "bg-green-500" : "bg-red-500"
@@ -254,8 +254,8 @@ export default function SoloGame() {
                 >
                   {feedback}
                 </div>
-              )}
-            </div>
+              </div>
+            )}
             <TileRack
                 onTileClick={handleTileClick}
                 tiles={tiles}
