@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Timer } from "../types/types"
 
 interface TimerProps {
@@ -17,16 +17,18 @@ export default function GameTimer({
 }: TimerProps) {
   const [timerState, setTimerState] = useState<Timer>(Timer.RUNNING)
   const [internalSecondsLeft, setInternalSecondsLeft] = useState(60)
-
+  const secondsRef = useRef(60)
   const currentTimerState = externalTimerState || timerState
   const secondsLeft = externalSecondsLeft !== undefined ? externalSecondsLeft : internalSecondsLeft
+  
+  secondsRef.current = secondsLeft
 
   useEffect(() => {
     if (currentTimerState !== Timer.RUNNING) return
 
     const interval = setInterval(() => {
       if (onTimeUpdate) {
-        onTimeUpdate(secondsLeft - 1)
+        onTimeUpdate(secondsRef.current - 1)
       } else {
         setInternalSecondsLeft((prev) => {
           if (prev <= 1) {
@@ -39,7 +41,7 @@ export default function GameTimer({
     }, 1000)
 
     return () => clearInterval(interval)
-  }, [currentTimerState, onTimeUpdate, secondsLeft])
+  }, [currentTimerState, onTimeUpdate])
 
   useEffect(() => {
     if (currentTimerState === Timer.STOPPED && secondsLeft === 0) {

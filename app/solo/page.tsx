@@ -88,7 +88,7 @@ export default function SoloGame() {
     [tiles, handleTileClick]
   )
 
-  const handleSubmitButton = useCallback(async () => {
+  const handleSubmitButton = useCallback(() => {
     const currentWordString = currentWord.map((tile) => tile.letter).join("")
     const wordScore = calculateFinalScore(currentWordString)
     const isValid = validateWord(currentWordString)
@@ -96,11 +96,6 @@ export default function SoloGame() {
     if (isValid) {
       setFeedback("Valid word!")
       setShowFeedback(true)
-
-      setTimeout(() => {
-        setShowFeedback(false)
-        setFeedback("")
-      }, 1000)
 
       if (wordScore > bestWord.score) {
         setBestWord({ word: currentWordString, score: wordScore })
@@ -114,11 +109,6 @@ export default function SoloGame() {
       setFeedback("Invalid word!")
       setShowFeedback(true)
       setIsShaking(true)
-
-      setTimeout(() => {
-        setShowFeedback(false)
-        setFeedback("")
-      }, 1000)
 
       setTimeout(() => {
         setIsShaking(false)
@@ -143,27 +133,27 @@ export default function SoloGame() {
     setGameKey((prev) => prev + 1)
   }
 
-  const handleEndGame = () => {
+  const handleEndGame = useCallback(() => {
     setGameState(GameState.ENDED)
     setTimerState(Timer.STOPPED)
-  }
+  }, [])
 
-  const handleTimeUpdate = (newSecondsLeft: number) => {
+  const handleTimeUpdate = useCallback((newSecondsLeft: number) => {
     setSecondsLeft(newSecondsLeft)
     if (newSecondsLeft <= 0) {
       handleEndGame()
     }
-  }
+  }, [handleEndGame])
 
-  const handlePauseGame = () => {
+  const handlePauseGame = useCallback(() => {
     setGameState(GameState.PAUSED)
     setTimerState(Timer.PAUSED)
-  }
+  }, [])
 
-  const handleResumeGame = () => {
+  const handleResumeGame = useCallback(() => {
     setGameState(GameState.PLAYING)
     setTimerState(Timer.RUNNING)
-  }
+  }, [])
 
   const handleQuitToHome = () => {
     window.location.href = "/"
@@ -251,6 +241,10 @@ export default function SoloGame() {
                   className={`px-6 py-2 rounded-lg font-bold text-white text-sm shadow-lg animate-fade-out ${
                     feedback === "Valid word!" ? "bg-green-500" : "bg-red-500"
                   }`}
+                  onAnimationEnd={() => {
+                    setShowFeedback(false)
+                    setFeedback("")
+                  }}
                 >
                   {feedback}
                 </div>
