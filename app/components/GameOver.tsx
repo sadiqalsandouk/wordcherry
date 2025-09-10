@@ -70,7 +70,7 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
 
       <div className="text-center space-y-6">
         <div className="bg-gray-100 p-8 rounded-lg">
-          <h1 className="text-6xl font-bold text-gray-800 mb-4">{score >= 50 ? "🎉" : "🍎"}</h1>
+          <h1 className="text-6xl font-bold text-gray-800 mb-4">{score >= 50 ? "🎉" : "🍒"}</h1>
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-gray-800 mb-4">
               {score >= 50 ? "Amazing Score!" : title}
@@ -100,7 +100,6 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
               className="cursor-pointer w-full bg-wordcherryYellow text-wordcherryBlue font-bold text-xl py-4 rounded-xl shadow-[2px_2px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(0,0,0,0.1)] hover:bg-wordcherryYellow/90 hover:scale-103 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-wordcherryYellow active:scale-95 transition-all duration-200"
             >
               <span className="flex items-center justify-center gap-2">
-                <span className="text-2xl">🎮</span>
                 Play Again
               </span>
             </button>
@@ -109,7 +108,7 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
               onClick={() => (window.location.href = "/")}
               className="cursor-pointer w-full bg-wordcherryBlue text-wordcherryYellow font-bold text-lg py-4 rounded-xl shadow-[2px_2px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(0,0,0,0.1)] hover:bg-wordcherryBlue/90 hover:scale-103 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-wordcherryBlue active:scale-95 transition-all duration-200"
             >
-              🏠 Back to Home
+              Back to Home
             </button>
           </div>
         </div>
