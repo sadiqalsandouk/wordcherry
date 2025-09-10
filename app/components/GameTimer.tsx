@@ -16,7 +16,7 @@ export default function GameTimer({
   onTimeUpdate,
 }: TimerProps) {
   const [timerState, setTimerState] = useState<Timer>(Timer.RUNNING)
-  const [internalSecondsLeft, setInternalSecondsLeft] = useState(60)
+  const [internalSecondsLeft, setInternalSecondsLeft] = useState(999)
 
   const currentTimerState = externalTimerState || timerState
   const secondsLeft = externalSecondsLeft !== undefined ? externalSecondsLeft : internalSecondsLeft

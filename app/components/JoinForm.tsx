@@ -65,8 +65,8 @@ export default function JoinForm() {
           className={`w-full py-4 text-2xl font-bold transition-all duration-200 
             ${
               !isFormComplete
-                ? "bg-gray-400 text-gray-200"
-                : "bg-wordcherryRed text-white hover:scale-103 active:scale-95"
+                ? "bg-gray-400 text-gray-200 cursor-not-allowed"
+                : "bg-wordcherryRed text-white hover:scale-103 active:scale-95 cursor-pointer"
             }`}
           onClick={() => {
             if (isFormComplete) {

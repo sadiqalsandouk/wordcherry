@@ -15,9 +15,9 @@ interface TileRackProps {
 
 export default function TileRack({ tiles, onTileClick, onBackspace, onPause }: TileRackProps) {
   return (
-    <div className="text-2xl font-black flex flex-col gap-y-2 min-h-[6rem] items-center justify-center w-full max-w-lg mx-auto">
+    <div className="w-full max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl mx-auto px-4">
       <div className="flex flex-col gap-y-4">
-        <div className="flex flex-row gap-x-2 justify-center items-center">
+        <div className="flex justify-between items-center">
           {tiles.slice(0, 5).map((tile, index) => (
             <Tile
               key={index}
@@ -27,13 +27,12 @@ export default function TileRack({ tiles, onTileClick, onBackspace, onPause }: T
               onClick={() => onTileClick(tile.letter, index)}
             />
           ))}
-          <div className="w-2"></div>
           <button
             onClick={onBackspace}
-            className="w-12 h-12 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-black border border-gray-300 shadow-[0_3px_0_0_#9ca3af] hover:shadow-[0_4px_0_0_#9ca3af] active:shadow-[0_1px_0_0_#9ca3af] active:translate-y-[2px] transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center select-none cursor-pointer"
+            className="w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-black border border-gray-300 shadow-[0_3px_0_0_#9ca3af] hover:shadow-[0_4px_0_0_#9ca3af] active:shadow-[0_1px_0_0_#9ca3af] active:translate-y-[2px] transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center select-none cursor-pointer"
             title="Remove last letter (Backspace)"
           >
-            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-6 h-6 md:w-7 md:h-7 lg:w-8 lg:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -43,7 +42,7 @@ export default function TileRack({ tiles, onTileClick, onBackspace, onPause }: T
             </svg>
           </button>
         </div>
-        <div className="flex flex-row gap-x-2 justify-center items-center">
+        <div className="flex justify-between items-center">
           {tiles.slice(5, 10).map((tile, index) => (
             <Tile
               key={index + 5}
@@ -53,13 +52,12 @@ export default function TileRack({ tiles, onTileClick, onBackspace, onPause }: T
               onClick={() => onTileClick(tile.letter, index + 5)}
             />
           ))}
-          <div className="w-2"></div>
           <button
             onClick={onPause}
-            className="w-12 h-12 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-black border border-gray-300 shadow-[0_3px_0_0_#9ca3af] hover:shadow-[0_4px_0_0_#9ca3af] active:shadow-[0_1px_0_0_#9ca3af] active:translate-y-[2px] transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center select-none cursor-pointer"
+            className="w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-black border border-gray-300 shadow-[0_3px_0_0_#9ca3af] hover:shadow-[0_4px_0_0_#9ca3af] active:shadow-[0_1px_0_0_#9ca3af] active:translate-y-[2px] transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center select-none cursor-pointer"
             title="Pause game (ESC)"
           >
-            <svg className="w-20 h-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-6 h-6 md:w-7 md:h-7 lg:w-8 lg:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"

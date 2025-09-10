@@ -34,12 +34,12 @@ export default function Tile({ letter, onClick, isUsed = false, isInTileRack = f
   return (
     <div
       onClick={onClick}
-      className={`w-12 h-12 rounded-lg relative
+      className={`${isInTileRack ? 'w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16' : 'w-10 h-10 md:w-11 md:h-11 lg:w-12 lg:h-12'} rounded-lg relative
         flex items-center justify-center transition-all duration-200
         hover:scale-105 active:scale-95
         border border-gray-200
         shadow-[0_4px_0_0_#d1d5db] hover:shadow-[0_6px_0_0_#d1d5db] active:shadow-[0_2px_0_0_#d1d5db] active:translate-y-[2px]
-        select-none text-xl ${getBackgroundColor()} ${getTextColor()} ${getCursorStyle()}`}
+        select-none ${isInTileRack ? 'text-xl md:text-2xl lg:text-3xl' : 'text-lg md:text-xl lg:text-2xl'} ${getBackgroundColor()} ${getTextColor()} ${getCursorStyle()}`}
     >
       {letter}
     </div>

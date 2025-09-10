@@ -217,31 +217,35 @@ export default function SoloGame() {
       {gameState === GameState.IDLE && <PreStartScreen handleStartGame={handleStartGame} />}
       {gameState === GameState.PLAYING && (
         <div className="relative">
-          <div className="space-y-4 md:space-y-6">
+          <div className="space-y-6 md:space-y-8">
             <Title />
-            <Score
-              key={gameKey}
-              handleEndGame={handleEndGame}
-              currentScore={score}
-              timerState={timerState}
-              secondsLeft={secondsLeft}
-              onTimeUpdate={handleTimeUpdate}
-            />
-            <div
-              className={`bg-gray-100 p-4 md:p-6 rounded-lg min-h-[120px] flex flex-col ${
-                isShaking ? "animate-shake" : ""
-              }`}
-            >
-              <div className="mb-2 font-medium text-gray-700">Current Word:</div>
-              <div className="flex-1 flex items-center justify-center">
-                <CurrentWord
-                  onTileClick={handleCurrentWordClick}
-                  currentWord={currentWord.map((tile) => tile.letter)}
-                />
+            <div className="w-full max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl mx-auto px-4">
+              <Score
+                key={gameKey}
+                handleEndGame={handleEndGame}
+                currentScore={score}
+                timerState={timerState}
+                secondsLeft={secondsLeft}
+                onTimeUpdate={handleTimeUpdate}
+              />
+            </div>
+            <div className="w-full max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl mx-auto px-4">
+              <div
+                className={`bg-gray-100 p-4 md:p-6 rounded-lg min-h-[120px] md:min-h-[140px] lg:min-h-[160px] flex flex-col ${
+                  isShaking ? "animate-shake" : ""
+                }`}
+              >
+                <div className="mb-2 font-medium text-gray-700">Current Word:</div>
+                <div className="flex-1 flex items-center justify-center">
+                  <CurrentWord
+                    onTileClick={handleCurrentWordClick}
+                    currentWord={currentWord.map((tile) => tile.letter)}
+                  />
+                </div>
               </div>
             </div>
 
-            <div className="h-12 flex items-center justify-center">
+            <div className="flex items-center justify-center">
               {showFeedback && (
                 <div
                   className={`px-6 py-2 rounded-lg font-bold text-white text-sm shadow-lg animate-fade-out ${
@@ -252,18 +256,17 @@ export default function SoloGame() {
                 </div>
               )}
             </div>
-
-            <SubmitButton
-              onSubmitClick={handleSubmitButton}
-              currentWord={currentWord.map((tile) => tile.letter)}
-            />
-            <div className="p-4 md:p-6 rounded-lg min-h-[100px] flex items-center justify-center">
-              <TileRack
+            <TileRack
                 onTileClick={handleTileClick}
                 tiles={tiles}
                 onBackspace={handleBackspace}
                 onPause={handlePauseGame}
               />
+            <SubmitButton
+              onSubmitClick={handleSubmitButton}
+              currentWord={currentWord.map((tile) => tile.letter)}
+            />
+            <div className="p-4 md:p-6 rounded-lg min-h-[100px] flex items-center justify-center">
             </div>
           </div>
         </div>
