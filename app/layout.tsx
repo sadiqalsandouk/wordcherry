@@ -17,7 +17,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   colorScheme: "light",
-  themeColor: "#3B82F6",
+  themeColor: "#0F766E",
 }
 
 export const metadata: Metadata = {
@@ -81,9 +81,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-wordcherryBlue min-h-screen flex flex-col justify-start md:justify-center`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-wordcherryBlue min-h-screen flex flex-col justify-center`}
       >
-        <div className="w-full max-w-4xl mx-auto px-4 md:px-8 lg:px-12 py-4 md:py-8">
+        <div className="w-full max-w-4xl mx-auto px-2 sm:px-4 md:px-8 lg:px-12 py-2 sm:py-4 md:py-8">
           {children}
           <Analytics />
         </div>
