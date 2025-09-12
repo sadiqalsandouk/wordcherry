@@ -70,7 +70,7 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
 
       <div className="text-center space-y-6">
         <div className="bg-gray-100 p-8 rounded-lg">
-          <h1 className="text-6xl font-bold text-gray-800 mb-4">{score >= 50 ? "🎉" : "🍒"}</h1>
+          <h1 className="text-6xl font-bold text-gray-800 mb-4">{"🍒"}</h1>
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-gray-800 mb-4">
               {score >= 50 ? "Amazing Score!" : title}
