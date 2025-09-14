@@ -40,8 +40,12 @@ export default function JoinForm() {
           </h2>
         </div>
 
-        <div className="bg-[#fff7d6] p-4 flex flex-col gap-4">
-          {mode === "join" && (
+        <div className="bg-[#fff7d6] p-4 flex flex-col gap-4 min-h-[120px]">
+          <div className={`transition-all duration-300 ease-in-out ${
+            mode === "join" 
+              ? "max-h-16 opacity-100" 
+              : "max-h-0 opacity-0 overflow-hidden"
+          }`}>
             <input
               type="text"
               value={gameCode}
@@ -49,7 +53,7 @@ export default function JoinForm() {
               placeholder="Enter game code"
               className="w-full p-3 text-center text-wordcherryBlue bg-[#fff7d6] placeholder:text-wordcherryBlue/70 outline-none border-b border-wordcherryYellow/30"
             />
-          )}
+          </div>
 
           <input
             type="text"
