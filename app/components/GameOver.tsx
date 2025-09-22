@@ -7,46 +7,93 @@ type GameOverProps = {
   bestWord: { word: string; score: number }
 }
 
-const gameOverTitles = [
-  "Nice Try!",
-  "That's a Wrap!",
-  "Great Effort!",
-  "Time's Up!",
-  "Wordcherry Complete!",
-  "Well Played!",
-  "So Close!",
-  "Good Run!",
-  "Sweet Try!",
-  "Game Over!",
-]
+type PerformanceLevel = {
+  emoji: string
+  title: string
+  subtitle: string
+  bgColor: string
+  textColor: string
+  showConfetti: boolean
+  buttonColor: string
+  buttonTextColor: string
+}
 
-const motivationalTexts = [
-  "Can you beat your high score?",
-  "One more round?",
-  "Your brain is just warming up!",
-  "Words are waiting… grab them!",
-  "Sharpen your skills for the next round!",
-  "You're on the right track!",
-  "Keep building those words!",
-  "Next time, even higher!",
-  "Practice makes perfect!",
-  "Ready for a rematch?",
-]
-
-function getRandomMessage(arr: string[]) {
-  return arr[Math.floor(Math.random() * arr.length)]
+const getPerformanceLevel = (score: number): PerformanceLevel => {
+  if (score >= 200) {
+    return {
+      emoji: "🏆",
+      title: "LEGENDARY!",
+      subtitle: "You're a word wizard! Seriously impressive!",
+      bgColor: "bg-gray-100",
+      textColor: "text-gray-800",
+      showConfetti: true,
+      buttonColor: "bg-wordcherryYellow",
+      buttonTextColor: "text-wordcherryBlue",
+    }
+  } else if (score >= 150) {
+    return {
+      emoji: "🎉",
+      title: "AMAZING!",
+      subtitle: "Outstanding performance! You're a word master!",
+      bgColor: "bg-gray-100",
+      textColor: "text-gray-800",
+      showConfetti: true,
+      buttonColor: "bg-wordcherryYellow",
+      buttonTextColor: "text-wordcherryBlue",
+    }
+  } else if (score >= 100) {
+    return {
+      emoji: "⭐",
+      title: "GREAT JOB!",
+      subtitle: "Excellent work! You're getting really good at this!",
+      bgColor: "bg-gray-100",
+      textColor: "text-gray-800",
+      showConfetti: false,
+      buttonColor: "bg-wordcherryYellow",
+      buttonTextColor: "text-wordcherryBlue",
+    }
+  } else if (score >= 50) {
+    return {
+      emoji: "👍",
+      title: "GOOD WORK!",
+      subtitle: "Nice effort! Keep practicing to get a higher score!",
+      bgColor: "bg-gray-100",
+      textColor: "text-gray-800",
+      showConfetti: false,
+      buttonColor: "bg-wordcherryYellow",
+      buttonTextColor: "text-wordcherryBlue",
+    }
+  } else if (score >= 20) {
+    return {
+      emoji: "🌱",
+      title: "KEEP GOING!",
+      subtitle: "You're just getting started! Practice makes perfect!",
+      bgColor: "bg-gray-100",
+      textColor: "text-gray-800",
+      showConfetti: false,
+      buttonColor: "bg-wordcherryYellow",
+      buttonTextColor: "text-wordcherryBlue",
+    }
+  } else {
+    return {
+      emoji: "💪",
+      title: "DON'T GIVE UP!",
+      subtitle: "Every expert was once a beginner. Try again!",
+      bgColor: "bg-gray-100",
+      textColor: "text-gray-800",
+      showConfetti: false,
+      buttonColor: "bg-wordcherryYellow",
+      buttonTextColor: "text-wordcherryBlue",
+    }
+  }
 }
 
 export default function GameOver({ handleStartGame, score, bestWord }: GameOverProps) {
-  const [title, setTitle] = useState("")
-  const [subtitle, setSubtitle] = useState("")
   const [showConfetti, setShowConfetti] = useState(false)
+  const performance = getPerformanceLevel(score)
 
   useEffect(() => {
-    setTitle(getRandomMessage(gameOverTitles))
-    setSubtitle(getRandomMessage(motivationalTexts))
-
-    if (score >= 150) {
+    if (performance.showConfetti) {
       setShowConfetti(true)
       const timer = setTimeout(() => {
         setShowConfetti(false)
@@ -54,7 +101,7 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
 
       return () => clearTimeout(timer)
     }
-  }, [score])
+  }, [performance.showConfetti])
 
   return (
     <>
@@ -69,16 +116,17 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
       )}
 
       <div className="text-center space-y-6">
-        <div className="bg-gray-100 p-8 rounded-lg">
-          <h1 className="text-6xl font-bold text-gray-800 mb-4">{"🍒"}</h1>
+        <div className={`${performance.bgColor} p-8 rounded-lg`}>
+          <h1 className="text-6xl font-bold mb-4">{performance.emoji}</h1>
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-800 mb-4">
-              {score >= 50 ? "Amazing Score!" : title}
+            <h2 className={`text-3xl font-bold ${performance.textColor} mb-4`}>
+              {performance.title}
             </h2>
 
-            <div className="space-y-3 text-gray-700 text-lg leading-relaxed">
+            <div className={`space-y-3 ${performance.textColor} text-lg leading-relaxed`}>
               <p>
-                You scored: <span className="font-semibold text-wordcherryBlue">{score}</span>
+                You scored:{" "}
+                <span className="font-semibold text-wordcherryBlue text-2xl">{score}</span>
               </p>
 
               {bestWord.word && (
@@ -91,17 +139,15 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
                 </div>
               )}
 
-              <p>{score >= 50 ? "You're a word master!" : subtitle}</p>
+              <p className="text-lg font-medium">{performance.subtitle}</p>
             </div>
           </div>
           <div className="space-y-3">
             <button
               onClick={handleStartGame}
-              className="cursor-pointer w-full bg-wordcherryYellow text-wordcherryBlue font-bold text-xl py-4 rounded-xl shadow-[2px_2px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(0,0,0,0.1)] hover:bg-wordcherryYellow/90 hover:scale-103 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-wordcherryYellow active:scale-95 transition-all duration-200"
+              className={`cursor-pointer w-full ${performance.buttonColor} ${performance.buttonTextColor} font-bold text-xl py-4 rounded-xl shadow-[2px_2px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(0,0,0,0.1)] hover:bg-wordcherryYellow/90 hover:scale-103 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-wordcherryYellow active:scale-95 transition-all duration-200`}
             >
-              <span className="flex items-center justify-center gap-2">
-                Play Again
-              </span>
+              <span className="flex items-center justify-center gap-2">Play Again</span>
             </button>
 
             <button
