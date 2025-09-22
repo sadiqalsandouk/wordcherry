@@ -210,7 +210,7 @@ export default function SoloGame() {
       {gameState === GameState.IDLE && <PreStartScreen handleStartGame={handleStartGame} />}
       {gameState === GameState.PLAYING && (
         <div className="relative">
-          <div className="space-y-6 md:space-y-8">
+          <div className="space-y-8 md:space-y-10">
             <Title />
             <div className="w-full max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl mx-auto px-4">
               <Score
@@ -275,7 +275,9 @@ export default function SoloGame() {
                 </div>
               </div>
             )}
-            <div className="mt-4 md:mt-0">
+
+            {/* Increased spacing before tile rack on mobile */}
+            <div className="mt-8 md:mt-6">
               <TileRack
                 onTileClick={handleTileClick}
                 tiles={tiles}
@@ -283,11 +285,17 @@ export default function SoloGame() {
                 onPause={handlePauseGame}
               />
             </div>
-            <SubmitButton
-              onSubmitClick={handleSubmitButton}
-              currentWord={currentWord.map((tile) => tile.letter)}
-            />
-            <div className="p-4 md:p-6 rounded-lg min-h-[100px] flex items-center justify-center"></div>
+
+            {/* Increased spacing before submit button */}
+            <div className="mt-6 md:mt-4">
+              <SubmitButton
+                onSubmitClick={handleSubmitButton}
+                currentWord={currentWord.map((tile) => tile.letter)}
+              />
+            </div>
+
+            {/* Bottom spacing for better mobile experience */}
+            <div className="p-6 md:p-6 rounded-lg min-h-[120px] md:min-h-[100px] flex items-center justify-center"></div>
           </div>
         </div>
       )}
