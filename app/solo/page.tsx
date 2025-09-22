@@ -275,12 +275,14 @@ export default function SoloGame() {
                 </div>
               </div>
             )}
-            <TileRack
-              onTileClick={handleTileClick}
-              tiles={tiles}
-              onBackspace={handleBackspace}
-              onPause={handlePauseGame}
-            />
+            <div className="mt-4 md:mt-0">
+              <TileRack
+                onTileClick={handleTileClick}
+                tiles={tiles}
+                onBackspace={handleBackspace}
+                onPause={handlePauseGame}
+              />
+            </div>
             <SubmitButton
               onSubmitClick={handleSubmitButton}
               currentWord={currentWord.map((tile) => tile.letter)}
