@@ -138,12 +138,15 @@ export default function SoloGame() {
     setTimerState(Timer.STOPPED)
   }, [])
 
-  const handleTimeUpdate = useCallback((newSecondsLeft: number) => {
-    setSecondsLeft(newSecondsLeft)
-    if (newSecondsLeft <= 0) {
-      handleEndGame()
-    }
-  }, [handleEndGame])
+  const handleTimeUpdate = useCallback(
+    (newSecondsLeft: number) => {
+      setSecondsLeft(newSecondsLeft)
+      if (newSecondsLeft <= 0) {
+        handleEndGame()
+      }
+    },
+    [handleEndGame]
+  )
 
   const handlePauseGame = useCallback(() => {
     setGameState(GameState.PAUSED)
@@ -225,12 +228,20 @@ export default function SoloGame() {
                   isShaking ? "animate-shake" : ""
                 }`}
               >
-                <div className="mb-2 font-medium text-gray-700">Current Word:</div>
                 <div className="flex-1 flex items-center justify-center">
-                  <CurrentWord
-                    onTileClick={handleCurrentWordClick}
-                    currentWord={currentWord.map((tile) => tile.letter)}
-                  />
+                  {currentWord.length === 0 ? (
+                    <div className="text-gray-400 text-lg md:text-xl italic text-center px-4">
+                      <span className="block md:hidden">Tap letters to build words...</span>
+                      <span className="hidden md:block">
+                        Type or click letters to build words...
+                      </span>
+                    </div>
+                  ) : (
+                    <CurrentWord
+                      onTileClick={handleCurrentWordClick}
+                      currentWord={currentWord.map((tile) => tile.letter)}
+                    />
+                  )}
                 </div>
               </div>
             </div>
@@ -251,17 +262,16 @@ export default function SoloGame() {
               </div>
             )}
             <TileRack
-                onTileClick={handleTileClick}
-                tiles={tiles}
-                onBackspace={handleBackspace}
-                onPause={handlePauseGame}
-              />
+              onTileClick={handleTileClick}
+              tiles={tiles}
+              onBackspace={handleBackspace}
+              onPause={handlePauseGame}
+            />
             <SubmitButton
               onSubmitClick={handleSubmitButton}
               currentWord={currentWord.map((tile) => tile.letter)}
             />
-            <div className="p-4 md:p-6 rounded-lg min-h-[100px] flex items-center justify-center">
-            </div>
+            <div className="p-4 md:p-6 rounded-lg min-h-[100px] flex items-center justify-center"></div>
           </div>
         </div>
       )}
