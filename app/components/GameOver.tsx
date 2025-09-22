@@ -33,7 +33,7 @@ const getPerformanceLevel = (score: number): PerformanceLevel => {
   } else if (score >= 150) {
     return {
       emoji: "🎉",
-      title: "AMAZING!",
+      title: "AMAZING!!",
       subtitle: "Outstanding performance! You're a word master!",
       bgColor: "bg-gray-100",
       textColor: "text-gray-800",
@@ -44,7 +44,7 @@ const getPerformanceLevel = (score: number): PerformanceLevel => {
   } else if (score >= 100) {
     return {
       emoji: "⭐",
-      title: "GREAT JOB!",
+      title: "Great Job!",
       subtitle: "Excellent work! You're getting really good at this!",
       bgColor: "bg-gray-100",
       textColor: "text-gray-800",
@@ -55,8 +55,8 @@ const getPerformanceLevel = (score: number): PerformanceLevel => {
   } else if (score >= 50) {
     return {
       emoji: "👍",
-      title: "GOOD WORK!",
-      subtitle: "Nice effort! Keep practicing to get a higher score!",
+      title: "Good Work!",
+      subtitle: "Keep up the effort!",
       bgColor: "bg-gray-100",
       textColor: "text-gray-800",
       showConfetti: false,
@@ -66,8 +66,8 @@ const getPerformanceLevel = (score: number): PerformanceLevel => {
   } else if (score >= 20) {
     return {
       emoji: "🌱",
-      title: "KEEP GOING!",
-      subtitle: "You're just getting started! Practice makes perfect!",
+      title: "Keep Going!",
+      subtitle: "Practice makes perfect!",
       bgColor: "bg-gray-100",
       textColor: "text-gray-800",
       showConfetti: false,
@@ -77,8 +77,8 @@ const getPerformanceLevel = (score: number): PerformanceLevel => {
   } else {
     return {
       emoji: "💪",
-      title: "DON'T GIVE UP!",
-      subtitle: "Every expert was once a beginner. Try again!",
+      title: "Don't Give Up!",
+      subtitle: "You can do better. Try again!",
       bgColor: "bg-gray-100",
       textColor: "text-gray-800",
       showConfetti: false,
