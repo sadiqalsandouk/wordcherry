@@ -206,7 +206,7 @@ export default function SoloGame() {
   ])
 
   return (
-    <div className="w-full max-w-3xl mx-auto">
+    <div className="w-full max-w-3xl mx-auto pt-8 md:pt-0">
       {gameState === GameState.IDLE && <PreStartScreen handleStartGame={handleStartGame} />}
       {gameState === GameState.PLAYING && (
         <div className="relative">
