@@ -126,7 +126,9 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
             <div className={`space-y-3 ${performance.textColor} text-lg leading-relaxed`}>
               <p>
                 You scored:{" "}
-                <span className="font-semibold text-wordcherryBlue text-2xl">{score}</span>
+                <span className="font-semibold text-wordcherryBlue text-2xl">
+                  {Math.floor(score)}
+                </span>
               </p>
 
               {bestWord.word && (
@@ -135,7 +137,9 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
                   <p className="text-2xl font-bold text-wordcherryBlue uppercase tracking-wider">
                     {bestWord.word}
                   </p>
-                  <p className="text-sm text-gray-600 mt-1">(+{bestWord.score} points)</p>
+                  <p className="text-sm text-gray-600 mt-1">
+                    (+{Math.floor(bestWord.score)} points)
+                  </p>
                 </div>
               )}
 

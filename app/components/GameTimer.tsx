@@ -7,6 +7,8 @@ interface TimerProps {
   timerState?: Timer
   secondsLeft?: number
   onTimeUpdate?: (seconds: number) => void
+  timeBonus?: number
+  onTimeBonusAnimationComplete?: () => void
 }
 
 export default function GameTimer({
@@ -14,9 +16,12 @@ export default function GameTimer({
   timerState: externalTimerState,
   secondsLeft: externalSecondsLeft,
   onTimeUpdate,
+  timeBonus,
+  onTimeBonusAnimationComplete,
 }: TimerProps) {
   const [timerState, setTimerState] = useState<Timer>(Timer.RUNNING)
   const [internalSecondsLeft, setInternalSecondsLeft] = useState(60)
+  const [isTimeBonusAnimating, setIsTimeBonusAnimating] = useState(false)
   const secondsRef = useRef(60)
   const currentTimerState = externalTimerState || timerState
   const secondsLeft = externalSecondsLeft !== undefined ? externalSecondsLeft : internalSecondsLeft
@@ -49,6 +54,21 @@ export default function GameTimer({
     }
   }, [currentTimerState, secondsLeft, handleEndGame])
 
+  useEffect(() => {
+    if (timeBonus && timeBonus > 0) {
+      setIsTimeBonusAnimating(true)
+
+      const timer = setTimeout(() => {
+        setIsTimeBonusAnimating(false)
+        if (onTimeBonusAnimationComplete) {
+          onTimeBonusAnimationComplete()
+        }
+      }, 1000)
+
+      return () => clearTimeout(timer)
+    }
+  }, [timeBonus, onTimeBonusAnimationComplete])
+
   const isUrgent = secondsLeft <= 10
   const isCritical = secondsLeft <= 5
   const isOver = secondsLeft === 0
@@ -66,14 +86,22 @@ export default function GameTimer({
 
   return (
     <>
-      <div
-        className={`
-          text-white font-bold text-2xl
-          ${isCritical ? "text-red-300 animate-pulse" : ""}
-          ${isUrgent ? "text-orange-300" : ""}
-        `}
-      >
-        {timeDisplay}
+      <div className="relative">
+        <div
+          className={`
+            text-white font-bold text-2xl
+            ${isCritical ? "text-red-300 animate-pulse" : ""}
+            ${isUrgent ? "text-orange-300" : ""}
+          `}
+        >
+          {timeDisplay}
+        </div>
+
+        {isTimeBonusAnimating && timeBonus && (
+          <div className="absolute -top-6 -right-2 text-green-400 font-bold text-lg animate-fade-out">
+            +{timeBonus}s
+          </div>
+        )}
       </div>
 
       <div className="absolute bottom-0 left-0 right-0 h-2">

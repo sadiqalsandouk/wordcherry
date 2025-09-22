@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react"
 import getRandomLetters from "../utils/getRandomLetters"
 import { validateWord } from "../utils/wordValidation"
 import { calculateFinalScore } from "../utils/wordScoringSystem"
+import { getTimeBonusDescription } from "../utils/timeBonusSystem"
 import { GameState, Timer } from "../types/types"
 import TileRack from "../components/TileRack"
 import CurrentWord from "../components/CurrentWord"
@@ -32,6 +33,7 @@ export default function SoloGame() {
   const [showFeedback, setShowFeedback] = useState(false)
   const [isShaking, setIsShaking] = useState(false)
   const [bestWord, setBestWord] = useState<{ word: string; score: number }>({ word: "", score: 0 })
+  const [timeBonus, setTimeBonus] = useState<number>(0)
 
   const handleTileClick = useCallback(
     (letter: string, index: number) => {
@@ -88,12 +90,33 @@ export default function SoloGame() {
     [tiles, handleTileClick]
   )
 
+  const addTimeBonus = useCallback((bonusSeconds: number) => {
+    setSecondsLeft((prevSeconds) => {
+      // Cap maximum time at 120 seconds to prevent infinite game
+      return Math.min(prevSeconds + bonusSeconds, 120)
+    })
+  }, [])
+
+  const handleTimeBonusAnimationComplete = useCallback(() => {
+    setTimeBonus(0)
+  }, [])
+
   const handleSubmitButton = useCallback(() => {
     const currentWordString = currentWord.map((tile) => tile.letter).join("")
     const wordScore = calculateFinalScore(currentWordString)
     const isValid = validateWord(currentWordString)
 
     if (isValid) {
+      // Calculate time bonus
+      const timeBonusInfo = getTimeBonusDescription(currentWordString)
+
+      // Add time bonus to timer
+      addTimeBonus(timeBonusInfo.bonus)
+
+      // Show time bonus animation
+      setTimeBonus(timeBonusInfo.bonus)
+
+      // Show feedback for valid word
       setFeedback("Valid word!")
       setShowFeedback(true)
 
@@ -116,7 +139,7 @@ export default function SoloGame() {
 
       return
     }
-  }, [currentWord, bestWord.score])
+  }, [currentWord, bestWord.score, addTimeBonus])
 
   const handleStartGame = () => {
     setGameState(GameState.PLAYING)
@@ -128,6 +151,7 @@ export default function SoloGame() {
     setShowFeedback(false)
     setIsShaking(false)
     setBestWord({ word: "", score: 0 })
+    setTimeBonus(0)
     const newLetters = getRandomLetters(10)
     setTiles(newLetters.map((letter) => ({ letter, isUsed: false })))
     setGameKey((prev) => prev + 1)
@@ -220,6 +244,8 @@ export default function SoloGame() {
                 timerState={timerState}
                 secondsLeft={secondsLeft}
                 onTimeUpdate={handleTimeUpdate}
+                timeBonus={timeBonus}
+                onTimeBonusAnimationComplete={handleTimeBonusAnimationComplete}
               />
             </div>
             <div className="w-full max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl mx-auto px-4">

@@ -10,6 +10,8 @@ interface ScoreProps {
   timerState?: import("../types/types").Timer
   secondsLeft?: number
   onTimeUpdate?: (seconds: number) => void
+  timeBonus?: number
+  onTimeBonusAnimationComplete?: () => void
 }
 
 export default function Score({
@@ -19,6 +21,8 @@ export default function Score({
   timerState,
   secondsLeft,
   onTimeUpdate,
+  timeBonus,
+  onTimeBonusAnimationComplete,
 }: ScoreProps) {
   const [previousScore, setPreviousScore] = useState(currentScore)
   const [isAnimating, setIsAnimating] = useState(false)
@@ -50,18 +54,20 @@ export default function Score({
           timerState={timerState}
           secondsLeft={secondsLeft}
           onTimeUpdate={onTimeUpdate}
+          timeBonus={timeBonus}
+          onTimeBonusAnimationComplete={onTimeBonusAnimationComplete}
         />
         <div className="relative">
           <div className="flex items-center gap-2">
             <div className="text-white font-bold text-2xl flex items-center gap-1">
               <span>🏆</span>
-              <span>{currentScore}</span>
+              <span>{Math.floor(currentScore)}</span>
             </div>
           </div>
 
           {isAnimating && (
             <div className="absolute -top-6 -right-2 text-green-400 font-bold text-lg animate-fade-out">
-              +{scoreIncrease}
+              +{Math.floor(scoreIncrease)}
             </div>
           )}
         </div>

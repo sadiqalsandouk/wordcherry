@@ -79,12 +79,16 @@ const commonSuffixes: { [suffix: string]: number } = {
 
 export const getMultiplier = (wordLength: number) => {
   if (wordLength >= 9) {
-    return 2.5
+    return 4.0  // 9+ letters: 4x multiplier (maximum reward)
   } else if (wordLength >= 7) {
-    return 2
+    return 3.0  // 7-8 letters: 3x multiplier
+  } else if (wordLength >= 5) {
+    return 2.0  // 5-6 letters: 2x multiplier
   } else if (wordLength >= 4) {
-    return 1.5
-  } else return 1
+    return 1.0  // 4 letters: 1x base multiplier (no bonus/penalty)
+  } else {
+    return 0.5  // 3 letters: 0.5x penalty (half points)
+  }
 }
 
 export const calculateBaseScore = (word: string) => {
