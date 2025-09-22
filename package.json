@@ -3,7 +3,16 @@
   "version": "0.1.0",
   "description": "A fun word game where you create words from letter tiles to score points. Play solo or challenge friends in this engaging anagram puzzle game.",
   "author": "Wordcherry Team",
-  "keywords": ["word game", "anagram", "puzzle", "letters", "vocabulary", "multiplayer", "solo game", "tiles"],
+  "keywords": [
+    "word game",
+    "anagram",
+    "puzzle",
+    "letters",
+    "vocabulary",
+    "multiplayer",
+    "solo game",
+    "tiles"
+  ],
   "homepage": "https://wordcherry.com",
   "repository": {
     "type": "git",
@@ -26,7 +35,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.507.0",
-    "next": "15.2.4",
+    "next": "^15.5.3",
     "react": "^19.0.0",
     "react-confetti": "^6.4.0",
     "react-dom": "^19.0.0",
