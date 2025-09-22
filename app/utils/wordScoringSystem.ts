@@ -48,5 +48,5 @@ export const calculateBaseScore = (word: string) => {
 }
 
 export const calculateFinalScore = (word: string) => {
-  return calculateBaseScore(word) * getMultiplier(word.length)
+  return Math.round(calculateBaseScore(word) * getMultiplier(word.length))
 }

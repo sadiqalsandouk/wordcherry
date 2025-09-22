@@ -20,7 +20,7 @@ export default function GameTimer({
   const secondsRef = useRef(60)
   const currentTimerState = externalTimerState || timerState
   const secondsLeft = externalSecondsLeft !== undefined ? externalSecondsLeft : internalSecondsLeft
-  
+
   secondsRef.current = secondsLeft
 
   useEffect(() => {
@@ -77,9 +77,9 @@ export default function GameTimer({
       </div>
 
       <div className="absolute bottom-0 left-0 right-0 h-2">
-        <div className="relative w-full h-full bg-gray-200/20 overflow-hidden">
+        <div className="relative w-full h-full bg-gray-200/20 overflow-hidden rounded-full">
           <div
-            className="absolute top-0 left-0 h-full transition-all duration-1000 ease-linear bg-gradient-to-r from-red-500 to-yellow-400"
+            className="absolute top-0 left-0 h-full transition-all duration-1000 ease-linear bg-gradient-to-r from-red-500 to-yellow-400 rounded-full"
             style={{ width: `${progressPercentage}%` }}
           />
         </div>

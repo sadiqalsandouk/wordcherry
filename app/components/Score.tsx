@@ -52,7 +52,12 @@ export default function Score({
           onTimeUpdate={onTimeUpdate}
         />
         <div className="relative">
-          <div className="text-white font-bold text-2xl">{currentScore}</div>
+          <div className="flex items-center gap-2">
+            <div className="text-white font-bold text-2xl flex items-center gap-1">
+              <span>🏆</span>
+              <span>{currentScore}</span>
+            </div>
+          </div>
 
           {isAnimating && (
             <div className="absolute -top-6 -right-2 text-green-400 font-bold text-lg animate-fade-out">

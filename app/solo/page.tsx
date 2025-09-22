@@ -224,10 +224,28 @@ export default function SoloGame() {
             </div>
             <div className="w-full max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl mx-auto px-4">
               <div
-                className={`bg-gray-100 p-4 md:p-6 rounded-lg min-h-[120px] md:min-h-[140px] lg:min-h-[160px] flex flex-col ${
+                className={`bg-gray-100 p-4 md:p-6 rounded-lg min-h-[140px] md:min-h-[160px] lg:min-h-[180px] flex flex-col relative ${
                   isShaking ? "animate-shake" : ""
                 }`}
               >
+                {currentWord.length > 0 && (
+                  <button
+                    onClick={() => {
+                      setCurrentWord([])
+                      setTiles((prev) =>
+                        prev.map((tile) => ({ ...tile, isUsed: false, usedInWordIndex: undefined }))
+                      )
+                    }}
+                    className="absolute bottom-3 right-3 px-2 py-1 md:px-3 md:py-1.5 bg-red-500 hover:bg-red-600 text-white text-xs md:text-sm font-medium rounded-lg border border-red-600 shadow-md hover:shadow-lg transition-all duration-200 group flex items-center gap-1 md:gap-1.5"
+                    title="Clear word"
+                  >
+                    <span className="text-xs md:text-sm">🗑️</span>
+                    <span className="hidden sm:inline">Clear</span>
+                    <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
+                      Clear word
+                    </div>
+                  </button>
+                )}
                 <div className="flex-1 flex items-center justify-center">
                   {currentWord.length === 0 ? (
                     <div className="text-gray-400 text-lg md:text-xl italic text-center px-4">
