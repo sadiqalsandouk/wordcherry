@@ -38,7 +38,7 @@ export default function getRandomLetters(numberOfTiles: number) {
   const baseWord = getRandomItem(validWords)
   
   // Start with the base word letters
-  let letters = baseWord.split("")
+  const letters = baseWord.split("")
   
   // Add random letters to reach the target count
   while (letters.length < numberOfTiles) {
