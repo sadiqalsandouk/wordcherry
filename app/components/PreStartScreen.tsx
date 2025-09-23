@@ -16,13 +16,12 @@ export default function PreStartScreen({ handleStartGame }: PreStartScreenProps)
           <div className="bg-gray-50 p-4 sm:p-6 rounded-xl mb-6 md:mb-8 border border-gray-200">
             <div className="space-y-4 text-gray-700">
               <div className="text-lg sm:text-xl font-semibold">
-                You have <span className="text-wordcherryBlue font-bold">60 seconds</span>
+                Start with <span className="text-wordcherryBlue font-bold">60 seconds</span>
               </div>
-              <div className="text-lg sm:text-xl font-semibold">
-                Build words from letter tiles
-              </div>
-              <div className="text-lg sm:text-xl font-semibold">
-                Beat your best score!
+              <div className="text-lg sm:text-xl font-semibold">Build words from letter tiles</div>
+
+              <div className="text-base sm:text-lg text-gray-600">
+                Longer words and rare letters give bonus score and time
               </div>
             </div>
           </div>
@@ -40,8 +39,8 @@ export default function PreStartScreen({ handleStartGame }: PreStartScreenProps)
               <div className="text-sm text-gray-600">Words</div>
             </div>
             <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
-              <div className="text-2xl font-bold text-wordcherryBlue">60s</div>
-              <div className="text-sm text-gray-600">Timer</div>
+              <div className="text-2xl font-bold text-wordcherryBlue">Time</div>
+              <div className="text-sm text-gray-600">Bonus</div>
             </div>
             <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
               <div className="text-2xl font-bold text-wordcherryBlue">Score</div>
