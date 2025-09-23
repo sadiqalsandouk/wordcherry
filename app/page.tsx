@@ -67,6 +67,9 @@ export default function Home() {
                 </div>
               </div>
 
+              {/* Divider */}
+              <div className="border-t border-wordcherryBlue my-8"></div>
+
               {/* Scoring System */}
               <div className="mb-8">
                 <h3 className="text-xl font-bold text-wordcherryBlue mb-4">Scoring System</h3>
@@ -154,6 +157,9 @@ export default function Home() {
                   </div>
                 </div>
               </div>
+
+              {/* Divider */}
+              <div className="border-t border-wordcherryBlue my-8"></div>
 
               {/* Strategy Tips */}
               <div>
