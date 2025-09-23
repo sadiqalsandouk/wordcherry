@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import "./globals.css"
 import { Analytics } from "@vercel/analytics/next"
+import Footer from "./components/Footer"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -85,6 +86,7 @@ export default function RootLayout({
       >
         <div className="w-full max-w-4xl mx-auto px-2 sm:px-4 md:px-8 lg:px-12 py-2 sm:py-4 md:py-8">
           {children}
+          <Footer />
           <Analytics />
         </div>
       </body>
