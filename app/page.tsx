@@ -142,16 +142,16 @@ export default function Home() {
                 <div className="mt-3 pl-4 border-l-2 border-wordcherryBlue/30">
                   <div className="space-y-3">
                     <div className="bg-wordcherryYellow/20 rounded-lg p-3 border border-wordcherryBlue/30">
-                      <div className="font-bold text-wordcherryBlue text-sm mb-1">🎯 Target 5+ Letter Words</div>
+                      <div className="font-bold text-wordcherryBlue text-sm mb-1">Target 5+ Letter Words</div>
                       <div className="text-gray-600 text-xs">Better time bonuses and point multipliers</div>
                     </div>
                     <div className="bg-wordcherryYellow/20 rounded-lg p-3 border border-wordcherryBlue/30">
-                      <div className="font-bold text-wordcherryBlue text-sm mb-1">⚡ Hunt Rare Letters</div>
+                      <div className="font-bold text-wordcherryBlue text-sm mb-1">Use Rare Letters</div>
                       <div className="text-gray-600 text-xs">Q, J, X, Z give the most points and time</div>
                     </div>
                     <div className="bg-wordcherryYellow/20 rounded-lg p-3 border border-wordcherryBlue/30">
-                      <div className="font-bold text-wordcherryBlue text-sm mb-1">🚫 Avoid 3-Letter Words</div>
-                      <div className="text-gray-600 text-xs">Minimal rewards - use only for survival</div>
+                      <div className="font-bold text-wordcherryBlue text-sm mb-1">Avoid 3-Letter Words</div>
+                      <div className="text-gray-600 text-xs">Minimal rewards - use only these for survival</div>
                     </div>
                   </div>
                 </div>
