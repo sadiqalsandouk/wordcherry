@@ -32,23 +32,8 @@ export default function PreStartScreen({ handleStartGame }: PreStartScreenProps)
           >
             START GAME
           </button>
-
-          <div className="mt-6 md:mt-8 grid grid-cols-3 gap-4 text-center">
-            <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
-              <div className="text-2xl font-bold text-wordcherryBlue">∞</div>
-              <div className="text-sm text-gray-600">Words</div>
-            </div>
-            <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
-              <div className="text-2xl font-bold text-wordcherryBlue">Time</div>
-              <div className="text-sm text-gray-600">Bonus</div>
-            </div>
-            <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
-              <div className="text-2xl font-bold text-wordcherryBlue">Score</div>
-              <div className="text-sm text-gray-600">Points</div>
-            </div>
           </div>
         </div>
       </div>
-    </div>
   )
 }
