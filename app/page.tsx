@@ -4,9 +4,9 @@ import Title from "./components/Title"
 
 export default function Home() {
   return (
-    <div className="w-full max-w-4xl mx-auto">
+    <div className="pt-8 md:pt-0">
       <Title />
-      <div className="mt-4 sm:mt-6 md:mt-8 space-y-4 sm:space-y-6 md:space-y-8">
+      <div className="mt-4 sm:mt-6 md:mt-6 space-y-4 sm:space-y-4 md:space-y-6">
         <SoloButton />
         <div className="text-center text-white text-base sm:text-lg font-bold my-2 sm:my-4 opacity-70">
           - OR -
@@ -14,16 +14,16 @@ export default function Home() {
         <JoinForm />
 
         {/* FAQ Section */}
-        <div className="mt-12 md:mt-16">
+        <div className="mt-8 md:mt-10">
           <div className="overflow-hidden rounded-xl shadow-[2px_2px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(0,0,0,0.1)]">
             <div className="bg-wordcherryYellow py-3 px-4 text-center">
               <h2 className="text-2xl font-bold text-wordcherryBlue">FAQ</h2>
             </div>
 
-            <div className="bg-[#fff7d6] p-4 space-y-3">
+            <div className="bg-[#fff7d6] p-3 space-y-2">
               {/* How to Play FAQ */}
               <details className="group">
-                <summary className="flex items-center justify-between cursor-pointer text-wordcherryBlue font-semibold hover:bg-wordcherryYellow/20 rounded-lg p-3 transition-colors">
+                <summary className="flex items-center justify-between cursor-pointer text-wordcherryBlue font-semibold hover:bg-wordcherryYellow/20 rounded-lg p-2 transition-colors">
                   <span>How do I play?</span>
                   <span className="transform transition-transform group-open:rotate-180">▼</span>
                 </summary>
@@ -54,7 +54,7 @@ export default function Home() {
 
               {/* Scoring FAQ */}
               <details className="group">
-                <summary className="flex items-center justify-between cursor-pointer text-wordcherryBlue font-semibold hover:bg-wordcherryYellow/20 rounded-lg p-3 transition-colors">
+                <summary className="flex items-center justify-between cursor-pointer text-wordcherryBlue font-semibold hover:bg-wordcherryYellow/20 rounded-lg p-2 transition-colors">
                   <span>How does scoring work?</span>
                   <span className="transform transition-transform group-open:rotate-180">▼</span>
                 </summary>
@@ -135,7 +135,7 @@ export default function Home() {
 
               {/* Tips FAQ */}
               <details className="group">
-                <summary className="flex items-center justify-between cursor-pointer text-wordcherryBlue font-semibold hover:bg-wordcherryYellow/20 rounded-lg p-3 transition-colors">
+                <summary className="flex items-center justify-between cursor-pointer text-wordcherryBlue font-semibold hover:bg-wordcherryYellow/20 rounded-lg p-2 transition-colors">
                   <span>Any tips for scoring higher?</span>
                   <span className="transform transition-transform group-open:rotate-180">▼</span>
                 </summary>

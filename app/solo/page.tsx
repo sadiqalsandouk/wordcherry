@@ -230,7 +230,7 @@ export default function SoloGame() {
   ])
 
   return (
-    <div className="w-full max-w-3xl mx-auto pt-8 md:pt-0">
+    <div className="pt-8 md:pt-0">
       {gameState === GameState.IDLE && <PreStartScreen handleStartGame={handleStartGame} />}
       {gameState === GameState.PLAYING && (
         <div className="relative">
@@ -250,7 +250,7 @@ export default function SoloGame() {
             </div>
             <div className="w-full max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl mx-auto px-4">
               <div
-                className={`bg-gray-100 p-4 md:p-6 rounded-lg min-h-[140px] md:min-h-[160px] lg:min-h-[180px] flex flex-col relative ${
+                className={`bg-gray-100 p-6 md:p-8 rounded-lg min-h-[180px] md:min-h-[200px] lg:min-h-[220px] flex flex-col relative ${
                   isShaking ? "animate-shake" : ""
                 }`}
               >
