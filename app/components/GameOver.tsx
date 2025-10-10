@@ -1,22 +1,8 @@
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import Confetti from "react-confetti"
-
-type GameOverProps = {
-  handleStartGame: () => void
-  score: number
-  bestWord: { word: string; score: number }
-}
-
-type PerformanceLevel = {
-  emoji: string
-  title: string
-  subtitle: string
-  bgColor: string
-  textColor: string
-  showConfetti: boolean
-  buttonColor: string
-  buttonTextColor: string
-}
+import { PerformanceLevel, GameOverProps } from "@/app/types/types"
+import { useAnonymousAuth } from "@/lib/supabase/useAnonymousAuth"
+import { submitScore } from "@/lib/supabase/submitScore"
 
 const getPerformanceLevel = (score: number): PerformanceLevel => {
   if (score >= 200) {
@@ -89,8 +75,13 @@ const getPerformanceLevel = (score: number): PerformanceLevel => {
 }
 
 export default function GameOver({ handleStartGame, score, bestWord }: GameOverProps) {
+  const gameId = useMemo(() => crypto.randomUUID(), [])
+  const [playerName, setPlayerName] = useState("")
+  const [submitting, setSubmitting] = useState(false)
+  const [submitMsg, setSubmitMsg] = useState<string | null>(null)
   const [showConfetti, setShowConfetti] = useState(false)
   const performance = getPerformanceLevel(score)
+  useAnonymousAuth()
 
   useEffect(() => {
     if (performance.showConfetti) {
@@ -102,6 +93,21 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
       return () => clearTimeout(timer)
     }
   }, [performance.showConfetti])
+
+  const onSubmit = async () => {
+    setSubmitting(true)
+    setSubmitMsg(null)
+    const res = await submitScore({
+      gameId,
+      score,
+      bestWord: bestWord.word || "",
+      bestWordScore: bestWord.score || 0,
+      playerName,
+    })
+    if (res.ok) setSubmitMsg("Submitted to leaderboard!") //TODO make this a toast
+    else setSubmitMsg(`Error: ${res.error}`) //TODO make this a toast
+    setSubmitting(false)
+  }
 
   return (
     <>
@@ -160,6 +166,16 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
             >
               Back to Home
             </button>
+            <div className="mt-6 space-y-3">
+              <button
+                onClick={onSubmit}
+                disabled={submitting}
+                className="w-full bg-green-600 text-white font-bold text-lg py-4 rounded-xl disabled:opacity-50"
+              >
+                {submitting ? "Submitting…" : "Submit to Leaderboard"}
+              </button>
+              {submitMsg && <p className="text-sm text-gray-700">{submitMsg}</p>}
+            </div>
           </div>
         </div>
       </div>

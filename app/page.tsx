@@ -33,20 +33,36 @@ export default function Home() {
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center gap-3">
-                      <div className="bg-wordcherryBlue text-white font-bold text-xs rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0">1</div>
-                      <span className="text-wordcherryBlue text-sm">Start with 60 seconds and 10 random tiles</span>
+                      <div className="bg-wordcherryBlue text-white font-bold text-xs rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0">
+                        1
+                      </div>
+                      <span className="text-wordcherryBlue text-sm">
+                        Start with 60 seconds and 10 random tiles
+                      </span>
                     </div>
                     <div className="flex items-center gap-3">
-                      <div className="bg-wordcherryBlue text-white font-bold text-xs rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0">2</div>
-                      <span className="text-wordcherryBlue text-sm">Click tiles or type to build words</span>
+                      <div className="bg-wordcherryBlue text-white font-bold text-xs rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0">
+                        2
+                      </div>
+                      <span className="text-wordcherryBlue text-sm">
+                        Click tiles or type to build words
+                      </span>
                     </div>
                     <div className="flex items-center gap-3">
-                      <div className="bg-wordcherryBlue text-white font-bold text-xs rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0">3</div>
-                      <span className="text-wordcherryBlue text-sm">Submit valid words to get new tiles and time bonuses</span>
+                      <div className="bg-wordcherryBlue text-white font-bold text-xs rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0">
+                        3
+                      </div>
+                      <span className="text-wordcherryBlue text-sm">
+                        Submit valid words to get new tiles and time bonuses
+                      </span>
                     </div>
                     <div className="flex items-center gap-3">
-                      <div className="bg-wordcherryBlue text-white font-bold text-xs rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0">4</div>
-                      <span className="text-wordcherryBlue text-sm">Longer words = more points and time!</span>
+                      <div className="bg-wordcherryBlue text-white font-bold text-xs rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0">
+                        4
+                      </div>
+                      <span className="text-wordcherryBlue text-sm">
+                        Longer words = more points and time!
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -61,7 +77,9 @@ export default function Home() {
                 <div className="mt-3 pl-4 border-l-2 border-wordcherryBlue/30">
                   <div className="space-y-4">
                     <div>
-                      <div className="text-wordcherryBlue font-semibold text-sm mb-2">Letter Values</div>
+                      <div className="text-wordcherryBlue font-semibold text-sm mb-2">
+                        Letter Values
+                      </div>
                       <div className="grid grid-cols-2 gap-2 text-xs">
                         <div className="bg-wordcherryYellow/20 rounded p-2 border border-wordcherryBlue/30">
                           <div className="text-gray-600 mb-2">Common (1pt)</div>
@@ -81,9 +99,11 @@ export default function Home() {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div>
-                      <div className="text-wordcherryBlue font-semibold text-sm mb-2">Length Multipliers</div>
+                      <div className="text-wordcherryBlue font-semibold text-sm mb-2">
+                        Length Multipliers
+                      </div>
                       <div className="grid grid-cols-5 gap-1 text-xs">
                         <div className="bg-wordcherryYellow/20 rounded p-1 border border-wordcherryBlue/30 text-center">
                           <div className="text-gray-600">3</div>
@@ -109,7 +129,9 @@ export default function Home() {
                     </div>
 
                     <div>
-                      <div className="text-wordcherryBlue font-semibold text-sm mb-2">Time Bonuses</div>
+                      <div className="text-wordcherryBlue font-semibold text-sm mb-2">
+                        Time Bonuses
+                      </div>
                       <div className="grid grid-cols-4 gap-1 text-xs">
                         <div className="bg-wordcherryYellow/20 rounded p-1 border border-wordcherryBlue/30 text-center">
                           <div className="text-gray-600">3 letters</div>
@@ -142,16 +164,28 @@ export default function Home() {
                 <div className="mt-3 pl-4 border-l-2 border-wordcherryBlue/30">
                   <div className="space-y-3">
                     <div className="bg-wordcherryYellow/20 rounded-lg p-3 border border-wordcherryBlue/30">
-                      <div className="font-bold text-wordcherryBlue text-sm mb-1">Target 5+ Letter Words</div>
-                      <div className="text-gray-600 text-xs">Better time bonuses and point multipliers</div>
+                      <div className="font-bold text-wordcherryBlue text-sm mb-1">
+                        Target 5+ Letter Words
+                      </div>
+                      <div className="text-gray-600 text-xs">
+                        Better time bonuses and point multipliers
+                      </div>
                     </div>
                     <div className="bg-wordcherryYellow/20 rounded-lg p-3 border border-wordcherryBlue/30">
-                      <div className="font-bold text-wordcherryBlue text-sm mb-1">Use Rare Letters</div>
-                      <div className="text-gray-600 text-xs">Q, J, X, Z give the most points and time</div>
+                      <div className="font-bold text-wordcherryBlue text-sm mb-1">
+                        Use Rare Letters
+                      </div>
+                      <div className="text-gray-600 text-xs">
+                        Q, J, X, Z give the most points and time
+                      </div>
                     </div>
                     <div className="bg-wordcherryYellow/20 rounded-lg p-3 border border-wordcherryBlue/30">
-                      <div className="font-bold text-wordcherryBlue text-sm mb-1">Avoid 3-Letter Words</div>
-                      <div className="text-gray-600 text-xs">Minimal rewards - use only these for survival</div>
+                      <div className="font-bold text-wordcherryBlue text-sm mb-1">
+                        Avoid 3-Letter Words
+                      </div>
+                      <div className="text-gray-600 text-xs">
+                        Minimal rewards - use only these for survival
+                      </div>
                     </div>
                   </div>
                 </div>
