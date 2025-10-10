@@ -37,7 +37,7 @@ export default function Home() {
                         1
                       </div>
                       <span className="text-wordcherryBlue text-sm">
-                        Start with 60 seconds and 10 random tiles
+                        Start with 30 seconds and 10 random tiles
                       </span>
                     </div>
                     <div className="flex items-center gap-3">
