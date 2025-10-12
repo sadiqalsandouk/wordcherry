@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react"
 import Confetti from "react-confetti"
 import { PerformanceLevel, GameOverProps } from "@/app/types/types"
-import { usePlayerName } from "@/app/utils/usePlayerName"
+import { usePlayerName } from "@/app/components/AuthProvider"
 import { submitScore } from "@/lib/supabase/submitScore"
 
 const getPerformanceLevel = (score: number): PerformanceLevel => {
@@ -80,7 +80,7 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
   const [submitMsg, setSubmitMsg] = useState<string | null>(null)
   const [showConfetti, setShowConfetti] = useState(false)
   const performance = getPerformanceLevel(score)
-  const playerName = usePlayerName()
+  const { playerName } = usePlayerName()
 
   useEffect(() => {
     if (performance.showConfetti) {

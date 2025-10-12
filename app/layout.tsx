@@ -85,12 +85,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-wordcherryBlue min-h-screen flex flex-col justify-center`}
       >
-        <AuthProvider />
-        <div className="w-full max-w-4xl mx-auto px-2 sm:px-4 md:px-8 lg:px-12 py-2 sm:py-4 md:py-8">
-          {children}
-          <Footer />
-          <Analytics />
-        </div>
+        <AuthProvider>
+          <div className="w-full max-w-4xl mx-auto px-2 sm:px-4 md:px-8 lg:px-12 py-2 sm:py-4 md:py-8">
+            {children}
+            <Footer />
+            <Analytics />
+          </div>
+        </AuthProvider>
       </body>
     </html>
   )
