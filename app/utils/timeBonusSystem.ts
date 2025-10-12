@@ -1,14 +1,14 @@
 // Time bonus system based on word quality
-import { calculateFinalScore } from './wordScoringSystem'
+import { calculateFinalScore } from "./wordScoringSystem"
 
 // Base time bonus constants (in seconds)
-const BASE_TIME_BONUS = 2 // Minimum time bonus for any valid word
-const SCORE_MULTIPLIER = 0.3 // Convert score points to time bonus seconds
+const BASE_TIME_BONUS = 1 // Minimum time bonus for any valid word
+const SCORE_MULTIPLIER = 0.15 // Convert score points to time bonus seconds (reduced from 0.3)
 
 // Bonus categories based on word score ranges
 export const getTimeBonusCategory = (score: number): string => {
   if (score >= 30) return "Legendary"
-  if (score >= 20) return "Excellent" 
+  if (score >= 20) return "Excellent"
   if (score >= 15) return "Great"
   if (score >= 10) return "Good"
   if (score >= 5) return "Nice"
@@ -18,36 +18,38 @@ export const getTimeBonusCategory = (score: number): string => {
 // Calculate time bonus based on word score and length
 export const calculateTimeBonus = (word: string): number => {
   const wordScore = calculateFinalScore(word)
-  
-  // Different base bonuses based on word length
+
+  // Different base bonuses based on word length (reduced across the board)
   let baseBonus = BASE_TIME_BONUS
   if (word.length >= 7) {
-    baseBonus = 4  // 7+ letters: +4 seconds base
+    baseBonus = 2 // 7+ letters: +2 seconds base (reduced from 4)
   } else if (word.length >= 5) {
-    baseBonus = 3  // 5-6 letters: +3 seconds base
+    baseBonus = 1.5 // 5-6 letters: +1.5 seconds base (reduced from 3)
   } else if (word.length >= 4) {
-    baseBonus = 2  // 4 letters: +2 seconds base
+    baseBonus = 1 // 4 letters: +1 second base (reduced from 2)
   } else {
-    baseBonus = 1  // 3 letters: +1 second base (reduced time bonus)
+    baseBonus = 0.5 // 3 letters: +0.5 second base (reduced from 1)
   }
-  
+
   // Score-based bonus (same multiplier)
   const scoreBonus = Math.floor(wordScore * SCORE_MULTIPLIER)
-  
+
   // Total time bonus
   const timeBonus = baseBonus + scoreBonus
-  
-  // Cap maximum time bonus at 15 seconds to prevent exploitation
-  return Math.min(timeBonus, 15)
+
+  // Cap maximum time bonus at 8 seconds to prevent exploitation (reduced from 15)
+  return Math.min(timeBonus, 8)
 }
 
 // Get bonus description for UI feedback
-export const getTimeBonusDescription = (word: string): { bonus: number, category: string, message: string } => {
+export const getTimeBonusDescription = (
+  word: string
+): { bonus: number; category: string; message: string } => {
   const bonus = calculateTimeBonus(word)
   const score = calculateFinalScore(word)
   const category = getTimeBonusCategory(score)
-  
+
   const message = `+${bonus}s • ${category} word!`
-  
+
   return { bonus, category, message }
 }
