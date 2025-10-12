@@ -33,7 +33,7 @@ export type SubmitScoreInput = {
   score: number
   bestWord: string
   bestWordScore: number
-  playerName?: string
+  playerName: string
 }
 
 export type SubmitScoreResult = { ok: true } | { ok: false; error: string }

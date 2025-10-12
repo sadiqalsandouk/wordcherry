@@ -29,7 +29,7 @@ export async function submitScore(input: SubmitScoreInput): Promise<SubmitScoreR
   const uid = (await supabase.auth.getUser()).data.user!.id
 
   // Normalise fields
-  const player_name = (input.playerName ?? "").trim().slice(0, 32) || `Guest-${uid.slice(0, 6)}`
+  const player_name = (input.playerName ?? `Guest-${uid.slice(0, 6)}`).trim().slice(0, 32)
   const score = Math.floor(input.score)
   const best_word = (input.bestWord ?? "").toUpperCase()
   const best_word_score = Math.floor(input.bestWordScore)

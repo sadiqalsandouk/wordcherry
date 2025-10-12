@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useState } from "react"
 import Confetti from "react-confetti"
 import { PerformanceLevel, GameOverProps } from "@/app/types/types"
-import { useAnonymousAuth } from "@/lib/supabase/useAnonymousAuth"
+import { usePlayerName } from "@/app/utils/usePlayerName"
 import { submitScore } from "@/lib/supabase/submitScore"
-import { supabase } from "@/lib/supabase/supabase"
 
 const getPerformanceLevel = (score: number): PerformanceLevel => {
   if (score >= 200) {
@@ -77,30 +76,11 @@ const getPerformanceLevel = (score: number): PerformanceLevel => {
 
 export default function GameOver({ handleStartGame, score, bestWord }: GameOverProps) {
   const gameId = useMemo(() => crypto.randomUUID(), [])
-  const [playerName, setPlayerName] = useState("")
   const [submitting, setSubmitting] = useState(false)
   const [submitMsg, setSubmitMsg] = useState<string | null>(null)
   const [showConfetti, setShowConfetti] = useState(false)
   const performance = getPerformanceLevel(score)
-  useAnonymousAuth()
-
-  useEffect(() => {
-    const fetchUsername = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
-      if (user) {
-        // For guests we’ll just show Guest-xxxxxx
-        const guestName = `Guest-${user.id.slice(0, 6)}`
-        setPlayerName(guestName)
-      } else {
-        // In case session is still loading
-        setPlayerName("Guest-??????")
-      }
-    }
-
-    fetchUsername()
-  }, [])
+  const playerName = usePlayerName()
 
   useEffect(() => {
     if (performance.showConfetti) {
