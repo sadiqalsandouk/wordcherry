@@ -24,11 +24,11 @@ export const calculateTimeBonus = (word: string): number => {
   if (word.length >= 7) {
     baseBonus = 2 // 7+ letters: +2 seconds base (reduced from 4)
   } else if (word.length >= 5) {
-    baseBonus = 1.5 // 5-6 letters: +1.5 seconds base (reduced from 3)
+    baseBonus = 2 // 5-6 letters: +2 seconds base (reduced from 3)
   } else if (word.length >= 4) {
     baseBonus = 1 // 4 letters: +1 second base (reduced from 2)
   } else {
-    baseBonus = 0.5 // 3 letters: +0.5 second base (reduced from 1)
+    baseBonus = 1 // 3 letters: +1 second base (reduced from 1)
   }
 
   // Score-based bonus (same multiplier)
