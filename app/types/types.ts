@@ -37,3 +37,17 @@ export type SubmitScoreInput = {
 }
 
 export type SubmitScoreResult = { ok: true } | { ok: false; error: string }
+
+export type LeaderboardEntry = {
+  id: string
+  player_name: string
+  score: number
+  best_word: string
+  best_word_score: number
+  created_at: string
+  is_anonymous: boolean
+}
+
+export type LeaderboardResult =
+  | { ok: true; data: LeaderboardEntry[] }
+  | { ok: false; error: string }
