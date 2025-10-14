@@ -103,7 +103,7 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
               <button
                 onClick={onSubmit}
                 disabled={submitting}
-                className="w-full bg-green-600 text-white font-bold text-lg py-4 rounded-xl disabled:opacity-50"
+                className="cursor-pointer w-full bg-green-600 text-white font-bold text-lg py-4 rounded-xl shadow-[2px_2px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(0,0,0,0.1)] hover:bg-green-600/90 hover:scale-103 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-wordcherryBlue active:scale-95 transition-all duration-200"
               >
                 {submitting ? "Submitting…" : "Submit to Leaderboard"}
               </button>
