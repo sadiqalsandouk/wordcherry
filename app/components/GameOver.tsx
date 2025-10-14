@@ -112,6 +112,12 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
               </div>
             </div>
             <div className="w-full lg:w-80"></div>
+            <button
+              onClick={() => (window.location.href = "/leaderboard")}
+              className="cursor-pointer w-full text-center text-grey-700 hover:text-wordcherryBlue underline decoration-transparent hover:decoration-current font-medium text-sm py-2 transition-all duration-300"
+            >
+              View leaderboard →
+            </button>
           </div>
         </div>
       </div>
