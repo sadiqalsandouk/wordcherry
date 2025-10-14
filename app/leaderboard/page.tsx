@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react"
 import { getLeaderboard } from "@/lib/supabase/getLeaderboard"
 import { LeaderboardEntry } from "@/app/types/types"
-import Title from "../components/Title"
 
 export default function LeaderboardPage() {
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
