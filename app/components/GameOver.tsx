@@ -4,6 +4,7 @@ import { GameOverProps } from "@/app/types/types"
 import { usePlayerName } from "@/app/components/AuthProvider"
 import { submitScore } from "@/lib/supabase/submitScore"
 import { getPerformanceLevel } from "@/app/utils/performanceLevel"
+import { toast } from "sonner"
 
 export default function GameOver({ handleStartGame, score, bestWord }: GameOverProps) {
   const gameId = useMemo(() => crypto.randomUUID(), [])
@@ -34,8 +35,8 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
       bestWordScore: bestWord.score || 0,
       playerName,
     })
-    if (res.ok) setSubmitMsg("Submitted to leaderboard!") //TODO make this a toast
-    else setSubmitMsg(`Error: ${res.error}`) //TODO make this a toast
+    if (res.ok) toast("Submitted to leaderboard!")
+    else toast(`You've already submitted your score!`)
     setSubmitting(false)
   }
 
