@@ -14,7 +14,7 @@ export async function getLeaderboard(limit: number = 10): Promise<LeaderboardRes
     }
 
     return { ok: true, data: data || [] }
-  } catch (err) {
+  } catch (_) {
     return { ok: false, error: "Failed to fetch leaderboard data" }
   }
 }
