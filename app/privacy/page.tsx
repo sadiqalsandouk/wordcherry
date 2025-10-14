@@ -158,7 +158,7 @@ export default function PrivacyPolicy() {
                   className="inline-block bg-wordcherryBlue text-white font-bold px-6 py-3 rounded-lg hover:bg-wordcherryBlue/90 transition-colors"
                 >
                   Back to Game
-                </a>
+                </Link>
               </div>
             </div>
           </div>

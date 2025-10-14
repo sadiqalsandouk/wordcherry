@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "next/link"
 
 export default function Footer() {
   return (
@@ -16,7 +16,7 @@ export default function Footer() {
           </Link>
           <Link href="/privacy" className="text-white/60 hover:text-white transition-colors">
             Privacy Policy
-          </a>
+          </Link>
         </div>
       </div>
     </footer>
