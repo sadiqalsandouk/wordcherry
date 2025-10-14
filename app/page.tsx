@@ -37,7 +37,7 @@ export default function Home() {
                         1
                       </div>
                       <span className="text-wordcherryBlue text-sm">
-                        Start with 30 seconds and 10 random tiles
+                        Start with 10 random tiles and build words to earn time
                       </span>
                     </div>
                     <div className="flex items-center gap-3">
@@ -53,7 +53,7 @@ export default function Home() {
                         3
                       </div>
                       <span className="text-wordcherryBlue text-sm">
-                        Submit valid words to get new tiles and time bonuses
+                        Submit valid words to get new tiles and earn time bonuses
                       </span>
                     </div>
                     <div className="flex items-center gap-3">
@@ -83,7 +83,7 @@ export default function Home() {
                       <div className="grid grid-cols-2 gap-2 text-xs">
                         <div className="bg-wordcherryYellow/20 rounded p-2 border border-wordcherryBlue/30">
                           <div className="text-gray-600 mb-2">Common (1pt)</div>
-                          <div className="font-mono">E A R S I N T O</div>
+                          <div className="font-mono">E S I A R N T O</div>
                         </div>
                         <div className="bg-wordcherryYellow/20 rounded p-2 border border-wordcherryBlue/30">
                           <div className="text-gray-600 mb-2">Uncommon (2pt)</div>
@@ -132,22 +132,27 @@ export default function Home() {
                       <div className="text-wordcherryBlue font-semibold text-sm mb-2">
                         Time Bonuses
                       </div>
-                      <div className="grid grid-cols-4 gap-1 text-xs">
-                        <div className="bg-wordcherryYellow/20 rounded p-1 border border-wordcherryBlue/30 text-center">
-                          <div className="text-gray-600">3 letters</div>
-                          <div className="font-bold text-wordcherryBlue">+1s</div>
+                      <div className="bg-wordcherryYellow/20 rounded p-3 border border-wordcherryBlue/30 text-xs">
+                        <div className="text-gray-600 mb-2">
+                          Base time bonus + score-based bonus (up to 8s max)
                         </div>
-                        <div className="bg-wordcherryYellow/20 rounded p-1 border border-wordcherryBlue/30 text-center">
-                          <div className="text-gray-600">4 letters</div>
-                          <div className="font-bold text-wordcherryBlue">+2s</div>
-                        </div>
-                        <div className="bg-wordcherryYellow/20 rounded p-1 border border-wordcherryBlue/30 text-center">
-                          <div className="text-gray-600">5-6 letters</div>
-                          <div className="font-bold text-wordcherryBlue">+3s</div>
-                        </div>
-                        <div className="bg-wordcherryYellow/20 rounded p-1 border border-wordcherryBlue/30 text-center">
-                          <div className="text-gray-600">7+ letters</div>
-                          <div className="font-bold text-wordcherryBlue">+4s</div>
+                        <div className="space-y-1">
+                          <div className="flex justify-between">
+                            <span>3-4 letters:</span>
+                            <span className="font-bold text-wordcherryBlue">+1s base</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>5-6 letters:</span>
+                            <span className="font-bold text-wordcherryBlue">+2s base</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>7+ letters:</span>
+                            <span className="font-bold text-wordcherryBlue">+2s base</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Score bonus:</span>
+                            <span className="font-bold text-wordcherryBlue">15% of word score</span>
+                          </div>
                         </div>
                       </div>
                     </div>
