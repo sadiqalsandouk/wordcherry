@@ -100,58 +100,61 @@ export default function LeaderboardPage() {
 
         {leaderboard.length > 0 && (
           <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-wordcherryYellow text-wordcherryBlue">
-                  <tr>
-                    <th className="px-6 py-4 text-left font-bold">Rank</th>
-                    <th className="px-6 py-4 text-left font-bold">Player</th>
-                    <th className="px-6 py-4 text-right font-bold">Score</th>
-                    <th className="px-6 py-4 text-center font-bold">Best Word</th>
-                    <th className="px-6 py-4 text-right font-bold">Top Score</th>
-                    <th className="px-6 py-4 text-center font-bold">Date</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {leaderboard.map((entry, index) => (
-                    <tr
-                      key={entry.id}
-                      className={`hover:bg-gray-50 transition-colors ${
-                        index < 3 ? "bg-gradient-to-r from-yellow-50 to-orange-50" : ""
-                      }`}
-                    >
-                      <td className="px-6 py-4 text-lg font-bold">{getRankEmoji(index)}</td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center">
-                          <span className="font-semibold text-gray-900">{entry.player_name}</span>
+            <div className="bg-wordcherryYellow text-wordcherryBlue px-6 py-4">
+              <h3 className="font-bold text-center text-xl">🏆 Top Scores</h3>
+            </div>
+            <div className="divide-y divide-gray-200">
+              {leaderboard.map((entry, index) => (
+                <div
+                  key={entry.id}
+                  className={`px-6 py-5 hover:bg-gray-50 transition-colors ${
+                    index < 3 ? "bg-gradient-to-r from-yellow-50 to-orange-50" : ""
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-4">
+                      <span className="text-2xl font-bold">{getRankEmoji(index)}</span>
+                      <div>
+                        <div className="font-semibold text-gray-900 text-lg">
+                          {entry.player_name}
                         </div>
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <span className="text-2xl font-bold text-wordcherryBlue">
-                          {entry.score.toLocaleString()}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-center">
-                        {entry.best_word && (
-                          <span className="font-mono text-lg font-bold text-gray-800 uppercase tracking-wider">
+                        {entry.is_anonymous && (
+                          <span className="text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded-full">
+                            Guest
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-3xl font-bold text-wordcherryBlue">
+                        {entry.score.toLocaleString()}
+                      </div>
+                      <div className="text-sm text-gray-500">points</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-6">
+                      {entry.best_word && (
+                        <div>
+                          <div className="text-xs text-gray-500 mb-1">Best Word</div>
+                          <div className="font-mono text-lg font-bold text-gray-800 uppercase tracking-wider">
                             {entry.best_word}
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        {entry.best_word_score > 0 && (
-                          <span className="text-lg font-semibold text-green-600">
-                            +{entry.best_word_score.toLocaleString()}
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 text-center text-sm text-gray-600">
-                        {formatDate(entry.created_at)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    <div className="text-right">
+                      {entry.best_word_score > 0 && (
+                        <div className="text-lg font-semibold text-green-600">
+                          +{entry.best_word_score.toLocaleString()}
+                        </div>
+                      )}
+                      <div className="text-sm text-gray-600">{formatDate(entry.created_at)}</div>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
