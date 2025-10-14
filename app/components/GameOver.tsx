@@ -51,8 +51,8 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
         />
       )}
 
-      <div className=" mt-16 text-center space-y-6">
-        <div className="flex flex-col lg:flex-row gap-6 items-start justify-center">
+      <div className="mt-16 text-center space-y-6">
+        <div className="flex flex-col lg:flex-row gap-6 items-center lg:items-start justify-center">
           <div className={`${performance.bgColor} p-8 rounded-lg flex-1 max-w-lg`}>
             <h1 className="text-6xl font-bold mb-4">{performance.emoji}</h1>
             <div className="text-center mb-8">
@@ -114,7 +114,7 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
             <div className="w-full lg:w-80"></div>
             <button
               onClick={() => (window.location.href = "/leaderboard")}
-              className="cursor-pointer w-full text-center text-grey-700 hover:text-wordcherryBlue underline decoration-transparent hover:decoration-current font-medium text-sm py-2 transition-all duration-300"
+              className="cursor-pointer w-full text-center text-gray-700 hover:text-wordcherryBlue underline decoration-transparent hover:decoration-current font-medium text-sm py-2 transition-all duration-300"
             >
               View leaderboard →
             </button>
