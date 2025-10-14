@@ -28,9 +28,11 @@ export default function PreStartScreen({ handleStartGame }: PreStartScreenProps)
             <div className="bg-gray-50 p-4 sm:p-6 rounded-xl mb-6 md:mb-8 border border-gray-200">
               <div className="space-y-4 text-gray-700">
                 <div className="text-lg sm:text-xl font-semibold">
-                  Start with <span className="text-wordcherryBlue font-bold">60 seconds</span>
+                  Start with <span className="text-wordcherryBlue font-bold">30 seconds</span>
                 </div>
-                <div className="text-lg sm:text-xl font-semibold">Build words from letter tiles</div>
+                <div className="text-lg sm:text-xl font-semibold">
+                  Build words from letter tiles
+                </div>
 
                 <div className="text-base sm:text-lg text-gray-600">
                   Longer words and rare letters give bonus score and time

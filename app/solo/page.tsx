@@ -27,7 +27,7 @@ export default function SoloGame() {
   const [score, setScore] = useState(0)
   const [gameState, setGameState] = useState<GameState>(GameState.IDLE)
   const [timerState, setTimerState] = useState<Timer>(Timer.RUNNING)
-  const [secondsLeft, setSecondsLeft] = useState(60)
+  const [secondsLeft, setSecondsLeft] = useState(30)
   const [gameKey, setGameKey] = useState(0)
   const [feedback, setFeedback] = useState<string>("")
   const [showFeedback, setShowFeedback] = useState(false)
@@ -144,7 +144,7 @@ export default function SoloGame() {
   const handleStartGame = () => {
     setGameState(GameState.PLAYING)
     setTimerState(Timer.RUNNING)
-    setSecondsLeft(60)
+    setSecondsLeft(30)
     setScore(0)
     setCurrentWord([])
     setFeedback("")

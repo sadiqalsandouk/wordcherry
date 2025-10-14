@@ -1,3 +1,4 @@
+import Link from "next/link"
 import Title from "../components/Title"
 
 export default function PrivacyPolicy() {
@@ -152,13 +153,12 @@ export default function PrivacyPolicy() {
 
             <div className="mt-8 pt-6 border-t border-gray-200">
               <div className="text-center">
-                {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-                <a
+                <Link
                   href="/"
                   className="inline-block bg-wordcherryBlue text-white font-bold px-6 py-3 rounded-lg hover:bg-wordcherryBlue/90 transition-colors"
                 >
                   Back to Game
-                </a>
+                </Link>
               </div>
             </div>
           </div>

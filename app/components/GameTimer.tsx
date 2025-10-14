@@ -20,9 +20,9 @@ export default function GameTimer({
   onTimeBonusAnimationComplete,
 }: TimerProps) {
   const [timerState, setTimerState] = useState<Timer>(Timer.RUNNING)
-  const [internalSecondsLeft, setInternalSecondsLeft] = useState(60)
+  const [internalSecondsLeft, setInternalSecondsLeft] = useState(30)
   const [isTimeBonusAnimating, setIsTimeBonusAnimating] = useState(false)
-  const secondsRef = useRef(60)
+  const secondsRef = useRef(30)
   const currentTimerState = externalTimerState || timerState
   const secondsLeft = externalSecondsLeft !== undefined ? externalSecondsLeft : internalSecondsLeft
 
@@ -77,7 +77,7 @@ export default function GameTimer({
     return null
   }
 
-  const progressPercentage = (secondsLeft / 60) * 100
+  const progressPercentage = (secondsLeft / 30) * 100
   const minutes = Math.floor(secondsLeft / 60)
   const seconds = secondsLeft % 60
   const timeDisplay = `${minutes.toString().padStart(2, "0")}:${seconds
