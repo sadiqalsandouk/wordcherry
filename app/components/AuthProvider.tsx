@@ -1,4 +1,3 @@
-// app/components/AuthProvider.tsx
 "use client"
 
 import { createContext, useContext } from "react"
