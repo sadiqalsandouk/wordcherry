@@ -5,6 +5,7 @@ import { usePlayerName } from "@/app/components/AuthProvider"
 import { submitScore } from "@/lib/supabase/submitScore"
 import { getPerformanceLevel } from "@/app/utils/performanceLevel"
 import { toast } from "sonner"
+import { continueWithGoogle } from "@/lib/supabase/oauth"
 
 export default function GameOver({ handleStartGame, score, bestWord }: GameOverProps) {
   const gameId = useMemo(() => crypto.randomUUID(), [])
@@ -12,7 +13,7 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
   const [submitMsg, setSubmitMsg] = useState<string | null>(null)
   const [showConfetti, setShowConfetti] = useState(false)
   const performance = getPerformanceLevel(score)
-  const { playerName } = usePlayerName()
+  const { playerName, isAuthenticated } = usePlayerName()
 
   useEffect(() => {
     if (performance.showConfetti) {
@@ -113,6 +114,14 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
               </div>
             </div>
             <div className="w-full lg:w-80"></div>
+            {!isAuthenticated && (
+              <button
+                onClick={() => continueWithGoogle()}
+                className="px-3 py-2 rounded border hover:bg-gray-50"
+              >
+                Continue with Google
+              </button>
+            )}
             <button
               onClick={() => (window.location.href = "/leaderboard")}
               className="cursor-pointer w-full text-center text-gray-700 hover:text-wordcherryBlue underline decoration-transparent hover:decoration-current font-medium text-sm py-2 transition-all duration-300"
