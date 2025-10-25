@@ -6,7 +6,6 @@ import { GameOverProps } from "@/app/types/types"
 import { usePlayerName } from "@/app/components/AuthProvider"
 import { submitScore } from "@/lib/supabase/submitScore"
 import { getPerformanceLevel } from "@/app/utils/performanceLevel"
-import { toast } from "sonner"
 import { continueWithGoogle } from "@/lib/supabase/oauth"
 
 export default function GameOver({ handleStartGame, score, bestWord }: GameOverProps) {

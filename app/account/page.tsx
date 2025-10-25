@@ -152,7 +152,6 @@ export default function AccountPage() {
       }
     }
     toast("Signed out")
-    window.location.assign("/account")
   }
 
   async function performDelete() {
