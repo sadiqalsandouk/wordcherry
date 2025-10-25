@@ -87,14 +87,16 @@ export default function LeaderboardPage() {
         {leaderboard.length > 0 && (
           <div className="bg-white rounded-xl shadow-lg overflow-hidden">
             <div className="bg-wordcherryYellow text-wordcherryBlue px-6 py-4">
-              <h3 className="font-bold text-center text-xl">🏆 Top 10 Scores</h3>
+              <h3 className="font-bold text-center text-xl">Top 10 Scores</h3>
             </div>
             <div className="divide-y divide-gray-200">
               {leaderboard.map((entry, index) => (
                 <div
                   key={entry.id}
-                  className={`px-6 py-5 hover:bg-gray-50 transition-colors ${
-                    index < 3 ? "bg-gradient-to-r from-yellow-50 to-orange-50" : ""
+                  className={`px-6 py-5 transition-all ${
+                    index < 3
+                      ? "bg-gradient-to-r from-yellow-50 to-orange-50 hover:from-yellow-50/60 hover:to-orange-50/60"
+                      : "hover:bg-gray-50"
                   }`}
                 >
                   <div className="flex items-center justify-between mb-3">
