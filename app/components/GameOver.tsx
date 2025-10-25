@@ -12,7 +12,6 @@ import { continueWithGoogle } from "@/lib/supabase/oauth"
 export default function GameOver({ handleStartGame, score, bestWord }: GameOverProps) {
   const gameId = useMemo(() => crypto.randomUUID(), [])
   const [submitting, setSubmitting] = useState(false)
-  const [submitMsg, setSubmitMsg] = useState<string | null>(null)
   const [showConfetti, setShowConfetti] = useState(false)
   const performance = getPerformanceLevel(score)
   const { playerName, isAuthenticated } = usePlayerName()
@@ -28,7 +27,6 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
 
   const onSubmit = async () => {
     setSubmitting(true)
-    setSubmitMsg(null)
     const res = await submitScore({
       gameId,
       score,
@@ -38,11 +36,9 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
     })
     if (res.ok) {
       toast("Submitted to leaderboard!")
-      setSubmitMsg("Submitted to leaderboard!")
     } else {
       const already = /already submitted/i.test(res.error || "")
       toast(already ? "Already submitted." : res.error || "Error")
-      setSubmitMsg(already ? "Already submitted." : res.error || "Error")
     }
     setSubmitting(false)
   }
