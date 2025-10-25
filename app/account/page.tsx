@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { supabase } from "@/lib/supabase/supabase"
 import { usePlayerName } from "@/app/components/AuthProvider"
 import { getMyProfile, setMyUsername } from "@/lib/profiles"
@@ -8,7 +8,6 @@ import { continueWithGoogle } from "@/lib/supabase/oauth"
 import { getDeviceGuest, saveDeviceGuest } from "@/lib/deviceGuest"
 import { getOrCreateDeviceToken } from "@/lib/deviceToken"
 import { toast } from "sonner"
-import { useRouter, useSearchParams } from "next/navigation"
 import GoogleButton from "../components/GoogleButton"
 
 type Entry = {
@@ -25,8 +24,6 @@ type Entry = {
 
 export default function AccountPage() {
   const { playerName, isAuthenticated, setPlayerName } = usePlayerName()
-  const router = useRouter()
-  const qp = useSearchParams()
 
   const [userId, setUserId] = useState("")
   const [email, setEmail] = useState("")
@@ -46,12 +43,40 @@ export default function AccountPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [confirmText, setConfirmText] = useState("")
 
-  useEffect(() => {
-    if (!loading && qp.get("deleted") === "1") {
-      toast.success("Account deleted")
-      router.replace("/account")
-    }
-  }, [loading, qp, router])
+  const loadGames = useCallback(
+    async (uid: string, reset = false) => {
+      setGamesLoading(true)
+      setGamesError(null)
+      try {
+        const from = reset ? 0 : games.length
+        const to = from + PAGE_SIZE - 1
+
+        const { data, error, count } = await supabase
+          .from("leaderboard_entries")
+          .select(
+            "id, game_id, user_id, player_name, score, best_word, best_word_score, created_at, is_anonymous",
+            { count: "exact" }
+          )
+          .eq("user_id", uid)
+          .order("created_at", { ascending: false })
+          .range(from, to)
+
+        if (error) throw error
+
+        setGames((prev) => (reset ? (data as Entry[]) : [...prev, ...(data as Entry[])]))
+        if (typeof count === "number") {
+          setHasMore(to + 1 < count)
+        } else {
+          setHasMore((data?.length || 0) === PAGE_SIZE)
+        }
+      } catch (e: any) {
+        setGamesError(e?.message || "Could not load games")
+      } finally {
+        setGamesLoading(false)
+      }
+    },
+    [PAGE_SIZE, games.length, supabase]
+  )
 
   useEffect(() => {
     let mounted = true
@@ -87,7 +112,7 @@ export default function AccountPage() {
     return () => {
       mounted = false
     }
-  }, [isAuthenticated])
+  }, [isAuthenticated, loadGames])
 
   async function onSaveUsername() {
     if (!isAuthenticated) return
@@ -193,41 +218,8 @@ export default function AccountPage() {
       } catch {}
 
       sessionStorage.setItem("wc:justDeleted", "1")
-      router.replace("/account?deleted=1")
     } catch (e: any) {
       toast.error(e?.message || "Could not delete account")
-    }
-  }
-
-  async function loadGames(uid: string, reset = false) {
-    setGamesLoading(true)
-    setGamesError(null)
-    try {
-      const from = reset ? 0 : games.length
-      const to = from + PAGE_SIZE - 1
-
-      const { data, error, count } = await supabase
-        .from("leaderboard_entries")
-        .select(
-          "id, game_id, user_id, player_name, score, best_word, best_word_score, created_at, is_anonymous",
-          { count: "exact" }
-        )
-        .eq("user_id", uid)
-        .order("created_at", { ascending: false })
-        .range(from, to)
-
-      if (error) throw error
-
-      setGames(reset ? (data as Entry[]) : [...games, ...(data as Entry[])])
-      if (typeof count === "number") {
-        setHasMore(to + 1 < count)
-      } else {
-        setHasMore((data?.length || 0) === PAGE_SIZE)
-      }
-    } catch (e: any) {
-      setGamesError(e?.message || "Could not load games")
-    } finally {
-      setGamesLoading(false)
     }
   }
 

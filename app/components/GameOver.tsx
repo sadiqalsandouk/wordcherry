@@ -1,12 +1,13 @@
 "use client"
 
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import Confetti from "react-confetti"
 import { GameOverProps } from "@/app/types/types"
 import { usePlayerName } from "@/app/components/AuthProvider"
 import { submitScore } from "@/lib/supabase/submitScore"
 import { getPerformanceLevel } from "@/app/utils/performanceLevel"
 import { continueWithGoogle } from "@/lib/supabase/oauth"
+import { toast } from "sonner"
 
 export default function GameOver({ handleStartGame, score, bestWord }: GameOverProps) {
   const gameId = useMemo(() => crypto.randomUUID(), [])
@@ -24,7 +25,7 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
     }
   }, [performance.showConfetti])
 
-  const onSubmit = async () => {
+  const onSubmit = useCallback(async () => {
     setSubmitting(true)
     const res = await submitScore({
       gameId,
@@ -34,15 +35,15 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
       playerName,
     })
     setSubmitting(false)
-  }
+  }, [gameId, score, bestWord.word, bestWord.score, playerName])
 
   useEffect(() => {
-    const threshold = 0
+    const threshold = 50
     if (score >= threshold && !didAutoSubmit.current && !submitting) {
       didAutoSubmit.current = true
       onSubmit()
     }
-  }, [score, submitting])
+  }, [score, submitting, onSubmit])
 
   return (
     <>
