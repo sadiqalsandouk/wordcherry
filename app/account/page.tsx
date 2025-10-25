@@ -588,7 +588,7 @@ export default function AccountPage() {
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="bg-[#fff7d6] rounded-lg p-3 border border-wordcherryBlue/30 text-center">
+    <div className="bg-[#fff7d6] rounded-lg p-3 border border-wordcherryBlue/30 text-center hover:bg-[#fff7d6]/70">
       <div className="text-gray-600 text-xs mb-1">{label}</div>
       <div className="text-wordcherryBlue font-bold text-lg">{value}</div>
     </div>
