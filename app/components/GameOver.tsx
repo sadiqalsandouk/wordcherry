@@ -34,17 +34,11 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
       bestWordScore: bestWord.score || 0,
       playerName,
     })
-    if (res.ok) {
-      toast("Submitted to leaderboard!")
-    } else {
-      const already = /already submitted/i.test(res.error || "")
-      toast(already ? "Already submitted." : res.error || "Error")
-    }
     setSubmitting(false)
   }
 
   useEffect(() => {
-    const threshold = 50
+    const threshold = 0
     if (score >= threshold && !didAutoSubmit.current && !submitting) {
       didAutoSubmit.current = true
       onSubmit()
@@ -109,12 +103,6 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
               >
                 Back to Home
               </button>
-              <div className="mt-6 space-y-3">
-                <p className="text-gray-600 text-sm">
-                  Logged in as <span className="font-semibold">{playerName}</span>
-                  {isAuthenticated && <span className="ml-2 text-green-700">· synced ✅</span>}
-                </p>
-              </div>
             </div>
             <div className="w-full lg:w-80"></div>
             {!isAuthenticated && (
@@ -127,9 +115,9 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
             )}
             <button
               onClick={() => (window.location.href = "/leaderboard")}
-              className="cursor-pointer w-full text-center text-gray-700 hover:text-wordcherryBlue underline decoration-transparent hover:decoration-current font-medium text-sm py-2 transition-all duration-300"
+              className="mt-1 cursor-pointer w-full text-center text-gray-700 hover:text-wordcherryBlue underline decoration-transparent hover:decoration-current font-medium text-sm py-2 transition-all duration-300"
             >
-              View leaderboard →
+              View leaderboard
             </button>
           </div>
         </div>
