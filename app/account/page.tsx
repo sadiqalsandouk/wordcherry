@@ -11,7 +11,6 @@ import { toast } from "sonner"
 import { useRouter, useSearchParams } from "next/navigation"
 import GoogleButton from "../components/GoogleButton"
 
-type Identity = { provider: string }
 type Entry = {
   id: string
   game_id: string
@@ -32,7 +31,6 @@ export default function AccountPage() {
   const [userId, setUserId] = useState("")
   const [email, setEmail] = useState("")
   const [createdAt, setCreatedAt] = useState("")
-  const [identities, setIdentities] = useState<Identity[]>([])
   const [loading, setLoading] = useState(true)
 
   const [currentUsername, setCurrentUsername] = useState("")
@@ -53,7 +51,6 @@ export default function AccountPage() {
       toast.success("Account deleted")
       router.replace("/account")
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading, qp, router])
 
   useEffect(() => {
@@ -77,14 +74,12 @@ export default function AccountPage() {
           setCreatedAt(
             new Date(user.created_at || user.last_sign_in_at || Date.now()).toLocaleString()
           )
-          setIdentities((user.identities ?? []) as Identity[])
 
           const profile = await getMyProfile().catch(() => null)
           setCurrentUsername(profile?.username ?? "")
 
           await loadGames(user.id, true)
         } else {
-          setIdentities((user.identities ?? []) as Identity[])
         }
       }
       setLoading(false)
@@ -92,7 +87,6 @@ export default function AccountPage() {
     return () => {
       mounted = false
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated])
 
   async function onSaveUsername() {
