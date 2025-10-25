@@ -1,12 +1,9 @@
 import Link from "next/link"
-import Title from "../components/Title"
 
 export default function PrivacyPolicy() {
   return (
     <div className="w-full max-w-4xl mx-auto">
-      <div className="text-center mb-8">
-        <Title />
-      </div>
+      <div className="text-center mb-8"></div>
 
       <div className="overflow-hidden rounded-xl shadow-[2px_2px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(0,0,0,0.1)]">
         {/* Header */}

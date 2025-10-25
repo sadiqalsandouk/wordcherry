@@ -13,7 +13,6 @@ import Score from "../components/Score"
 import PreStartScreen from "../components/PreStartScreen"
 import GameOver from "../components/GameOver"
 import PauseMenu from "../components/PauseMenu"
-import Title from "../components/Title"
 
 interface TileState {
   letter: string
@@ -235,7 +234,6 @@ export default function SoloGame() {
       {gameState === GameState.PLAYING && (
         <div className="relative">
           <div className="space-y-8 md:space-y-10">
-            <Title />
             <div className="w-full max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl mx-auto px-4">
               <Score
                 key={gameKey}

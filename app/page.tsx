@@ -1,11 +1,9 @@
 import JoinForm from "./components/JoinForm"
 import SoloButton from "./components/SoloButton"
-import Title from "./components/Title"
 
 export default function Home() {
   return (
     <div className="pt-8 md:pt-0">
-      <Title />
       <div className="mt-4 sm:mt-6 md:mt-6 space-y-4 sm:space-y-4 md:space-y-6">
         <SoloButton />
         <div className="text-center text-white text-base sm:text-lg font-bold my-2 sm:my-4 opacity-70">
