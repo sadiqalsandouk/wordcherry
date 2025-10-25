@@ -50,7 +50,7 @@ export default function AccountPage() {
 
   useEffect(() => {
     if (!loading && qp.get("deleted") === "1") {
-      toast("Account deleted")
+      toast.success("Account deleted")
       router.replace("/account")
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -103,13 +103,22 @@ export default function AccountPage() {
       setPlayerName(clean)
       setCurrentUsername(clean)
       setUsername("")
-      toast("Username updated")
+      toast.success("Username updated")
     } catch (e: any) {
       toast.error(e?.message || "Could not save username")
     } finally {
       setSavingUsername(false)
     }
   }
+
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    const justSignedIn = sessionStorage.getItem("wc:justSignedIn")
+    if (justSignedIn) {
+      sessionStorage.removeItem("wc:justSignedIn")
+      toast.success("Signed in successfully!")
+    }
+  }, [])
 
   async function onClaimDeviceScores() {
     try {
@@ -151,7 +160,7 @@ export default function AccountPage() {
         })
       }
     }
-    toast("Signed out")
+    toast.success("Signed out")
   }
 
   async function performDelete() {

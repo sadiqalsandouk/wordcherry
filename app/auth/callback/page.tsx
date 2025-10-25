@@ -7,6 +7,9 @@ export default function AuthCallback() {
   const qp = useSearchParams()
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("wc:justSignedIn", "1")
+    }
     const next = qp.get("next") || "/account"
     const t = setTimeout(() => router.replace(next), 800)
     return () => clearTimeout(t)
