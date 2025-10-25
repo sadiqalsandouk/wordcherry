@@ -1,4 +1,6 @@
-import { useEffect, useMemo, useState } from "react"
+"use client"
+
+import { useEffect, useMemo, useRef, useState } from "react"
 import Confetti from "react-confetti"
 import { GameOverProps } from "@/app/types/types"
 import { usePlayerName } from "@/app/components/AuthProvider"
@@ -14,14 +16,12 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
   const [showConfetti, setShowConfetti] = useState(false)
   const performance = getPerformanceLevel(score)
   const { playerName, isAuthenticated } = usePlayerName()
+  const didAutoSubmit = useRef(false)
 
   useEffect(() => {
     if (performance.showConfetti) {
       setShowConfetti(true)
-      const timer = setTimeout(() => {
-        setShowConfetti(false)
-      }, 10000)
-
+      const timer = setTimeout(() => setShowConfetti(false), 10000)
       return () => clearTimeout(timer)
     }
   }, [performance.showConfetti])
@@ -36,10 +36,24 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
       bestWordScore: bestWord.score || 0,
       playerName,
     })
-    if (res.ok) toast("Submitted to leaderboard!")
-    else toast(`You've already submitted your score!`)
+    if (res.ok) {
+      toast("Submitted to leaderboard!")
+      setSubmitMsg("Submitted to leaderboard!")
+    } else {
+      const already = /already submitted/i.test(res.error || "")
+      toast(already ? "Already submitted." : res.error || "Error")
+      setSubmitMsg(already ? "Already submitted." : res.error || "Error")
+    }
     setSubmitting(false)
   }
+
+  useEffect(() => {
+    const threshold = 50
+    if (score >= threshold && !didAutoSubmit.current && !submitting) {
+      didAutoSubmit.current = true
+      onSubmit()
+    }
+  }, [score, submitting])
 
   return (
     <>
@@ -100,17 +114,10 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
                 Back to Home
               </button>
               <div className="mt-6 space-y-3">
-                <p className="text-gray-600 text-sm mt-4">
+                <p className="text-gray-600 text-sm">
                   Logged in as <span className="font-semibold">{playerName}</span>
+                  {isAuthenticated && <span className="ml-2 text-green-700">· synced ✅</span>}
                 </p>
-                <button
-                  onClick={onSubmit}
-                  disabled={submitting}
-                  className="cursor-pointer w-full bg-green-600 text-white font-bold text-lg py-4 rounded-xl shadow-[2px_2px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(0,0,0,0.1)] hover:bg-green-600/90 hover:scale-103 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-wordcherryBlue active:scale-95 transition-all duration-200"
-                >
-                  {submitting ? "Submitting…" : "Submit to Leaderboard"}
-                </button>
-                {submitMsg && <p className="text-sm text-gray-700">{submitMsg}</p>}
               </div>
             </div>
             <div className="w-full lg:w-80"></div>
