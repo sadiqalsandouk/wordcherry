@@ -1,3 +1,5 @@
+import { LucideIcon } from "lucide-react"
+
 export enum GameState {
   IDLE = "idle",
   PLAYING = "playing",
@@ -18,7 +20,7 @@ export type GameOverProps = {
 }
 
 export type PerformanceLevel = {
-  emoji: string
+  icon: LucideIcon
   title: string
   subtitle: string
   bgColor: string

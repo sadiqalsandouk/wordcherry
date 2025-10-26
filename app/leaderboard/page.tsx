@@ -76,20 +76,6 @@ export default function LeaderboardPage() {
   return (
     <div className="min-h-screen py-8">
       <div className="max-w-4xl mx-auto">
-        <div className="pt-2 md:pt-8 pb-2 md:pb-6 mb-2 md:mb-4">
-          <div className="flex items-center justify-center mb-4">
-            <span className="text-4xl md:text-6xl mr-2 md:mr-3">🍒</span>
-            <h1
-              className={`text-wordcherryYellow text-center text-3xl md:text-6xl font-bold drop-shadow-[0_2px_2px_rgba(0,0,0,0.25)] leading-tight`}
-            >
-              WORDCHERRY.COM
-            </h1>
-          </div>
-          <p className="text-white text-center opacity-80 text-sm md:text-lg mt-2">
-            WordCherry Hall of Fame
-          </p>
-        </div>
-
         {leaderboard.length === 0 && (
           <div className="text-center py-12">
             <p className="text-wordcherryYellow/80 text-lg mb-4">
@@ -101,14 +87,16 @@ export default function LeaderboardPage() {
         {leaderboard.length > 0 && (
           <div className="bg-white rounded-xl shadow-lg overflow-hidden">
             <div className="bg-wordcherryYellow text-wordcherryBlue px-6 py-4">
-              <h3 className="font-bold text-center text-xl">🏆 Top Scores</h3>
+              <h3 className="font-bold text-center text-xl">Top 10 Scores</h3>
             </div>
             <div className="divide-y divide-gray-200">
               {leaderboard.map((entry, index) => (
                 <div
                   key={entry.id}
-                  className={`px-6 py-5 hover:bg-gray-50 transition-colors ${
-                    index < 3 ? "bg-gradient-to-r from-yellow-50 to-orange-50" : ""
+                  className={`px-6 py-5 transition-all ${
+                    index < 3
+                      ? "bg-gradient-to-r from-yellow-50 to-orange-50 hover:from-yellow-50/60 hover:to-orange-50/60"
+                      : "hover:bg-gray-50"
                   }`}
                 >
                   <div className="flex items-center justify-between mb-3">

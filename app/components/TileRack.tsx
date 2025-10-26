@@ -1,3 +1,4 @@
+import { Pause } from "lucide-react"
 import Tile from "./Tile"
 
 interface TileState {
@@ -62,7 +63,9 @@ export default function TileRack({ tiles, onTileClick, onBackspace, onPause }: T
             className="w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-black border border-gray-300 shadow-[0_3px_0_0_#9ca3af] hover:shadow-[0_4px_0_0_#9ca3af] active:shadow-[0_1px_0_0_#9ca3af] active:translate-y-[2px] transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center select-none cursor-pointer group relative"
             title="Pause game (ESC)"
           >
-            <span className="text-2xl md:text-3xl lg:text-4xl">⏸️</span>
+            <span className="text-2xl md:text-3xl lg:text-4xl">
+              <Pause />
+            </span>
             <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
               Pause
             </div>

@@ -1,31 +1,29 @@
 "use client"
 
 import { createContext, useContext } from "react"
-import { useAnonymousAuth } from "@/lib/supabase/useAnonymousAuth"
+import { useAuth } from "@/lib/supabase/useAuth"
 
-const PlayerNameContext = createContext<{
+type Ctx = {
   playerName: string
   isLoading: boolean
   isAuthenticated: boolean
-}>({
+  setPlayerName: (name: string) => void
+}
+
+const PlayerNameContext = createContext<Ctx>({
   playerName: "Guest-??????",
   isLoading: true,
   isAuthenticated: false,
+  setPlayerName: () => {},
 })
 
 export const usePlayerName = () => useContext(PlayerNameContext)
 
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
-  const { playerName, isLoading } = useAnonymousAuth()
+  const { playerName, isLoading, isAuthenticated, setPlayerName } = useAuth()
 
   return (
-    <PlayerNameContext.Provider
-      value={{
-        playerName,
-        isLoading,
-        isAuthenticated: false, // Always false since we only have anonymous users for now
-      }}
-    >
+    <PlayerNameContext.Provider value={{ playerName, isLoading, isAuthenticated, setPlayerName }}>
       {children}
     </PlayerNameContext.Provider>
   )
