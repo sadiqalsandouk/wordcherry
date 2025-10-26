@@ -46,16 +46,18 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
   return (
     <>
       {showConfetti && (
-        <Confetti
-          width={window.innerWidth}
-          height={window.innerHeight}
-          recycle={false}
-          numberOfPieces={300}
-          gravity={0.5}
-        />
+        <div className="fixed inset-0 pointer-events-none z-50">
+          <Confetti
+            width={window.innerWidth}
+            height={window.innerHeight}
+            recycle={false}
+            numberOfPieces={300}
+            gravity={0.5}
+          />
+        </div>
       )}
 
-      <div className="mt-16 text-center space-y-6">
+      <div className="text-center space-y-6">
         <div className="flex flex-col lg:flex-row gap-6 items-center lg:items-start justify-center">
           <div className={`${performance.bgColor} p-8 rounded-lg flex-1 max-w-lg`}>
             <div className="mb-4">
