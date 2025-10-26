@@ -8,7 +8,7 @@ export default function NavBar() {
         <div>
           <Link
             href="/"
-            className="text-wordcherryYellow text-center text-3xl md:text-2xl font-bold drop-shadow-[0_2px_2px_rgba(0,0,0,0.25)] leading-tight"
+            className="text-wordcherryYellow text-center text-lg md:text-2xl font-bold drop-shadow-[0_2px_2px_rgba(0,0,0,0.25)] leading-tight"
           >
             WORDCHERRY
           </Link>
