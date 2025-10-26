@@ -66,7 +66,6 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: "default",
     title: "Wordcherry",
-    startupImage: "/apple-touch-icon.png",
   },
   formatDetection: {
     telephone: false,
