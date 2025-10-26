@@ -6,8 +6,6 @@ import { GameOverProps } from "@/app/types/types"
 import { usePlayerName } from "@/app/components/AuthProvider"
 import { submitScore } from "@/lib/supabase/submitScore"
 import { getPerformanceLevel } from "@/app/utils/performanceLevel"
-import { continueWithGoogle } from "@/lib/supabase/oauth"
-import { toast } from "sonner"
 
 export default function GameOver({ handleStartGame, score, bestWord }: GameOverProps) {
   const gameId = useMemo(() => crypto.randomUUID(), [])
@@ -60,7 +58,12 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
       <div className="mt-16 text-center space-y-6">
         <div className="flex flex-col lg:flex-row gap-6 items-center lg:items-start justify-center">
           <div className={`${performance.bgColor} p-8 rounded-lg flex-1 max-w-lg`}>
-            <h1 className="text-6xl font-bold mb-4">{performance.emoji}</h1>
+            <div className="mb-4">
+              <performance.icon
+                className="mx-auto h-12 w-12 text-wordcherryBlue"
+                aria-hidden="true"
+              />
+            </div>{" "}
             <div className="text-center mb-8">
               <h2 className={`text-3xl font-bold ${performance.textColor} mb-4`}>
                 {performance.title}
@@ -105,14 +108,6 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
               </button>
             </div>
             <div className="w-full lg:w-80"></div>
-            {!isAuthenticated && (
-              <button
-                onClick={() => continueWithGoogle()}
-                className="px-3 py-2 rounded border hover:bg-gray-50"
-              >
-                Continue with Google
-              </button>
-            )}
             <button
               onClick={() => (window.location.href = "/leaderboard")}
               className="mt-1 cursor-pointer w-full text-center text-gray-700 hover:text-wordcherryBlue underline decoration-transparent hover:decoration-current font-medium text-sm py-2 transition-all duration-300"

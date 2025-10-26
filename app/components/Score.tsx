@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import GameTimer from "./GameTimer"
+import { Star } from "lucide-react"
 
 interface ScoreProps {
   currentScore: number
@@ -60,7 +61,9 @@ export default function Score({
         <div className="relative">
           <div className="flex items-center gap-2">
             <div className="text-white font-bold text-2xl flex items-center gap-1">
-              <span>🏆</span>
+              <span>
+                <Star />
+              </span>
               <span>{Math.floor(currentScore)}</span>
             </div>
           </div>
