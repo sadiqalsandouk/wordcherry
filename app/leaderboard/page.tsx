@@ -74,7 +74,7 @@ export default function LeaderboardPage() {
   }
 
   return (
-    <div className="min-h-screen py-8">
+    <div className="min-h-screen px-2">
       <div className="max-w-4xl mx-auto">
         {leaderboard.length === 0 && (
           <div className="text-center py-12">

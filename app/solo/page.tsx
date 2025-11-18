@@ -229,7 +229,7 @@ export default function SoloGame() {
   ])
 
   return (
-    <div className="pt-8 md:pt-0">
+    <div className="pt-0">
       {gameState === GameState.IDLE && <PreStartScreen handleStartGame={handleStartGame} />}
       {gameState === GameState.PLAYING && (
         <div className="relative">

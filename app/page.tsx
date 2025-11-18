@@ -3,16 +3,16 @@ import SoloButton from "./components/SoloButton"
 
 export default function Home() {
   return (
-    <div className="py-8">
-      <div className="space-y-4 sm:space-y-4 md:space-y-6">
+    <div className="px-2">
+      <div className="space-y-4">
         <SoloButton />
-        <div className="text-center text-white text-base sm:text-lg font-bold my-2 sm:my-4 opacity-70">
+        <div className="text-center text-white text-base text-lg font-bold my-2 opacity-70">
           - OR -
         </div>
         <JoinForm />
 
         {/* FAQ Section */}
-        <div className="mt-8 md:mt-10">
+        <div className="mt-4">
           <div className="overflow-hidden rounded-xl shadow-[2px_2px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(0,0,0,0.1)]">
             <div className="bg-wordcherryYellow py-3 px-4 text-center">
               <h2 className="text-2xl font-bold text-wordcherryBlue">FAQ</h2>

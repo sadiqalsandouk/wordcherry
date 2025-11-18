@@ -274,7 +274,7 @@ export default function AccountPage() {
   }
 
   return (
-    <div className="min-h-screen py-8">
+    <div className="min-h-screen px-2">
       <div className="max-w-4xl mx-auto">
         <div className="overflow-hidden rounded-xl shadow-[2px_2px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(0,0,0,0.1)] mb-6">
           <div className="bg-wordcherryYellow py-3 px-4 text-center">

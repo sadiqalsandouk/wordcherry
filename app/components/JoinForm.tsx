@@ -10,7 +10,7 @@ export default function JoinForm() {
 
   return (
     <div>
-      <div className="bg-wordcherryBlue/30 backdrop-blur-sm rounded-full flex mb-4 sm:mb-6 shadow-inner mx-4 sm:mx-8 md:mx-12">
+      <div className="bg-wordcherryBlue/30 backdrop-blur-sm rounded-full flex mb-6 shadow-inner mx-4 sm:mx-8 md:mx-12">
         <button
           className={`cursor-pointer flex-1 py-1.5 px-4 text-center font-bold rounded-full transition-all duration-200 hover:scale-103 active:scale-95 ${
             mode === "join"
