@@ -130,7 +130,7 @@ export default function JoinForm() {
           }`}>
             <div className="text-center py-2">
               <p className="text-wordcherryBlue/80 text-sm">
-                Play by yourself, earn time bonuses for valid words!
+                Play Solo Mode!
               </p>
             </div>
           </div>
