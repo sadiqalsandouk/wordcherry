@@ -1,11 +1,12 @@
 "use client"
 
-import { useEffect, useState, useCallback } from "react"
-import { useParams, useRouter } from "next/navigation"
+import { useEffect, useState, useCallback, useRef } from "react"
+import { useParams } from "next/navigation"
 import { Game, GamePlayer } from "@/app/types/types"
 import { supabase } from "@/lib/supabase/supabase"
 import { getFullGameState } from "@/lib/supabase/createGame"
-import { getMyPlayer } from "@/lib/supabase/joinGame"
+import { joinGame } from "@/lib/supabase/joinGame"
+import { usePlayerName } from "@/app/components/AuthProvider"
 import Lobby from "@/app/components/Lobby"
 import MultiplayerGame from "@/app/components/MultiplayerGame"
 import { Loader2 } from "lucide-react"
@@ -13,21 +14,23 @@ import Link from "next/link"
 
 type PageState =
   | { status: "loading" }
+  | { status: "joining" }
   | { status: "error"; message: string }
   | { status: "not_found" }
-  | { status: "not_in_game"; game: Game; players: GamePlayer[] }
+  | { status: "game_started" }
   | { status: "lobby"; game: Game; players: GamePlayer[]; userId: string }
   | { status: "in_progress"; game: Game; players: GamePlayer[]; userId: string; startedAt: string }
   | { status: "finished"; game: Game; players: GamePlayer[]; userId: string }
 
 export default function GamePage() {
   const params = useParams()
-  const router = useRouter()
   const code = (params.code as string).toUpperCase()
+  const { playerName, isLoading: playerNameLoading } = usePlayerName()
   
   const [state, setState] = useState<PageState>({ status: "loading" })
+  const hasAttemptedJoin = useRef(false)
 
-  const loadGame = useCallback(async () => {
+  const loadGame = useCallback(async (attemptAutoJoin: boolean = false) => {
     try {
       // Get current user
       const { data: { user } } = await supabase.auth.getUser()
@@ -66,7 +69,30 @@ export default function GamePage() {
       const isInGame = players.some((p) => p.user_id === currentUser.id)
 
       if (!isInGame) {
-        setState({ status: "not_in_game", game, players })
+        // Auto-join if game is in lobby and we haven't tried yet
+        if (attemptAutoJoin && game.status === "lobby" && !hasAttemptedJoin.current) {
+          hasAttemptedJoin.current = true
+          setState({ status: "joining" })
+          
+          const joinResult = await joinGame(code, playerName)
+          
+          if (joinResult.ok) {
+            // Reload game state after joining
+            await loadGame(false)
+          } else {
+            setState({ status: "error", message: joinResult.error || "Failed to join game" })
+          }
+          return
+        }
+        
+        // Game already started, can't join
+        if (game.status !== "lobby") {
+          setState({ status: "game_started" })
+          return
+        }
+        
+        // Shouldn't reach here normally, but fallback to error
+        setState({ status: "error", message: "Unable to join game" })
         return
       }
 
@@ -92,11 +118,14 @@ export default function GamePage() {
       console.error("Load game error:", err)
       setState({ status: "error", message: "Failed to load game" })
     }
-  }, [code])
+  }, [code, playerName])
 
+  // Wait for player name to load before attempting to join
   useEffect(() => {
-    loadGame()
-  }, [loadGame])
+    if (!playerNameLoading) {
+      loadGame(true) // Attempt auto-join on first load
+    }
+  }, [loadGame, playerNameLoading])
 
   const handleGameStart = useCallback((updatedGame: Game) => {
     setState((prev) => {
@@ -137,11 +166,13 @@ export default function GamePage() {
   }, [])
 
   // Render based on state
-  if (state.status === "loading") {
+  if (state.status === "loading" || state.status === "joining") {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center">
         <Loader2 className="w-12 h-12 text-wordcherryYellow animate-spin mb-4" />
-        <p className="text-white text-lg">Loading game...</p>
+        <p className="text-white text-lg">
+          {state.status === "joining" ? "Joining game..." : "Loading game..."}
+        </p>
       </div>
     )
   }
@@ -154,7 +185,7 @@ export default function GamePage() {
           <p className="text-gray-600 mb-6">{state.message}</p>
           <Link
             href="/"
-            className="inline-block bg-wordcherryBlue text-white px-6 py-3 rounded-xl font-bold hover:bg-wordcherryBlue/90 transition-colors"
+            className="inline-block bg-wordcherryBlue text-white px-6 py-3 rounded-xl font-bold hover:bg-wordcherryBlue/90 transition-colors cursor-pointer"
           >
             Back to Home
           </Link>
@@ -176,7 +207,7 @@ export default function GamePage() {
           </p>
           <Link
             href="/"
-            className="inline-block bg-wordcherryBlue text-white px-6 py-3 rounded-xl font-bold hover:bg-wordcherryBlue/90 transition-colors"
+            className="inline-block bg-wordcherryBlue text-white px-6 py-3 rounded-xl font-bold hover:bg-wordcherryBlue/90 transition-colors cursor-pointer"
           >
             Back to Home
           </Link>
@@ -185,31 +216,23 @@ export default function GamePage() {
     )
   }
 
-  if (state.status === "not_in_game") {
+  if (state.status === "game_started") {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center">
         <div className="bg-white rounded-xl p-8 text-center max-w-md">
-          <h1 className="text-2xl font-bold text-wordcherryBlue mb-4">Join Game?</h1>
+          <h1 className="text-2xl font-bold text-wordcherryBlue mb-4">Game Already Started</h1>
           <p className="text-gray-600 mb-2">
-            Game <span className="font-mono font-bold">{code}</span>
+            Game <span className="font-mono font-bold">{code}</span> is already in progress.
           </p>
           <p className="text-gray-500 text-sm mb-6">
-            {state.players.length} player{state.players.length !== 1 ? "s" : ""} in lobby
+            You can only join games that are still in the lobby.
           </p>
-          <div className="flex gap-3 justify-center">
-            <Link
-              href="/"
-              className="px-6 py-3 bg-gray-200 text-gray-700 rounded-xl font-bold hover:bg-gray-300 transition-colors"
-            >
-              Cancel
-            </Link>
-            <Link
-              href={`/?join=${code}`}
-              className="px-6 py-3 bg-wordcherryBlue text-white rounded-xl font-bold hover:bg-wordcherryBlue/90 transition-colors"
-            >
-              Join Game
-            </Link>
-          </div>
+          <Link
+            href="/"
+            className="inline-block bg-wordcherryBlue text-white px-6 py-3 rounded-xl font-bold hover:bg-wordcherryBlue/90 transition-colors cursor-pointer"
+          >
+            Back to Home
+          </Link>
         </div>
       </div>
     )
