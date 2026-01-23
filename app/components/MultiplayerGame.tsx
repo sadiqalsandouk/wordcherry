@@ -51,8 +51,7 @@ export default function MultiplayerGame({
   const [bestWord, setBestWord] = useState<{ word: string; score: number }>({ word: "", score: 0 })
   
   const timerRef = useRef<NodeJS.Timeout | null>(null)
-  const startTimeRef = useRef<number>(new Date(startedAt).getTime())
-  const durationRef = useRef<number>(game.duration_seconds * 1000)
+  const gameEndTimeRef = useRef<number | null>(null)
 
   // Get current player
   const currentPlayer = players.find((p) => p.user_id === currentUserId)
@@ -63,31 +62,35 @@ export default function MultiplayerGame({
     setTiles(letters.map((letter) => ({ letter, isUsed: false })))
   }, [game.seed, roundIndex])
 
-  // Server-synced timer
+  // Calculate game end time once on mount
+  useEffect(() => {
+    // Game end time = started_at + duration (using server timestamp)
+    const startTime = new Date(startedAt).getTime()
+    const endTime = startTime + (game.duration_seconds * 1000)
+    gameEndTimeRef.current = endTime
+    
+    // Set initial seconds left
+    setSecondsLeft(game.duration_seconds)
+  }, [startedAt, game.duration_seconds])
+
+  // Simple countdown timer - decrements every second
   useEffect(() => {
     if (isGameOver) return
 
-    const updateTimer = () => {
-      const now = Date.now()
-      const elapsed = now - startTimeRef.current
-      const remaining = Math.max(0, durationRef.current - elapsed)
-      const secondsRemaining = Math.ceil(remaining / 1000)
-      
-      setSecondsLeft(secondsRemaining)
-      
-      if (remaining <= 0) {
-        setIsGameOver(true)
-        onGameEnd()
-        // Notify server that game ended
-        endGame(game.id)
-      }
-    }
-
-    // Update immediately
-    updateTimer()
-
-    // Update every 100ms for smooth countdown
-    timerRef.current = setInterval(updateTimer, 100)
+    timerRef.current = setInterval(() => {
+      setSecondsLeft((prev) => {
+        const newValue = prev - 1
+        
+        if (newValue <= 0) {
+          setIsGameOver(true)
+          onGameEnd()
+          endGame(game.id)
+          return 0
+        }
+        
+        return newValue
+      })
+    }, 1000)
 
     return () => {
       if (timerRef.current) {

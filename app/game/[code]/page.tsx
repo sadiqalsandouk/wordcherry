@@ -98,15 +98,15 @@ export default function GamePage() {
     loadGame()
   }, [loadGame])
 
-  const handleGameStart = useCallback((startedAt: string) => {
+  const handleGameStart = useCallback((updatedGame: Game) => {
     setState((prev) => {
       if (prev.status === "lobby") {
         return {
           status: "in_progress",
-          game: { ...prev.game, status: "in_progress", started_at: startedAt },
+          game: updatedGame,
           players: prev.players,
           userId: prev.userId,
-          startedAt,
+          startedAt: updatedGame.started_at!,
         }
       }
       return prev

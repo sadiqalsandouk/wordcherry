@@ -21,7 +21,7 @@ type LobbyProps = {
   game: Game
   players: GamePlayer[]
   currentUserId: string
-  onGameStart: (startedAt: string) => void
+  onGameStart: (game: Game) => void
 }
 
 export default function Lobby({
@@ -37,7 +37,9 @@ export default function Lobby({
   const [isStarting, setIsStarting] = useState(false)
 
   const isHost = currentUserId === game.host_user_id
-  const canStart = players.length >= 2
+  const teamACount = players.filter((p) => p.team === "A").length
+  const teamBCount = players.filter((p) => p.team === "B").length
+  const canStart = players.length >= 2 && teamACount >= 1 && teamBCount >= 1
 
   // Subscribe to realtime updates
   useEffect(() => {
@@ -58,7 +60,7 @@ export default function Lobby({
             setGame(updatedGame)
             
             if (updatedGame.status === "in_progress" && updatedGame.started_at) {
-              onGameStart(updatedGame.started_at)
+              onGameStart(updatedGame)
             }
           }
         }
@@ -170,7 +172,7 @@ export default function Lobby({
   }, [game.id, game.duration_seconds])
 
   return (
-    <div className="py-8 max-w-md sm:max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto">
+    <div className="py-8 w-full px-4 sm:px-0">
       {/* Back button */}
       <button
         onClick={handleLeaveGame}
@@ -263,7 +265,13 @@ export default function Lobby({
               }`}
             >
               <Play className="w-5 h-5 md:w-6 md:h-6" />
-              {isStarting ? "Starting..." : canStart ? "Start Game" : "Need 2+ players"}
+              {isStarting 
+                ? "Starting..." 
+                : canStart 
+                  ? "Start Game" 
+                  : teamACount === 0 || teamBCount === 0
+                    ? "Both teams need players"
+                    : "Need 2+ players"}
             </button>
           ) : (
             <div className="w-full py-4 md:py-5 rounded-xl font-medium text-center text-base md:text-lg bg-gray-100 text-gray-500">

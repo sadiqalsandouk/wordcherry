@@ -34,8 +34,8 @@ export default function PlayerList({
         key={player.id}
         className={`flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 rounded-lg text-sm md:text-base ${
           isCurrentUser
-            ? "bg-wordcherryBlue/10 font-semibold"
-            : "bg-gray-50"
+            ? "bg-wordcherryBlue/20 font-semibold border border-wordcherryBlue/30"
+            : "bg-gray-200/80 border border-gray-300"
         }`}
       >
         {isHostPlayer && (
@@ -69,7 +69,7 @@ export default function PlayerList({
               <span className="text-sm md:text-base font-bold text-blue-600">{teamAScore}</span>
             )}
           </div>
-          <div className="space-y-1.5 md:space-y-2 min-h-[40px]">
+          <div className="space-y-1.5 md:space-y-2 h-[120px] md:h-[150px] overflow-y-auto">
             {teamAPlayers.length === 0 ? (
               <p className="text-xs md:text-sm text-gray-400 italic py-2">No players</p>
             ) : (
@@ -89,7 +89,7 @@ export default function PlayerList({
               <span className="text-sm md:text-base font-bold text-red-600">{teamBScore}</span>
             )}
           </div>
-          <div className="space-y-1.5 md:space-y-2 min-h-[40px]">
+          <div className="space-y-1.5 md:space-y-2 h-[120px] md:h-[150px] overflow-y-auto">
             {teamBPlayers.length === 0 ? (
               <p className="text-xs md:text-sm text-gray-400 italic py-2">No players</p>
             ) : (
@@ -103,7 +103,7 @@ export default function PlayerList({
       {canChangeTeam && currentPlayer && onTeamChange && (
         <button
           onClick={() => onTeamChange(currentPlayer.id, currentPlayer.team === "A" ? "B" : "A")}
-          className="cursor-pointer w-full py-2.5 md:py-3 rounded-lg text-sm md:text-base font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
+          className="cursor-pointer w-full py-2.5 md:py-3 rounded-lg text-sm md:text-base font-semibold text-wordcherryBlue bg-wordcherryBlue/10 border border-wordcherryBlue/30 hover:bg-wordcherryBlue/20 transition-colors flex items-center justify-center gap-2"
         >
           <ArrowLeftRight className="w-4 h-4 md:w-5 md:h-5" />
           Switch Team
