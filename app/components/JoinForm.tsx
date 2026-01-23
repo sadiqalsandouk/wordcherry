@@ -49,7 +49,6 @@ export default function JoinForm() {
         const result = await createGame(authPlayerName)
         
         if (result.ok) {
-          toast.success(`Game created! Code: ${result.joinCode}`)
           router.push(`/game/${result.joinCode}`)
         } else {
           toast.error(result.error || "Failed to create game")
