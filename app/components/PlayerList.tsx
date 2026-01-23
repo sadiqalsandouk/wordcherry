@@ -57,14 +57,13 @@ export default function PlayerList({
   return (
     <div className="space-y-3 md:space-y-4">
       {/* Teams container */}
-      <div className="grid grid-cols-2 gap-3 md:gap-4">
+      <div className="flex">
         {/* Blue Team */}
-        <div className="space-y-2 md:space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-blue-500" />
-              <span className="text-xs md:text-sm font-semibold text-gray-600 uppercase tracking-wide">Blue</span>
-            </div>
+        <div className="flex-1 pr-3 md:pr-4">
+          {/* Blue accent bar */}
+          <div className="h-1 bg-blue-500 rounded-full mb-3" />
+          <div className="flex items-center justify-between mb-2 md:mb-3">
+            <span className="text-xs md:text-sm font-bold text-blue-600 uppercase tracking-wide">Blue Team</span>
             {gameStatus !== "lobby" && (
               <span className="text-sm md:text-base font-bold text-blue-600">{teamAScore}</span>
             )}
@@ -78,13 +77,15 @@ export default function PlayerList({
           </div>
         </div>
 
+        {/* Vertical divider */}
+        <div className="w-px bg-gray-200 mx-2" />
+
         {/* Red Team */}
-        <div className="space-y-2 md:space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-red-500" />
-              <span className="text-xs md:text-sm font-semibold text-gray-600 uppercase tracking-wide">Red</span>
-            </div>
+        <div className="flex-1 pl-3 md:pl-4">
+          {/* Red accent bar */}
+          <div className="h-1 bg-red-500 rounded-full mb-3" />
+          <div className="flex items-center justify-between mb-2 md:mb-3">
+            <span className="text-xs md:text-sm font-bold text-red-600 uppercase tracking-wide">Red Team</span>
             {gameStatus !== "lobby" && (
               <span className="text-sm md:text-base font-bold text-red-600">{teamBScore}</span>
             )}
