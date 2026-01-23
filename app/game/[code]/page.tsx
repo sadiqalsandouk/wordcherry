@@ -6,6 +6,7 @@ import { Game, GamePlayer } from "@/app/types/types"
 import { supabase } from "@/lib/supabase/supabase"
 import { getFullGameState } from "@/lib/supabase/createGame"
 import { joinGame } from "@/lib/supabase/joinGame"
+import { resetGameToLobby, playAgain } from "@/lib/supabase/gameOperations"
 import { usePlayerName } from "@/app/components/AuthProvider"
 import Lobby from "@/app/components/Lobby"
 import MultiplayerGame from "@/app/components/MultiplayerGame"
@@ -28,6 +29,7 @@ export default function GamePage() {
   const { playerName, isLoading: playerNameLoading } = usePlayerName()
   
   const [state, setState] = useState<PageState>({ status: "loading" })
+  const [actionLoading, setActionLoading] = useState(false)
   const hasAttemptedJoin = useRef(false)
 
   const loadGame = useCallback(async (attemptAutoJoin: boolean = false) => {
@@ -127,6 +129,43 @@ export default function GamePage() {
     }
   }, [loadGame, playerNameLoading])
 
+  // Subscribe to game status changes (for non-hosts to get redirected on reset/replay)
+  useEffect(() => {
+    if (state.status !== "in_progress" && state.status !== "finished") return
+    
+    const channel = supabase.channel(`game_status_page:${state.game.id}`)
+    
+    channel
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "games",
+          filter: `id=eq.${state.game.id}`,
+        },
+        async (payload) => {
+          const updatedGame = payload.new as Game
+          
+          // If game was reset to lobby
+          if (updatedGame.status === "lobby") {
+            // Reload to get fresh state
+            await loadGame(false)
+          }
+          // If game was restarted (play again)
+          else if (updatedGame.status === "in_progress" && state.status === "finished") {
+            // Reload to get fresh state with new seed
+            await loadGame(false)
+          }
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [state, loadGame])
+
   const handleGameStart = useCallback((updatedGame: Game) => {
     setState((prev) => {
       if (prev.status === "lobby") {
@@ -164,6 +203,59 @@ export default function GamePage() {
       return prev
     })
   }, [])
+
+  const handleBackToLobby = useCallback(async () => {
+    if (state.status !== "finished" && state.status !== "in_progress") return
+    
+    setActionLoading(true)
+    try {
+      const result = await resetGameToLobby(state.game.id)
+      
+      if (result.ok && result.game) {
+        // Reset players scores locally and go to lobby
+        const resetPlayers = state.players.map(p => ({ ...p, score: 0, best_word: null, best_word_score: 0 }))
+        setState({
+          status: "lobby",
+          game: result.game,
+          players: resetPlayers,
+          userId: state.userId,
+        })
+      } else {
+        console.error("Failed to reset game:", result.error)
+      }
+    } catch (err) {
+      console.error("Back to lobby error:", err)
+    } finally {
+      setActionLoading(false)
+    }
+  }, [state])
+
+  const handlePlayAgain = useCallback(async () => {
+    if (state.status !== "finished" && state.status !== "in_progress") return
+    
+    setActionLoading(true)
+    try {
+      const result = await playAgain(state.game.id)
+      
+      if (result.ok && result.game && result.startedAt) {
+        // Reset players scores and start game
+        const resetPlayers = state.players.map(p => ({ ...p, score: 0, best_word: null, best_word_score: 0 }))
+        setState({
+          status: "in_progress",
+          game: result.game,
+          players: resetPlayers,
+          userId: state.userId,
+          startedAt: result.startedAt,
+        })
+      } else {
+        console.error("Failed to play again:", result.error)
+      }
+    } catch (err) {
+      console.error("Play again error:", err)
+    } finally {
+      setActionLoading(false)
+    }
+  }, [state])
 
   // Render based on state
   if (state.status === "loading" || state.status === "joining") {
@@ -258,6 +350,9 @@ export default function GamePage() {
         startedAt={state.startedAt}
         onGameEnd={handleGameEnd}
         onPlayersUpdate={handlePlayersUpdate}
+        onBackToLobby={handleBackToLobby}
+        onPlayAgain={handlePlayAgain}
+        isActionLoading={actionLoading}
       />
     )
   }
@@ -272,6 +367,9 @@ export default function GamePage() {
         startedAt={state.game.started_at!}
         onGameEnd={handleGameEnd}
         onPlayersUpdate={handlePlayersUpdate}
+        onBackToLobby={handleBackToLobby}
+        onPlayAgain={handlePlayAgain}
+        isActionLoading={actionLoading}
       />
     )
   }

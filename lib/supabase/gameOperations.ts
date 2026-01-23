@@ -308,3 +308,82 @@ export async function getServerTime(): Promise<Date> {
   
   return new Date(data)
 }
+
+/**
+ * Reset game to lobby state (keeps players and teams, resets scores)
+ * Only the host can call this
+ */
+export async function resetGameToLobby(gameId: string): Promise<{ ok: boolean; game?: Game; newSeed?: string; error?: string }> {
+  try {
+    // Call the RPC function (SECURITY DEFINER, checks host permission)
+    const { data, error } = await supabase.rpc("reset_game_to_lobby", {
+      p_game_id: gameId,
+    })
+
+    if (error) {
+      console.error("Reset game RPC error:", error)
+      return { ok: false, error: error.message }
+    }
+
+    if (!data || data.length === 0) {
+      return { ok: false, error: "No response from server" }
+    }
+
+    const result = data[0]
+    
+    if (!result.success) {
+      return { ok: false, error: result.error_message || "Failed to reset game" }
+    }
+
+    // Fetch the updated game
+    const { data: gameData, error: fetchError } = await supabase
+      .from("games")
+      .select()
+      .eq("id", gameId)
+      .single()
+
+    if (fetchError) {
+      return { ok: false, error: fetchError.message }
+    }
+
+    return { ok: true, game: gameData as Game, newSeed: result.new_seed }
+  } catch (err) {
+    console.error("Reset game exception:", err)
+    return { ok: false, error: "An unexpected error occurred" }
+  }
+}
+
+/**
+ * Play again with same settings (resets scores and starts immediately)
+ */
+export async function playAgain(gameId: string): Promise<{ ok: boolean; game?: Game; startedAt?: string; error?: string }> {
+  try {
+    // First reset the game
+    const resetResult = await resetGameToLobby(gameId)
+    if (!resetResult.ok) {
+      return resetResult
+    }
+
+    // Then start it immediately
+    const startResult = await startGame(gameId)
+    if (!startResult.ok) {
+      return { ok: false, error: startResult.error }
+    }
+
+    // Fetch the updated game
+    const { data: gameData, error: gameError } = await supabase
+      .from("games")
+      .select()
+      .eq("id", gameId)
+      .single()
+
+    if (gameError) {
+      return { ok: false, error: gameError.message }
+    }
+
+    return { ok: true, game: gameData as Game, startedAt: startResult.startedAt }
+  } catch (err) {
+    console.error("Play again exception:", err)
+    return { ok: false, error: "An unexpected error occurred" }
+  }
+}

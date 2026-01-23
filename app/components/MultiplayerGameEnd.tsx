@@ -1,7 +1,7 @@
 "use client"
 
 import { Game, GamePlayer } from "@/app/types/types"
-import { Trophy, Medal, Home, Users2, Crown } from "lucide-react"
+import { Trophy, Medal, Home, RotateCcw, Crown } from "lucide-react"
 import Link from "next/link"
 import Confetti from "react-confetti"
 import { useState, useEffect, useRef } from "react"
@@ -12,6 +12,10 @@ type MultiplayerGameEndProps = {
   players: GamePlayer[]
   currentUserId: string
   bestWord: { word: string; score: number }
+  onBackToLobby: () => void
+  onPlayAgain: () => void
+  isLoading?: boolean
+  isHost?: boolean
 }
 
 export default function MultiplayerGameEnd({
@@ -19,6 +23,10 @@ export default function MultiplayerGameEnd({
   players,
   currentUserId,
   bestWord,
+  onBackToLobby,
+  onPlayAgain,
+  isLoading = false,
+  isHost = false,
 }: MultiplayerGameEndProps) {
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 })
   const [showConfetti, setShowConfetti] = useState(false)
@@ -218,21 +226,45 @@ export default function MultiplayerGameEnd({
         </div>
 
         {/* Actions */}
-        <div className="p-6 flex gap-3">
-          <Link
-            href="/"
-            className="cursor-pointer flex-1 py-3 px-4 bg-gray-200 text-gray-700 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-gray-300 transition-colors"
-          >
-            <Home className="w-5 h-5" />
-            Home
-          </Link>
-          <Link
-            href="/"
-            className="cursor-pointer flex-1 py-3 px-4 bg-wordcherryBlue text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-wordcherryBlue/90 transition-colors"
-          >
-            <Users2 className="w-5 h-5" />
-            New Game
-          </Link>
+        <div className="p-6 space-y-3">
+          {/* Host-only options */}
+          {isHost ? (
+            <>
+              {/* Play Again - goes back to lobby (host only) */}
+              <button
+                onClick={onBackToLobby}
+                disabled={isLoading}
+                className="cursor-pointer w-full py-3 px-4 bg-gradient-to-r from-wordcherryBlue to-cyan-500 text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <RotateCcw className="w-5 h-5" />
+                {isLoading ? "Loading..." : "Play Again"}
+              </button>
+              
+              <Link
+                href="/"
+                className="cursor-pointer w-full py-3 px-4 bg-gray-200 text-gray-700 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-gray-300 transition-colors"
+              >
+                <Home className="w-5 h-5" />
+                Home
+              </Link>
+            </>
+          ) : (
+            <>
+              {/* Non-host: waiting message + home button */}
+              <div className="text-center py-3 px-4 bg-gray-100 rounded-xl">
+                <p className="text-gray-600 text-sm">
+                  Waiting for the host...
+                </p>
+              </div>
+              <Link
+                href="/"
+                className="cursor-pointer w-full py-3 px-4 bg-gray-200 text-gray-700 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-gray-300 transition-colors"
+              >
+                <Home className="w-5 h-5" />
+                Leave
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </div>

@@ -26,6 +26,9 @@ type MultiplayerGameProps = {
   startedAt: string
   onGameEnd: () => void
   onPlayersUpdate: (players: GamePlayer[]) => void
+  onBackToLobby?: () => void
+  onPlayAgain?: () => void
+  isActionLoading?: boolean
 }
 
 // Taunt emojis and messages
@@ -51,6 +54,9 @@ export default function MultiplayerGame({
   startedAt,
   onGameEnd,
   onPlayersUpdate,
+  onBackToLobby,
+  onPlayAgain,
+  isActionLoading = false,
 }: MultiplayerGameProps) {
   const [players, setPlayers] = useState<GamePlayer[]>(initialPlayers)
   const [tiles, setTiles] = useState<TileState[]>([])
@@ -612,12 +618,17 @@ export default function MultiplayerGame({
 
   // Game Over Screen
   if (isGameOver) {
+    const isHost = game.host_user_id === currentUserId
     return (
       <MultiplayerGameEnd
         game={game}
         players={players}
         currentUserId={currentUserId}
         bestWord={bestWord}
+        onBackToLobby={onBackToLobby || (() => {})}
+        onPlayAgain={onPlayAgain || (() => {})}
+        isLoading={isActionLoading}
+        isHost={isHost}
       />
     )
   }
@@ -641,8 +652,8 @@ export default function MultiplayerGame({
             {/* Team Scores and Timer Row */}
             <div className="flex justify-between items-center">
               {/* Blue Team */}
-              <div className="flex flex-col items-center bg-blue-500/30 px-4 py-2 md:px-6 md:py-3 rounded-lg min-w-[80px] md:min-w-[100px]">
-                <span className="text-blue-200 font-bold text-xs md:text-sm uppercase tracking-wide">Blue</span>
+              <div className="flex flex-col items-center bg-blue-600 px-4 py-2 md:px-6 md:py-3 rounded-lg min-w-[80px] md:min-w-[100px]">
+                <span className="text-blue-100 font-bold text-xs md:text-sm uppercase tracking-wide">Blue</span>
                 <span className="text-white font-black text-3xl md:text-4xl">{teamAScore}</span>
               </div>
 
@@ -669,8 +680,8 @@ export default function MultiplayerGame({
               </div>
 
               {/* Red Team */}
-              <div className="flex flex-col items-center bg-red-500/30 px-4 py-2 md:px-6 md:py-3 rounded-lg min-w-[80px] md:min-w-[100px]">
-                <span className="text-red-200 font-bold text-xs md:text-sm uppercase tracking-wide">Red</span>
+              <div className="flex flex-col items-center bg-red-500 px-4 py-2 md:px-6 md:py-3 rounded-lg min-w-[80px] md:min-w-[100px]">
+                <span className="text-red-100 font-bold text-xs md:text-sm uppercase tracking-wide">Red</span>
                 <span className="text-white font-black text-3xl md:text-4xl">{teamBScore}</span>
               </div>
             </div>
