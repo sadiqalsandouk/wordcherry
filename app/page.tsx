@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import JoinForm from "./components/JoinForm"
 import SoloButton from "./components/SoloButton"
 
@@ -9,7 +10,9 @@ export default function Home() {
         <div className="text-center text-white text-base sm:text-lg font-bold my-2 sm:my-4 opacity-70">
           - OR -
         </div>
-        <JoinForm />
+        <Suspense fallback={<div className="h-40" />}>
+          <JoinForm />
+        </Suspense>
 
         {/* FAQ Section */}
         <div className="mt-8 md:mt-10">
