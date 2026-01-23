@@ -5,7 +5,7 @@ import { createGame } from "@/lib/supabase/createGame"
 import { joinGame } from "@/lib/supabase/joinGame"
 import { usePlayerName } from "./AuthProvider"
 import { toast } from "sonner"
-import { Loader2, User } from "lucide-react"
+import { Loader2, User, Users, Gamepad2 } from "lucide-react"
 
 export default function JoinForm() {
   const router = useRouter()
@@ -13,7 +13,7 @@ export default function JoinForm() {
   const { playerName: authPlayerName, isLoading: authLoading } = usePlayerName()
   
   const [gameCode, setGameCode] = useState("")
-  const [mode, setMode] = useState<"join" | "create">("join")
+  const [mode, setMode] = useState<"solo" | "join" | "create">("solo")
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   // Pre-fill game code from URL parameter
@@ -26,12 +26,19 @@ export default function JoinForm() {
   }, [searchParams])
 
   const isFormComplete =
-    mode === "join" 
-      ? gameCode.trim().length === 6 && !authLoading
-      : !authLoading
+    mode === "solo"
+      ? true
+      : mode === "join" 
+        ? gameCode.trim().length === 6 && !authLoading
+        : !authLoading
 
   const handleSubmit = async () => {
     if (!isFormComplete || isSubmitting) return
+
+    if (mode === "solo") {
+      router.push("/solo")
+      return
+    }
 
     setIsSubmitting(true)
 
@@ -70,56 +77,96 @@ export default function JoinForm() {
 
   return (
     <div>
-      <div className="bg-wordcherryBlue/30 backdrop-blur-sm rounded-full flex mb-4 sm:mb-6 shadow-inner mx-4 sm:mx-8 md:mx-12">
+      {/* Mode selector tabs */}
+      <div className="bg-wordcherryBlue/30 backdrop-blur-sm rounded-full flex mb-4 sm:mb-6 shadow-inner mx-2 sm:mx-4">
         <button
-          className={`cursor-pointer flex-1 py-1.5 px-4 text-center font-bold rounded-full transition-all duration-200 hover:scale-103 active:scale-95 ${
+          className={`cursor-pointer flex-1 py-2 px-2 sm:px-4 text-center font-bold rounded-full transition-all duration-200 hover:scale-103 active:scale-95 flex items-center justify-center gap-1.5 ${
+            mode === "solo"
+              ? "bg-wordcherryYellow text-wordcherryBlue shadow-sm"
+              : "bg-transparent text-white"
+          }`}
+          onClick={() => setMode("solo")}
+        >
+          <Gamepad2 className="w-4 h-4" />
+          <span className="text-sm sm:text-base">Solo</span>
+        </button>
+        <button
+          className={`cursor-pointer flex-1 py-2 px-2 sm:px-4 text-center font-bold rounded-full transition-all duration-200 hover:scale-103 active:scale-95 flex items-center justify-center gap-1.5 ${
             mode === "join"
               ? "bg-wordcherryYellow text-wordcherryBlue shadow-sm"
               : "bg-transparent text-white"
           }`}
           onClick={() => setMode("join")}
         >
-          Join
+          <Users className="w-4 h-4" />
+          <span className="text-sm sm:text-base">Join</span>
         </button>
         <button
-          className={`cursor-pointer flex-1 py-1.5 px-4 text-center font-bold rounded-full transition-all duration-200 hover:scale-103 active:scale-95 ${
+          className={`cursor-pointer flex-1 py-2 px-2 sm:px-4 text-center font-bold rounded-full transition-all duration-200 hover:scale-103 active:scale-95 flex items-center justify-center gap-1.5 ${
             mode === "create"
               ? "bg-wordcherryYellow text-wordcherryBlue shadow-sm"
               : "bg-transparent text-white"
           }`}
           onClick={() => setMode("create")}
         >
-          Create
+          <Users className="w-4 h-4" />
+          <span className="text-sm sm:text-base">Create</span>
         </button>
       </div>
 
       <div className="overflow-hidden rounded-xl shadow-[2px_2px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(0,0,0,0.1)]">
         <div className="bg-wordcherryYellow py-3 px-4 text-center">
           <h2 className="text-2xl font-bold text-wordcherryBlue">
-            {mode === "join" ? "JOIN A GAME" : "HOST A GAME"}
+            {mode === "solo" ? "SOLO MODE" : mode === "join" ? "JOIN A GAME" : "HOST A GAME"}
           </h2>
         </div>
 
-        <div className="bg-[#fff7d6] p-4 flex flex-col gap-4 min-h-[100px]">
-          {/* Game code input - only show for join mode */}
-          <div className={`transition-all duration-300 ease-in-out ${
+        <div className="bg-[#fff7d6] p-4 flex flex-col min-h-[80px]">
+          {/* Solo mode content - with smooth transition */}
+          <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
+            mode === "solo" 
+              ? "max-h-20 opacity-100" 
+              : "max-h-0 opacity-0"
+          }`}>
+            <div className="text-center py-2">
+              <p className="text-wordcherryBlue/80 text-sm">
+                Play by yourself, earn time bonuses for valid words!
+              </p>
+            </div>
+          </div>
+
+          {/* Game code input - with smooth transition */}
+          <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
             mode === "join" 
-              ? "max-h-16 opacity-100" 
-              : "max-h-0 opacity-0 overflow-hidden"
+              ? "max-h-20 opacity-100" 
+              : "max-h-0 opacity-0"
           }`}>
             <input
               type="text"
               value={gameCode}
               onChange={(e) => setGameCode(e.target.value.toUpperCase().slice(0, 6))}
               onKeyDown={handleKeyDown}
-              placeholder="Enter game code"
+              placeholder="Enter 6-digit game code"
               maxLength={6}
-              className="w-full p-3 text-center text-wordcherryBlue bg-[#fff7d6] placeholder:text-wordcherryBlue/70 outline-none border-b border-wordcherryYellow/30 font-mono text-xl tracking-widest uppercase"
+              className="w-full p-3 text-center text-wordcherryBlue bg-[#fff7d6] placeholder:text-wordcherryBlue/50 outline-none border-b border-wordcherryYellow/30 font-mono text-xl tracking-widest uppercase"
             />
           </div>
 
-          {/* Player name display */}
-          <div className="text-center py-2">
+          {/* Create mode content - with smooth transition */}
+          <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
+            mode === "create" 
+              ? "max-h-20 opacity-100" 
+              : "max-h-0 opacity-0"
+          }`}>
+            <div className="text-center py-2">
+              <p className="text-wordcherryBlue/80 text-sm">
+                Create a lobby and invite friends with a code!
+              </p>
+            </div>
+          </div>
+
+          {/* Player name display - shown for all modes */}
+          <div className="text-center py-1 mt-2">
             {authLoading ? (
               <span className="text-wordcherryBlue/60 text-sm">Loading...</span>
             ) : authPlayerName.startsWith("Guest-") ? (
@@ -152,7 +199,9 @@ export default function JoinForm() {
             ${
               !isFormComplete || isSubmitting
                 ? "bg-gray-400 text-gray-200 cursor-not-allowed"
-                : "bg-wordcherryRed text-white hover:scale-103 active:scale-95 cursor-pointer"
+                : mode === "solo"
+                  ? "bg-wordcherryYellow text-wordcherryBlue hover:bg-wordcherryYellow/90 hover:scale-103 active:scale-95 cursor-pointer"
+                  : "bg-wordcherryRed text-white hover:scale-103 active:scale-95 cursor-pointer"
             }`}
           onClick={handleSubmit}
         >
@@ -162,7 +211,7 @@ export default function JoinForm() {
               {mode === "join" ? "JOINING..." : "CREATING..."}
             </>
           ) : (
-            mode === "join" ? "JOIN GAME" : "CREATE GAME"
+            mode === "solo" ? "PLAY SOLO" : mode === "join" ? "JOIN GAME" : "CREATE GAME"
           )}
         </button>
       </div>
