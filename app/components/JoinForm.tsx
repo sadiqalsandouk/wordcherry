@@ -119,12 +119,31 @@ export default function JoinForm() {
             />
           </div>
 
-          {/* Player name display (non-editable) */}
-          <div className="flex items-center justify-center gap-2 py-2">
-            <User className="w-5 h-5 text-wordcherryBlue/60" />
-            <span className="text-wordcherryBlue font-medium">
-              {authLoading ? "Loading..." : authPlayerName}
-            </span>
+          {/* Player name display */}
+          <div className="text-center py-2">
+            {authLoading ? (
+              <span className="text-wordcherryBlue/60 text-sm">Loading...</span>
+            ) : authPlayerName.startsWith("Guest-") ? (
+              <div className="space-y-1">
+                <div className="flex items-center justify-center gap-2">
+                  <User className="w-4 h-4 text-wordcherryBlue/50" />
+                  <span className="text-sm text-wordcherryBlue/70">Playing as</span>
+                  <span className="text-sm font-semibold text-wordcherryBlue">{authPlayerName}</span>
+                </div>
+                <a 
+                  href="/account" 
+                  className="text-xs text-wordcherryBlue/60 hover:text-wordcherryBlue underline underline-offset-2"
+                >
+                  Sign up to customize your name
+                </a>
+              </div>
+            ) : (
+              <div className="flex items-center justify-center gap-2">
+                <User className="w-4 h-4 text-wordcherryBlue/50" />
+                <span className="text-sm text-wordcherryBlue/70">Playing as</span>
+                <span className="text-sm font-semibold text-wordcherryBlue">{authPlayerName}</span>
+              </div>
+            )}
           </div>
         </div>
 
