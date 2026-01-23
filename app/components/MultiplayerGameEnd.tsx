@@ -54,6 +54,8 @@ export default function MultiplayerGameEnd({
         bestWord: bestWord.word || "",
         bestWordScore: bestWord.score || 0,
         playerName: currentPlayer.player_name,
+      }).catch((err) => {
+        console.error("Failed to submit score:", err)
       })
     }
   }, [currentPlayer, game.id, bestWord])
@@ -64,8 +66,8 @@ export default function MultiplayerGameEnd({
     // Only show confetti if player is on the winning team (not on draw)
     if (isWinner) {
       setShowConfetti(true)
-      // Keep confetti longer (10 seconds)
-      const timer = setTimeout(() => setShowConfetti(false), 10000)
+      // Quick confetti burst - 3 seconds then stop
+      const timer = setTimeout(() => setShowConfetti(false), 3000)
       return () => clearTimeout(timer)
     }
   }, [isWinner])
@@ -77,9 +79,10 @@ export default function MultiplayerGameEnd({
         <Confetti
           width={windowSize.width}
           height={windowSize.height}
-          recycle={true}
-          numberOfPieces={400}
-          gravity={0.15}
+          recycle={false}
+          numberOfPieces={200}
+          gravity={0.3}
+          initialVelocityY={20}
           colors={
             winningTeam === "A"
               ? ["#3b82f6", "#60a5fa", "#93c5fd", "#fbbf24", "#ffffff"]
@@ -152,11 +155,6 @@ export default function MultiplayerGameEnd({
                 <p className="text-xs text-gray-500">Best Score</p>
               </div>
             </div>
-            {isWinner && (
-              <p className="text-center text-green-600 font-bold mt-3">
-                You were on the winning team!
-              </p>
-            )}
           </div>
         )}
 

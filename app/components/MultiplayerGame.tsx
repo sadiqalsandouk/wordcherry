@@ -59,6 +59,7 @@ export default function MultiplayerGame({
   const [roundIndex, setRoundIndex] = useState(0)
   const [secondsLeft, setSecondsLeft] = useState(game.duration_seconds)
   const [isGameOver, setIsGameOver] = useState(game.status === "finished")
+  const [isLoadingFinalScores, setIsLoadingFinalScores] = useState(false)
   const [feedback, setFeedback] = useState<string>("")
   const [showFeedback, setShowFeedback] = useState(false)
   const [isShaking, setIsShaking] = useState(false)
@@ -69,6 +70,43 @@ export default function MultiplayerGame({
   const timerRef = useRef<NodeJS.Timeout | null>(null)
   const gameEndTimeRef = useRef<number | null>(null)
   const tauntChannelRef = useRef<ReturnType<typeof supabase.channel> | null>(null)
+
+  // Ref to store final local score for merging
+  const finalLocalScoreRef = useRef<number>(0)
+
+  // Keep the ref updated with current score
+  useEffect(() => {
+    finalLocalScoreRef.current = score
+  }, [score])
+
+  // Fetch fresh player scores from database
+  const fetchFinalScores = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from("game_players")
+        .select("*")
+        .eq("game_id", game.id)
+      
+      if (error) {
+        console.error("Error fetching final scores:", error)
+        return
+      }
+      
+      if (data) {
+        // Merge in the local score for current player in case DB hasn't synced yet
+        const playersWithLocalScore = (data as GamePlayer[]).map(p => {
+          if (p.user_id === currentUserId) {
+            // Use the higher of local or DB score (in case local is ahead)
+            return { ...p, score: Math.max(p.score, finalLocalScoreRef.current) }
+          }
+          return p
+        })
+        setPlayers(playersWithLocalScore)
+      }
+    } catch (err) {
+      console.error("Failed to fetch final scores:", err)
+    }
+  }, [game.id, currentUserId])
 
   // Get current player
   const currentPlayer = players.find((p) => p.user_id === currentUserId)
@@ -90,18 +128,57 @@ export default function MultiplayerGame({
     setSecondsLeft(game.duration_seconds)
   }, [startedAt, game.duration_seconds])
 
+  // Broadcast final score to other players
+  const broadcastFinalScore = useCallback(async () => {
+    const channel = supabase.channel(`final_scores:${game.id}`)
+    await channel.subscribe()
+    await channel.send({
+      type: "broadcast",
+      event: "final_score",
+      payload: {
+        playerId: currentPlayer?.id,
+        userId: currentUserId,
+        score: finalLocalScoreRef.current,
+      },
+    })
+    // Keep channel open briefly to ensure message is sent
+    await new Promise(resolve => setTimeout(resolve, 200))
+    supabase.removeChannel(channel)
+  }, [game.id, currentPlayer?.id, currentUserId])
+
+  // Handle game end - fetch final scores then show results
+  const handleGameEnd = useCallback(async () => {
+    setIsLoadingFinalScores(true)
+    
+    // Broadcast our final score to other players
+    await broadcastFinalScore()
+    
+    // End game on server
+    await endGame(game.id)
+    
+    // Wait for pending score updates to sync, then fetch fresh data
+    // Longer wait to allow other players' broadcasts and DB writes
+    await new Promise(resolve => setTimeout(resolve, 1500))
+    await fetchFinalScores()
+    
+    // Double-check with another fetch after a short delay
+    await new Promise(resolve => setTimeout(resolve, 500))
+    await fetchFinalScores()
+    
+    setIsLoadingFinalScores(false)
+    setIsGameOver(true)
+  }, [game.id, fetchFinalScores, broadcastFinalScore])
+
   // Simple countdown timer - decrements every second
   useEffect(() => {
-    if (isGameOver) return
+    if (isGameOver || isLoadingFinalScores) return
 
     timerRef.current = setInterval(() => {
       setSecondsLeft((prev) => {
         const newValue = prev - 1
         
         if (newValue <= 0) {
-          setIsGameOver(true)
-          onGameEnd()
-          endGame(game.id)
+          handleGameEnd()
           return 0
         }
         
@@ -114,13 +191,164 @@ export default function MultiplayerGame({
         clearInterval(timerRef.current)
       }
     }
-  }, [game.id, isGameOver, onGameEnd])
+  }, [game.id, isGameOver, isLoadingFinalScores, handleGameEnd])
 
-  // Subscribe to player score updates
+  // Notify parent when game is over (in useEffect to avoid setState during render)
   useEffect(() => {
-    const channel = supabase.channel(`game_scores:${game.id}`)
+    if (isGameOver) {
+      onGameEnd()
+    }
+  }, [isGameOver, onGameEnd])
+
+  // Listen for other players' final score broadcasts
+  useEffect(() => {
+    const channel = supabase.channel(`final_scores:${game.id}`)
+    
+    channel
+      .on("broadcast", { event: "final_score" }, (payload) => {
+        const { userId, score: finalScore } = payload.payload
+        
+        // Update players array with the broadcast score
+        setPlayers((prev) =>
+          prev.map((p) => {
+            if (p.user_id === userId) {
+              // Use the higher score (broadcast might arrive before DB sync)
+              return { ...p, score: Math.max(p.score, finalScore) }
+            }
+            return p
+          })
+        )
+      })
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [game.id])
+
+  // Ref to store the live scores channel and its ready state
+  const liveScoresChannelRef = useRef<ReturnType<typeof supabase.channel> | null>(null)
+  const [liveScoresReady, setLiveScoresReady] = useState(false)
+
+  // Subscribe to live score broadcasts from other players
+  useEffect(() => {
+    // Use a unique but consistent channel name for the game
+    const channelName = `live-scores-${game.id}`
+    const channel = supabase.channel(channelName, {
+      config: {
+        broadcast: { self: false }, // Don't receive our own broadcasts
+      },
+    })
 
     channel
+      .on("broadcast", { event: "score_update" }, (payload) => {
+        const { playerId, userId, newScore, team } = payload.payload
+        
+        console.log("Received score update:", { playerId, userId, newScore, team })
+        
+        setPlayers((prev) => {
+          console.log("Current players count:", prev.length)
+          
+          // First check if this player exists in our array
+          const existingPlayerIndex = prev.findIndex(
+            (p) => p.id === playerId || p.user_id === userId
+          )
+          
+          if (existingPlayerIndex !== -1) {
+            // Player found - update their score
+            console.log("Found player, updating score")
+            return prev.map((p, i) => 
+              i === existingPlayerIndex ? { ...p, score: newScore } : p
+            )
+          }
+          
+          // Player not found by ID - try to find by team
+          const teamPlayerIndex = prev.findIndex(
+            (p) => p.team === team && p.user_id !== currentUserId
+          )
+          
+          if (teamPlayerIndex !== -1) {
+            console.log("Found by team, updating score")
+            return prev.map((p, i) =>
+              i === teamPlayerIndex ? { ...p, score: newScore } : p
+            )
+          }
+          
+          // No matching player found - add a placeholder player for this team
+          console.log("No matching player found, adding placeholder for team:", team)
+          const newPlayer: GamePlayer = {
+            id: playerId || `temp-${Date.now()}`,
+            game_id: game.id,
+            user_id: userId || "",
+            player_name: `Team ${team === "A" ? "Blue" : "Red"} Player`,
+            team: team as "A" | "B",
+            score: newScore,
+            best_word: null,
+            best_word_score: 0,
+            joined_at: new Date().toISOString(),
+          }
+          return [...prev, newPlayer]
+        })
+      })
+      .subscribe((status) => {
+        console.log("Live scores channel status:", status)
+        if (status === "SUBSCRIBED") {
+          setLiveScoresReady(true)
+        }
+      })
+
+    liveScoresChannelRef.current = channel
+
+    return () => {
+      setLiveScoresReady(false)
+      supabase.removeChannel(channel)
+    }
+  }, [game.id, currentUserId])
+
+  // Subscribe to game and player changes via postgres
+  useEffect(() => {
+    const channel = supabase.channel(`game_room:${game.id}`)
+
+    channel
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "games",
+          filter: `id=eq.${game.id}`,
+        },
+        async (payload) => {
+          const updatedGame = payload.new as Game
+          if (updatedGame.status === "finished" && !isGameOver) {
+            // Another player ended the game - fetch final scores
+            setIsLoadingFinalScores(true)
+            await new Promise(resolve => setTimeout(resolve, 500))
+            await fetchFinalScores()
+            setIsLoadingFinalScores(false)
+            setIsGameOver(true)
+          }
+        }
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "game_players",
+          filter: `game_id=eq.${game.id}`,
+        },
+        (payload) => {
+          // New player joined - add them to our list
+          const newPlayer = payload.new as GamePlayer
+          console.log("New player joined:", newPlayer.player_name)
+          setPlayers((prev) => {
+            // Don't add if already exists
+            if (prev.some(p => p.id === newPlayer.id)) return prev
+            return [...prev, newPlayer]
+          })
+        }
+      )
       .on(
         "postgres_changes",
         {
@@ -130,26 +358,11 @@ export default function MultiplayerGame({
           filter: `game_id=eq.${game.id}`,
         },
         (payload) => {
+          // Player updated (score change from DB)
           const updatedPlayer = payload.new as GamePlayer
           setPlayers((prev) =>
             prev.map((p) => (p.id === updatedPlayer.id ? updatedPlayer : p))
           )
-        }
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "games",
-          filter: `id=eq.${game.id}`,
-        },
-        (payload) => {
-          const updatedGame = payload.new as Game
-          if (updatedGame.status === "finished") {
-            setIsGameOver(true)
-            onGameEnd()
-          }
         }
       )
       .subscribe()
@@ -157,7 +370,7 @@ export default function MultiplayerGame({
     return () => {
       supabase.removeChannel(channel)
     }
-  }, [game.id, onGameEnd])
+  }, [game.id, isGameOver, fetchFinalScores])
 
   // Notify parent of player updates (deferred to avoid updating during render)
   useEffect(() => {
@@ -313,6 +526,34 @@ export default function MultiplayerGame({
         // Update local score immediately for responsiveness
         setScore(result.newTotalScore)
 
+        // Also update in players array for team score display
+        setPlayers((prev) =>
+          prev.map((p) =>
+            p.user_id === currentUserId ? { ...p, score: result.newTotalScore } : p
+          )
+        )
+
+        // Broadcast score update to other players
+        if (liveScoresChannelRef.current && liveScoresReady) {
+          console.log("Broadcasting score update:", result.newTotalScore)
+          liveScoresChannelRef.current.send({
+            type: "broadcast",
+            event: "score_update",
+            payload: {
+              playerId: currentPlayer?.id,
+              userId: currentUserId,
+              newScore: result.newTotalScore,
+              team: currentPlayer?.team,
+            },
+          }).then((result) => {
+            console.log("Score broadcast result:", result)
+          }).catch((err) => {
+            console.error("Score broadcast failed:", err)
+          })
+        } else {
+          console.warn("Live scores channel not ready:", { channel: !!liveScoresChannelRef.current, ready: liveScoresReady })
+        }
+
         if (wordScore > bestWord.score) {
           setBestWord({ word: currentWordString, score: wordScore })
         }
@@ -333,7 +574,7 @@ export default function MultiplayerGame({
       setIsShaking(true)
       setTimeout(() => setIsShaking(false), 500)
     }
-  }, [currentWord, game.id, roundIndex, bestWord.score, isGameOver])
+  }, [currentWord, game.id, roundIndex, bestWord.score, isGameOver, currentPlayer?.id, currentUserId, liveScoresReady])
 
 
   // Keyboard controls
@@ -358,6 +599,16 @@ export default function MultiplayerGame({
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [handleBackspace, handleLetterType, handleSubmitButton, currentWord, isGameOver])
+
+  // Loading final scores
+  if (isLoadingFinalScores) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center">
+        <div className="text-white text-xl font-bold mb-4">Game Over!</div>
+        <div className="text-white/70">Loading final scores...</div>
+      </div>
+    )
+  }
 
   // Game Over Screen
   if (isGameOver) {
@@ -510,22 +761,48 @@ export default function MultiplayerGame({
           />
         </div>
 
-        {/* Taunt Overlay - positioned on the right side */}
-        <div className="fixed right-4 top-1/4 z-50 pointer-events-none flex flex-col gap-2">
-          {activeTaunts.map((taunt) => (
-            <div
-              key={taunt.id}
-              className="animate-taunt-slide"
-            >
-              <div className={`flex items-center gap-2 px-3 py-2 rounded-xl shadow-lg ${
-                taunt.team === "A" ? "bg-blue-500" : "bg-red-500"
-              }`}>
-                <span className="text-3xl md:text-4xl">{taunt.emoji}</span>
-                <span className="text-white font-bold text-xs md:text-sm">{taunt.playerName}</span>
+        {/* Taunt Overlay - positioned in the margins beside the game area */}
+        {activeTaunts.length > 0 && (
+          <>
+            {/* Desktop: show on left side in the margin */}
+            <div className="hidden lg:block fixed left-4 xl:left-8 top-1/2 -translate-y-1/2 z-50 pointer-events-none">
+              <div className="flex flex-col gap-2">
+                {activeTaunts.map((taunt) => (
+                  <div
+                    key={taunt.id}
+                    className="animate-taunt-slide"
+                  >
+                    <div className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl shadow-lg ${
+                      taunt.team === "A" ? "bg-blue-500" : "bg-red-500"
+                    }`}>
+                      <span className="text-4xl">{taunt.emoji}</span>
+                      <span className="text-white font-bold text-xs">{taunt.playerName}</span>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-          ))}
-        </div>
+            
+            {/* Mobile/Tablet: show at bottom left corner */}
+            <div className="lg:hidden fixed left-4 bottom-24 z-50 pointer-events-none">
+              <div className="flex flex-col gap-2">
+                {activeTaunts.map((taunt) => (
+                  <div
+                    key={taunt.id}
+                    className="animate-taunt-slide"
+                  >
+                    <div className={`flex items-center gap-2 px-2 py-1.5 rounded-lg shadow-lg ${
+                      taunt.team === "A" ? "bg-blue-500" : "bg-red-500"
+                    }`}>
+                      <span className="text-2xl">{taunt.emoji}</span>
+                      <span className="text-white font-bold text-xs">{taunt.playerName}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
 
         {/* Bottom spacing */}
         <div className="h-8"></div>
