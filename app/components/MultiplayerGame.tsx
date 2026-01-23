@@ -31,22 +31,6 @@ type MultiplayerGameProps = {
   isActionLoading?: boolean
 }
 
-// Taunt emojis and messages
-const TAUNTS = [
-  "😐",  // unimpressed
-  "😑",  // really?
-  "🙂",  // polite disrespect
-  "🙃",  // sure...
-  "🤷",  // what was that
-  "🫥",  // vanished
-  "⏱️", // late
-  "📉",  // unfortunate
-  "🎯",  // precise
-  "🥱",  // boring
-  "🔄",  // try again
-  "❓",  // explain?
-];
-
 export default function MultiplayerGame({
   game,
   players: initialPlayers,
@@ -70,12 +54,9 @@ export default function MultiplayerGame({
   const [showFeedback, setShowFeedback] = useState(false)
   const [isShaking, setIsShaking] = useState(false)
   const [bestWord, setBestWord] = useState<{ word: string; score: number }>({ word: "", score: 0 })
-  const [activeTaunts, setActiveTaunts] = useState<{ id: string; emoji: string; playerName: string; team: "A" | "B" }[]>([])
-  const [canTaunt, setCanTaunt] = useState(true)
   
   const timerRef = useRef<NodeJS.Timeout | null>(null)
   const gameEndTimeRef = useRef<number | null>(null)
-  const tauntChannelRef = useRef<ReturnType<typeof supabase.channel> | null>(null)
 
   // Ref to store final local score for merging
   const finalLocalScoreRef = useRef<number>(0)
@@ -383,63 +364,6 @@ export default function MultiplayerGame({
     onPlayersUpdate(players)
   }, [players, onPlayersUpdate])
 
-  // Subscribe to taunt channel
-  useEffect(() => {
-    const channel = supabase.channel(`taunts:${game.id}`)
-    
-    channel
-      .on("broadcast", { event: "taunt" }, (payload) => {
-        const { emoji, playerName, team, senderId } = payload.payload
-        
-        // Don't show our own taunts
-        if (senderId === currentUserId) return
-        
-        const tauntId = `${Date.now()}-${Math.random()}`
-        setActiveTaunts((prev) => [...prev, { id: tauntId, emoji, playerName, team }])
-        
-        // Remove taunt after animation
-        setTimeout(() => {
-          setActiveTaunts((prev) => prev.filter((t) => t.id !== tauntId))
-        }, 2000)
-      })
-      .subscribe()
-    
-    tauntChannelRef.current = channel
-    
-    return () => {
-      supabase.removeChannel(channel)
-    }
-  }, [game.id, currentUserId])
-
-  // Handle sending a taunt
-  const handleTaunt = useCallback(() => {
-    if (!canTaunt || !currentPlayer || !tauntChannelRef.current) return
-    
-    const randomEmoji = TAUNTS[Math.floor(Math.random() * TAUNTS.length)]
-    
-    // Broadcast taunt to other players
-    tauntChannelRef.current.send({
-      type: "broadcast",
-      event: "taunt",
-      payload: {
-        emoji: randomEmoji,
-        playerName: currentPlayer.player_name,
-        team: currentPlayer.team,
-        senderId: currentUserId,
-      },
-    })
-    
-    // Show our own taunt locally too
-    const tauntId = `${Date.now()}-${Math.random()}`
-    setActiveTaunts((prev) => [...prev, { id: tauntId, emoji: randomEmoji, playerName: "You", team: currentPlayer.team }])
-    setTimeout(() => {
-      setActiveTaunts((prev) => prev.filter((t) => t.id !== tauntId))
-    }, 2000)
-    
-    // Cooldown to prevent spam
-    setCanTaunt(false)
-    setTimeout(() => setCanTaunt(true), 1500)
-  }, [canTaunt, currentPlayer, currentUserId])
 
   // Update local score from current player
   useEffect(() => {
@@ -760,7 +684,7 @@ export default function MultiplayerGame({
             onTileClick={handleTileClick}
             tiles={tiles}
             onBackspace={handleBackspace}
-            onTaunt={handleTaunt}
+            team={currentPlayer?.team}
           />
         </div>
 
@@ -771,49 +695,6 @@ export default function MultiplayerGame({
             currentWord={currentWord.map((tile) => tile.letter)}
           />
         </div>
-
-        {/* Taunt Overlay - positioned in the margins beside the game area */}
-        {activeTaunts.length > 0 && (
-          <>
-            {/* Desktop: show on left side in the margin */}
-            <div className="hidden lg:block fixed left-4 xl:left-8 top-1/2 -translate-y-1/2 z-50 pointer-events-none">
-              <div className="flex flex-col gap-2">
-                {activeTaunts.map((taunt) => (
-                  <div
-                    key={taunt.id}
-                    className="animate-taunt-slide"
-                  >
-                    <div className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl shadow-lg ${
-                      taunt.team === "A" ? "bg-blue-500" : "bg-red-500"
-                    }`}>
-                      <span className="text-4xl">{taunt.emoji}</span>
-                      <span className="text-white font-bold text-xs">{taunt.playerName}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            
-            {/* Mobile/Tablet: show at bottom left corner */}
-            <div className="lg:hidden fixed left-4 bottom-24 z-50 pointer-events-none">
-              <div className="flex flex-col gap-2">
-                {activeTaunts.map((taunt) => (
-                  <div
-                    key={taunt.id}
-                    className="animate-taunt-slide"
-                  >
-                    <div className={`flex items-center gap-2 px-2 py-1.5 rounded-lg shadow-lg ${
-                      taunt.team === "A" ? "bg-blue-500" : "bg-red-500"
-                    }`}>
-                      <span className="text-2xl">{taunt.emoji}</span>
-                      <span className="text-white font-bold text-xs">{taunt.playerName}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </>
-        )}
 
         {/* Bottom spacing */}
         <div className="h-8"></div>
