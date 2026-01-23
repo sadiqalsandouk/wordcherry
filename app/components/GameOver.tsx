@@ -12,7 +12,7 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
   const [submitting, setSubmitting] = useState(false)
   const [showConfetti, setShowConfetti] = useState(false)
   const performance = getPerformanceLevel(score)
-  const { playerName, isAuthenticated } = usePlayerName()
+  const { playerName, isLoading: playerNameLoading } = usePlayerName()
   const didAutoSubmit = useRef(false)
 
   useEffect(() => {
@@ -23,25 +23,36 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
     }
   }, [performance.showConfetti])
 
-  const onSubmit = useCallback(async () => {
-    setSubmitting(true)
-    const res = await submitScore({
-      gameId,
-      score,
-      bestWord: bestWord.word || "",
-      bestWordScore: bestWord.score || 0,
-      playerName,
-    })
-    setSubmitting(false)
-  }, [gameId, score, bestWord.word, bestWord.score, playerName])
-
+  // Auto-submit score to leaderboard
   useEffect(() => {
     const threshold = 50
-    if (score >= threshold && !didAutoSubmit.current && !submitting) {
+    if (
+      score >= threshold && 
+      !didAutoSubmit.current && 
+      !submitting && 
+      !playerNameLoading &&
+      playerName
+    ) {
       didAutoSubmit.current = true
-      onSubmit()
+      setSubmitting(true)
+      
+      submitScore({
+        gameId,
+        score,
+        bestWord: bestWord.word || "",
+        bestWordScore: bestWord.score || 0,
+        playerName,
+      }).then((res) => {
+        if (!res.ok) {
+          console.error("Failed to submit score to leaderboard:", res.error)
+        }
+        setSubmitting(false)
+      }).catch((err) => {
+        console.error("Error submitting score:", err)
+        setSubmitting(false)
+      })
     }
-  }, [score, submitting, onSubmit])
+  }, [score, submitting, playerNameLoading, playerName, gameId, bestWord.word, bestWord.score])
 
   return (
     <>

@@ -4,7 +4,8 @@ import { Game, GamePlayer } from "@/app/types/types"
 import { Trophy, Medal, Home, Users2, Crown } from "lucide-react"
 import Link from "next/link"
 import Confetti from "react-confetti"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
+import { submitScore } from "@/lib/supabase/submitScore"
 
 type MultiplayerGameEndProps = {
   game: Game
@@ -21,6 +22,7 @@ export default function MultiplayerGameEnd({
 }: MultiplayerGameEndProps) {
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 })
   const [showConfetti, setShowConfetti] = useState(false)
+  const didSubmitScore = useRef(false)
 
   // Calculate team scores
   const teamAPlayers = players.filter((p) => p.team === "A")
@@ -41,6 +43,20 @@ export default function MultiplayerGameEnd({
 
   // Get MVP (highest scorer)
   const mvp = rankedPlayers[0]
+
+  // Submit score to leaderboard
+  useEffect(() => {
+    if (currentPlayer && !didSubmitScore.current && currentPlayer.score > 0) {
+      didSubmitScore.current = true
+      submitScore({
+        gameId: game.id,
+        score: currentPlayer.score,
+        bestWord: bestWord.word || "",
+        bestWordScore: bestWord.score || 0,
+        playerName: currentPlayer.player_name,
+      })
+    }
+  }, [currentPlayer, game.id, bestWord])
 
   useEffect(() => {
     setWindowSize({ width: window.innerWidth, height: window.innerHeight })
