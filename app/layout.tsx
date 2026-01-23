@@ -6,6 +6,7 @@ import Footer from "./components/Footer"
 import NavBar from "./components/NavBar"
 import AuthProvider from "./components/AuthProvider"
 import { Toaster } from "@/components/ui/sonner"
+import Script from "next/script"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -86,6 +87,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-wordcherryBlue min-h-screen flex flex-col`}
       >
+        <Script
+          id="adsbygoogle-script"
+          async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_GOOGLE_AD_CLIENT}`}
+          crossOrigin="anonymous">
+        </Script>
         <AuthProvider>
           <div className="w-full max-w-4xl mx-auto px-2 sm:px-4 md:px-8 lg:px-12 py-2 sm:py-4 md:py-8 flex-1 flex flex-col">
             <NavBar />
