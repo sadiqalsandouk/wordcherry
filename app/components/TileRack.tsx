@@ -11,10 +11,12 @@ interface TileRackProps {
   tiles: TileState[]
   onTileClick: (letter: string, index: number) => void
   onBackspace: () => void
-  onPause: () => void
+  onPause?: () => void
+  /** For multiplayer: taunt button */
+  onTaunt?: () => void
 }
 
-export default function TileRack({ tiles, onTileClick, onBackspace, onPause }: TileRackProps) {
+export default function TileRack({ tiles, onTileClick, onBackspace, onPause, onTaunt }: TileRackProps) {
   return (
     <div className="w-full max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl mx-auto px-4">
       <div className="flex flex-col gap-y-4">
@@ -58,18 +60,32 @@ export default function TileRack({ tiles, onTileClick, onBackspace, onPause }: T
               onClick={() => onTileClick(tile.letter, index + 5)}
             />
           ))}
-          <button
-            onClick={onPause}
-            className="w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-black border border-gray-300 shadow-[0_3px_0_0_#9ca3af] hover:shadow-[0_4px_0_0_#9ca3af] active:shadow-[0_1px_0_0_#9ca3af] active:translate-y-[2px] transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center select-none cursor-pointer group relative"
-            title="Pause game (ESC)"
-          >
-            <span className="text-2xl md:text-3xl lg:text-4xl">
-              <Pause />
-            </span>
-            <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
-              Pause
-            </div>
-          </button>
+          {/* Show pause button for solo mode, or taunt button for multiplayer */}
+          {onPause ? (
+            <button
+              onClick={onPause}
+              className="w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-black border border-gray-300 shadow-[0_3px_0_0_#9ca3af] hover:shadow-[0_4px_0_0_#9ca3af] active:shadow-[0_1px_0_0_#9ca3af] active:translate-y-[2px] transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center select-none cursor-pointer group relative"
+              title="Pause game (ESC)"
+            >
+              <span className="text-2xl md:text-3xl lg:text-4xl">
+                <Pause />
+              </span>
+              <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
+                Pause
+              </div>
+            </button>
+          ) : onTaunt ? (
+            <button
+              onClick={onTaunt}
+              className="w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 rounded-lg bg-gradient-to-br from-yellow-100 to-orange-100 hover:from-yellow-200 hover:to-orange-200 text-gray-700 font-black border border-orange-300 shadow-[0_3px_0_0_#fdba74] hover:shadow-[0_4px_0_0_#fdba74] active:shadow-[0_1px_0_0_#fdba74] active:translate-y-[2px] transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center select-none cursor-pointer group relative"
+              title="Send a taunt!"
+            >
+              <span className="text-2xl md:text-3xl">😈</span>
+              <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
+                Taunt!
+              </div>
+            </button>
+          ) : null}
         </div>
       </div>
     </div>

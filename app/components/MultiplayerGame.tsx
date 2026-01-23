@@ -10,10 +10,8 @@ import { calculateFinalScore } from "@/app/utils/wordScoringSystem"
 import TileRack from "./TileRack"
 import CurrentWord from "./CurrentWord"
 import SubmitButton from "./SubmitButton"
-import PlayerList from "./PlayerList"
 import MultiplayerGameEnd from "./MultiplayerGameEnd"
 import { Star } from "lucide-react"
-import { toast } from "sonner"
 
 interface TileState {
   letter: string
@@ -29,6 +27,22 @@ type MultiplayerGameProps = {
   onGameEnd: () => void
   onPlayersUpdate: (players: GamePlayer[]) => void
 }
+
+// Taunt emojis and messages
+const TAUNTS = [
+  "😐",  // unimpressed
+  "😑",  // really?
+  "🙂",  // polite disrespect
+  "🙃",  // sure...
+  "🤷",  // what was that
+  "🫥",  // vanished
+  "⏱️", // late
+  "📉",  // unfortunate
+  "🎯",  // precise
+  "🥱",  // boring
+  "🔄",  // try again
+  "❓",  // explain?
+];
 
 export default function MultiplayerGame({
   game,
@@ -49,9 +63,12 @@ export default function MultiplayerGame({
   const [showFeedback, setShowFeedback] = useState(false)
   const [isShaking, setIsShaking] = useState(false)
   const [bestWord, setBestWord] = useState<{ word: string; score: number }>({ word: "", score: 0 })
+  const [activeTaunts, setActiveTaunts] = useState<{ id: string; emoji: string; playerName: string; team: "A" | "B" }[]>([])
+  const [canTaunt, setCanTaunt] = useState(true)
   
   const timerRef = useRef<NodeJS.Timeout | null>(null)
   const gameEndTimeRef = useRef<number | null>(null)
+  const tauntChannelRef = useRef<ReturnType<typeof supabase.channel> | null>(null)
 
   // Get current player
   const currentPlayer = players.find((p) => p.user_id === currentUserId)
@@ -146,6 +163,64 @@ export default function MultiplayerGame({
   useEffect(() => {
     onPlayersUpdate(players)
   }, [players, onPlayersUpdate])
+
+  // Subscribe to taunt channel
+  useEffect(() => {
+    const channel = supabase.channel(`taunts:${game.id}`)
+    
+    channel
+      .on("broadcast", { event: "taunt" }, (payload) => {
+        const { emoji, playerName, team, senderId } = payload.payload
+        
+        // Don't show our own taunts
+        if (senderId === currentUserId) return
+        
+        const tauntId = `${Date.now()}-${Math.random()}`
+        setActiveTaunts((prev) => [...prev, { id: tauntId, emoji, playerName, team }])
+        
+        // Remove taunt after animation
+        setTimeout(() => {
+          setActiveTaunts((prev) => prev.filter((t) => t.id !== tauntId))
+        }, 2000)
+      })
+      .subscribe()
+    
+    tauntChannelRef.current = channel
+    
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [game.id, currentUserId])
+
+  // Handle sending a taunt
+  const handleTaunt = useCallback(() => {
+    if (!canTaunt || !currentPlayer || !tauntChannelRef.current) return
+    
+    const randomEmoji = TAUNTS[Math.floor(Math.random() * TAUNTS.length)]
+    
+    // Broadcast taunt to other players
+    tauntChannelRef.current.send({
+      type: "broadcast",
+      event: "taunt",
+      payload: {
+        emoji: randomEmoji,
+        playerName: currentPlayer.player_name,
+        team: currentPlayer.team,
+        senderId: currentUserId,
+      },
+    })
+    
+    // Show our own taunt locally too
+    const tauntId = `${Date.now()}-${Math.random()}`
+    setActiveTaunts((prev) => [...prev, { id: tauntId, emoji: randomEmoji, playerName: "You", team: currentPlayer.team }])
+    setTimeout(() => {
+      setActiveTaunts((prev) => prev.filter((t) => t.id !== tauntId))
+    }, 2000)
+    
+    // Cooldown to prevent spam
+    setCanTaunt(false)
+    setTimeout(() => setCanTaunt(true), 1500)
+  }, [canTaunt, currentPlayer, currentUserId])
 
   // Update local score from current player
   useEffect(() => {
@@ -260,10 +335,6 @@ export default function MultiplayerGame({
     }
   }, [currentWord, game.id, roundIndex, bestWord.score, isGameOver])
 
-  const handlePause = useCallback(() => {
-    // No pause in multiplayer - just show info toast
-    toast.info("Cannot pause multiplayer games")
-  }, [])
 
   // Keyboard controls
   useEffect(() => {
@@ -313,48 +384,49 @@ export default function MultiplayerGame({
   return (
     <div className="pt-4 md:pt-0">
       <div className="space-y-4 md:space-y-6">
-        {/* Timer and Score Header */}
+        {/* Timer and Team Scores Header */}
         <div className="w-full max-w-2xl mx-auto px-4">
-          <div className="relative bg-wordcherryBlue p-4 rounded-lg">
+          <div className="relative bg-wordcherryBlue p-4 md:p-6 rounded-xl">
             {/* Team Scores and Timer Row */}
             <div className="flex justify-between items-center">
               {/* Blue Team */}
-              <div className="flex items-center gap-2">
-                <span className="text-blue-300 font-bold text-sm">BLUE</span>
-                <span className="text-white font-bold text-xl">{teamAScore}</span>
+              <div className="flex flex-col items-center bg-blue-500/30 px-4 py-2 md:px-6 md:py-3 rounded-lg min-w-[80px] md:min-w-[100px]">
+                <span className="text-blue-200 font-bold text-xs md:text-sm uppercase tracking-wide">Blue</span>
+                <span className="text-white font-black text-3xl md:text-4xl">{teamAScore}</span>
               </div>
 
               {/* Timer */}
-              <div
-                className={`text-white font-bold text-2xl ${
-                  secondsLeft <= 5
-                    ? "text-red-300 animate-pulse"
-                    : secondsLeft <= 10
-                    ? "text-orange-300"
-                    : ""
-                }`}
-              >
-                {timeDisplay}
+              <div className="flex flex-col items-center">
+                <div
+                  className={`font-black text-4xl md:text-5xl ${
+                    secondsLeft <= 5
+                      ? "text-red-300 animate-pulse"
+                      : secondsLeft <= 10
+                      ? "text-orange-300"
+                      : "text-white"
+                  }`}
+                >
+                  {timeDisplay}
+                </div>
+                {/* Your Score */}
+                <div className="flex items-center gap-1.5 mt-1">
+                  <Star className="w-4 h-4 text-wordcherryYellow" />
+                  <span className="text-wordcherryYellow font-bold text-sm">
+                    You: {score}
+                  </span>
+                </div>
               </div>
 
               {/* Red Team */}
-              <div className="flex items-center gap-2">
-                <span className="text-white font-bold text-xl">{teamBScore}</span>
-                <span className="text-red-300 font-bold text-sm">RED</span>
+              <div className="flex flex-col items-center bg-red-500/30 px-4 py-2 md:px-6 md:py-3 rounded-lg min-w-[80px] md:min-w-[100px]">
+                <span className="text-red-200 font-bold text-xs md:text-sm uppercase tracking-wide">Red</span>
+                <span className="text-white font-black text-3xl md:text-4xl">{teamBScore}</span>
               </div>
-            </div>
-
-            {/* Your Score */}
-            <div className="flex justify-center items-center gap-2 mt-2">
-              <Star className="w-4 h-4 text-wordcherryYellow" />
-              <span className="text-wordcherryYellow font-bold text-sm">
-                You: {score}
-              </span>
             </div>
 
             {/* Progress Bar */}
             <div className="absolute bottom-0 left-0 right-0 h-2">
-              <div className="relative w-full h-full bg-gray-200/20 overflow-hidden rounded-b-lg">
+              <div className="relative w-full h-full bg-gray-200/20 overflow-hidden rounded-b-xl">
                 <div
                   className="absolute top-0 left-0 h-full transition-all duration-1000 ease-linear bg-gradient-to-r from-red-500 to-yellow-400"
                   style={{ width: `${progressPercentage}%` }}
@@ -426,7 +498,7 @@ export default function MultiplayerGame({
             onTileClick={handleTileClick}
             tiles={tiles}
             onBackspace={handleBackspace}
-            onPause={handlePause}
+            onTaunt={handleTaunt}
           />
         </div>
 
@@ -438,18 +510,21 @@ export default function MultiplayerGame({
           />
         </div>
 
-        {/* Live Player List */}
-        <div className="w-full max-w-2xl mx-auto px-4 mt-4">
-          <div className="bg-[#fff7d6] rounded-xl p-3">
-            <h3 className="text-sm font-bold text-wordcherryBlue mb-2 text-center">Live Scores</h3>
-            <PlayerList
-              players={players}
-              currentUserId={currentUserId}
-              hostUserId={game.host_user_id}
-              isHost={false}
-              gameStatus="in_progress"
-            />
-          </div>
+        {/* Taunt Overlay - positioned on the right side */}
+        <div className="fixed right-4 top-1/4 z-50 pointer-events-none flex flex-col gap-2">
+          {activeTaunts.map((taunt) => (
+            <div
+              key={taunt.id}
+              className="animate-taunt-slide"
+            >
+              <div className={`flex items-center gap-2 px-3 py-2 rounded-xl shadow-lg ${
+                taunt.team === "A" ? "bg-blue-500" : "bg-red-500"
+              }`}>
+                <span className="text-3xl md:text-4xl">{taunt.emoji}</span>
+                <span className="text-white font-bold text-xs md:text-sm">{taunt.playerName}</span>
+              </div>
+            </div>
+          ))}
         </div>
 
         {/* Bottom spacing */}
