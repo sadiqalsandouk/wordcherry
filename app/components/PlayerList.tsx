@@ -42,7 +42,7 @@ export default function PlayerList({
           <Crown className="w-3.5 h-3.5 md:w-4 md:h-4 text-amber-500 flex-shrink-0" />
         )}
         <span className={`truncate ${isCurrentUser ? "text-wordcherryBlue" : "text-gray-700"}`}>
-          {isCurrentUser ? "You" : player.player_name}
+          {isCurrentUser ? `${player.player_name} (you)` : player.player_name}
         </span>
         {gameStatus !== "lobby" && (
           <span className="ml-auto font-bold text-gray-800">{player.score}</span>
