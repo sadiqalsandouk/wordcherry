@@ -1,7 +1,7 @@
 "use client"
 
 import { GamePlayer, Team } from "@/app/types/types"
-import { Crown, ArrowLeftRight } from "lucide-react"
+import { Crown, ArrowLeftRight, CheckCircle2, Circle } from "lucide-react"
 
 type PlayerListProps = {
   players: GamePlayer[]
@@ -28,6 +28,7 @@ export default function PlayerList({
   const renderPlayer = (player: GamePlayer) => {
     const isCurrentUser = player.user_id === currentUserId
     const isHostPlayer = player.user_id === hostUserId
+    const isReady = player.is_ready ?? false
 
     return (
       <div
@@ -44,6 +45,20 @@ export default function PlayerList({
         <span className={`truncate ${isCurrentUser ? "text-wordcherryBlue" : "text-gray-700"}`}>
           {isCurrentUser ? `${player.player_name} (you)` : player.player_name}
         </span>
+        {gameStatus === "lobby" && (
+          <span
+            className={`ml-auto inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+              isReady ? "bg-emerald-100 text-emerald-700" : "bg-gray-100 text-gray-500"
+            }`}
+          >
+            {isReady ? (
+              <CheckCircle2 className="h-3.5 w-3.5" />
+            ) : (
+              <Circle className="h-3.5 w-3.5" />
+            )}
+            {isReady ? "Ready" : "Not ready"}
+          </span>
+        )}
         {gameStatus !== "lobby" && (
           <span className="ml-auto font-bold text-gray-800">{player.score}</span>
         )}

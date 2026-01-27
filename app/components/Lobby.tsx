@@ -4,7 +4,12 @@ import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { Game, GamePlayer, Team } from "@/app/types/types"
 import { supabase } from "@/lib/supabase/supabase"
-import { startGame, updatePlayerTeam, updateGameSettings } from "@/lib/supabase/gameOperations"
+import {
+  startGame,
+  updatePlayerTeam,
+  updateGameSettings,
+  updatePlayerReady,
+} from "@/lib/supabase/gameOperations"
 import { leaveGame } from "@/lib/supabase/joinGame"
 import PlayerList from "./PlayerList"
 import { Copy, Check, Play, ArrowLeft } from "lucide-react"
@@ -39,7 +44,11 @@ export default function Lobby({
   const isHost = currentUserId === game.host_user_id
   const teamACount = players.filter((p) => p.team === "A").length
   const teamBCount = players.filter((p) => p.team === "B").length
-  const canStart = players.length >= 2 && teamACount >= 1 && teamBCount >= 1
+  const readyCount = players.filter((p) => p.is_ready).length
+  const allReady = players.length > 0 && readyCount === players.length
+  const canStart = players.length >= 2 && teamACount >= 1 && teamBCount >= 1 && allReady
+  const currentPlayer = players.find((p) => p.user_id === currentUserId)
+  const isReady = currentPlayer?.is_ready ?? false
 
   // Subscribe to realtime updates
   useEffect(() => {
@@ -135,6 +144,16 @@ export default function Lobby({
       toast.error(result.error || "Failed to change team")
     }
   }, [])
+
+  const handleReadyToggle = useCallback(async () => {
+    if (!currentPlayer) return
+
+    const nextReady = !(currentPlayer.is_ready ?? false)
+    const result = await updatePlayerReady(currentPlayer.id, nextReady)
+    if (!result.ok) {
+      toast.error(result.error || "Failed to update ready status")
+    }
+  }, [currentPlayer])
 
   const handleStartGame = useCallback(async () => {
     if (!canStart || isStarting) return
@@ -254,6 +273,22 @@ export default function Lobby({
 
         {/* Start button */}
         <div className="p-4 md:p-6 pt-0">
+          <div className="mb-4 md:mb-5 flex items-center justify-between gap-3 rounded-xl bg-gray-50 px-4 py-3 text-sm md:text-base text-gray-600">
+            <span className="font-semibold">
+              Ready up: {readyCount}/{players.length}
+            </span>
+            <button
+              onClick={handleReadyToggle}
+              disabled={!currentPlayer}
+              className={`cursor-pointer rounded-lg px-4 py-1.5 text-sm md:text-base font-semibold transition-colors ${
+                isReady
+                  ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
+                  : "bg-gray-200 text-gray-600 hover:bg-gray-300"
+              } ${!currentPlayer ? "cursor-not-allowed opacity-60" : ""}`}
+            >
+              {isReady ? "Ready" : "Not ready"}
+            </button>
+          </div>
           {isHost ? (
             <button
               onClick={handleStartGame}
@@ -271,7 +306,9 @@ export default function Lobby({
                   ? "Start Game" 
                   : teamACount === 0 || teamBCount === 0
                     ? "Both teams need players"
-                    : "Need 2+ players"}
+                    : !allReady
+                      ? "Waiting for ready"
+                      : "Need 2+ players"}
             </button>
           ) : (
             <div className="w-full py-4 md:py-5 rounded-xl font-medium text-center text-base md:text-lg bg-gray-100 text-gray-500">

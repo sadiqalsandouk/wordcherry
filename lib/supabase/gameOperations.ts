@@ -124,6 +124,25 @@ export async function updatePlayerTeam(
 }
 
 /**
+ * Update a player's ready status
+ */
+export async function updatePlayerReady(
+  playerId: string,
+  isReady: boolean
+): Promise<{ ok: boolean; error?: string }> {
+  const { error } = await supabase
+    .from("game_players")
+    .update({ is_ready: isReady })
+    .eq("id", playerId)
+
+  if (error) {
+    return { ok: false, error: error.message }
+  }
+
+  return { ok: true }
+}
+
+/**
  * Update game settings (host only, lobby only)
  */
 export async function updateGameSettings(
