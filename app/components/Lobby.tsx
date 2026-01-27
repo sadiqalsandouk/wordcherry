@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { Game, GamePlayer, Team } from "@/app/types/types"
 import { supabase } from "@/lib/supabase/supabase"
@@ -24,6 +24,8 @@ const DURATION_OPTIONS = [
   { value: 120, label: "2m" },
 ]
 
+const COUNTDOWN_SECONDS = 5
+
 type LobbyProps = {
   game: Game
   players: GamePlayer[]
@@ -40,8 +42,10 @@ export default function Lobby({
   const router = useRouter()
   const [game, setGame] = useState<Game>(initialGame)
   const [players, setPlayers] = useState<GamePlayer[]>(initialPlayers)
+  const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null)
   const [copied, setCopied] = useState(false)
   const [isStarting, setIsStarting] = useState(false)
+  const [countdownSeconds, setCountdownSeconds] = useState<number | null>(null)
 
   const isHost = currentUserId === game.host_user_id
   const currentPlayer = players.find((p) => p.user_id === currentUserId)
@@ -61,9 +65,25 @@ export default function Lobby({
   const canStart =
     activePlayers.length >= 2 && teamACount >= 1 && teamBCount >= 1 && allReady
 
+  const beginCountdown = useCallback((startAtMs: number) => {
+    const tick = () => {
+      const remainingMs = startAtMs - Date.now()
+      const remaining = Math.max(0, Math.ceil(remainingMs / 1000))
+      setCountdownSeconds(remaining)
+      if (remaining <= 0) {
+        setCountdownSeconds(null)
+      }
+    }
+
+    tick()
+    const interval = setInterval(tick, 250)
+    return () => clearInterval(interval)
+  }, [])
+
   // Subscribe to realtime updates
   useEffect(() => {
     const channel = supabase.channel(`lobby:${game.id}`)
+    channelRef.current = channel
 
     channel
       .on(
@@ -82,6 +102,16 @@ export default function Lobby({
             if (updatedGame.status === "in_progress" && updatedGame.started_at) {
               onGameStart(updatedGame)
             }
+          }
+        }
+      )
+      .on(
+        "broadcast",
+        { event: "countdown" },
+        ({ payload }) => {
+          const startAtMs = Number(payload?.startAtMs)
+          if (Number.isFinite(startAtMs)) {
+            beginCountdown(startAtMs)
           }
         }
       )
@@ -135,8 +165,9 @@ export default function Lobby({
 
     return () => {
       supabase.removeChannel(channel)
+      channelRef.current = null
     }
-  }, [game.id, onGameStart])
+  }, [game.id, onGameStart, beginCountdown])
 
   const handleCopyCode = useCallback(async () => {
     try {
@@ -216,6 +247,17 @@ export default function Lobby({
     if (!canStart || isStarting) return
 
     setIsStarting(true)
+    const startAtMs = Date.now() + COUNTDOWN_SECONDS * 1000
+    beginCountdown(startAtMs)
+    if (channelRef.current) {
+      void channelRef.current.send({
+        type: "broadcast",
+        event: "countdown",
+        payload: { startAtMs },
+      })
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, COUNTDOWN_SECONDS * 1000))
     const result = await startGame(game.id)
 
     if (result.ok) {
@@ -224,7 +266,7 @@ export default function Lobby({
       toast.error(result.error || "Failed to start game")
       setIsStarting(false)
     }
-  }, [game.id, canStart, isStarting])
+  }, [game.id, canStart, isStarting, beginCountdown])
 
   const handleLeaveGame = useCallback(async () => {
     const result = await leaveGame(game.id)
@@ -405,6 +447,17 @@ export default function Lobby({
           )}
         </div>
       </div>
+      {countdownSeconds !== null && (
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/35 backdrop-blur-[2px]">
+          <div className="rounded-2xl bg-white px-8 py-6 shadow-xl text-center">
+            <div className="text-xs uppercase tracking-[0.3em] text-gray-400 mb-2">Starting</div>
+            <div className="text-5xl font-black text-wordcherryBlue">
+              {countdownSeconds}
+            </div>
+            <div className="text-xs text-gray-500 mt-2">Get ready</div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
