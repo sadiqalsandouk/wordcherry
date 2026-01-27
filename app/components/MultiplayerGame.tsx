@@ -111,8 +111,9 @@ export default function MultiplayerGame({
     const endTime = startTime + (game.duration_seconds * 1000)
     gameEndTimeRef.current = endTime
     
-    // Set initial seconds left
-    setSecondsLeft(game.duration_seconds)
+    // Set initial seconds left based on server start time
+    const initialLeft = Math.max(0, Math.ceil((endTime - Date.now()) / 1000))
+    setSecondsLeft(initialLeft)
   }, [startedAt, game.duration_seconds])
 
   // Broadcast final score to other players
@@ -156,21 +157,18 @@ export default function MultiplayerGame({
     setIsGameOver(true)
   }, [game.id, fetchFinalScores, broadcastFinalScore])
 
-  // Simple countdown timer - decrements every second
+  // Countdown timer synced to server start time
   useEffect(() => {
     if (isGameOver || isLoadingFinalScores) return
 
     timerRef.current = setInterval(() => {
-      setSecondsLeft((prev) => {
-        const newValue = prev - 1
-        
-        if (newValue <= 0) {
-          handleGameEnd()
-          return 0
-        }
-        
-        return newValue
-      })
+      const endTime = gameEndTimeRef.current
+      if (!endTime) return
+      const remaining = Math.max(0, Math.ceil((endTime - Date.now()) / 1000))
+      setSecondsLeft(remaining)
+      if (remaining <= 0) {
+        handleGameEnd()
+      }
     }, 1000)
 
     return () => {
