@@ -143,6 +143,47 @@ export async function updatePlayerReady(
 }
 
 /**
+ * Update a player's heartbeat timestamp
+ */
+export async function updatePlayerHeartbeat(
+  playerId: string
+): Promise<{ ok: boolean; error?: string }> {
+  const { error } = await supabase
+    .from("game_players")
+    .update({ last_seen_at: new Date().toISOString() })
+    .eq("id", playerId)
+
+  if (error) {
+    return { ok: false, error: error.message }
+  }
+
+  return { ok: true }
+}
+
+/**
+ * Remove stale players from a lobby (server-side cleanup)
+ */
+export async function cleanupStalePlayers(
+  gameId: string,
+  cutoffSeconds = 60
+): Promise<{ ok: boolean; removed?: number; error?: string }> {
+  try {
+    const { data, error } = await supabase.rpc("cleanup_stale_players", {
+      p_game_id: gameId,
+      p_cutoff_seconds: cutoffSeconds,
+    })
+
+    if (error) {
+      return { ok: false, error: error.message }
+    }
+
+    return { ok: true, removed: typeof data === "number" ? data : undefined }
+  } catch (err) {
+    return { ok: false, error: "An unexpected error occurred" }
+  }
+}
+
+/**
  * Update game settings (host only, lobby only)
  */
 export async function updateGameSettings(

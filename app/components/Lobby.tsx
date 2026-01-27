@@ -9,6 +9,8 @@ import {
   updatePlayerTeam,
   updateGameSettings,
   updatePlayerReady,
+  updatePlayerHeartbeat,
+  cleanupStalePlayers,
 } from "@/lib/supabase/gameOperations"
 import { leaveGame } from "@/lib/supabase/joinGame"
 import PlayerList from "./PlayerList"
@@ -42,13 +44,22 @@ export default function Lobby({
   const [isStarting, setIsStarting] = useState(false)
 
   const isHost = currentUserId === game.host_user_id
-  const teamACount = players.filter((p) => p.team === "A").length
-  const teamBCount = players.filter((p) => p.team === "B").length
-  const readyCount = players.filter((p) => p.is_ready).length
-  const allReady = players.length > 0 && readyCount === players.length
-  const canStart = players.length >= 2 && teamACount >= 1 && teamBCount >= 1 && allReady
   const currentPlayer = players.find((p) => p.user_id === currentUserId)
   const isReady = currentPlayer?.is_ready ?? false
+  const staleCutoffMs = 60_000
+  const [nowMs, setNowMs] = useState(Date.now())
+  const activePlayers = players.filter((p) => {
+    const lastSeen = p.last_seen_at ?? p.joined_at
+    const lastSeenMs = Date.parse(lastSeen)
+    if (Number.isNaN(lastSeenMs)) return true
+    return nowMs - lastSeenMs <= staleCutoffMs
+  })
+  const teamACount = activePlayers.filter((p) => p.team === "A").length
+  const teamBCount = activePlayers.filter((p) => p.team === "B").length
+  const readyCount = activePlayers.filter((p) => p.is_ready).length
+  const allReady = activePlayers.length > 0 && readyCount === activePlayers.length
+  const canStart =
+    activePlayers.length >= 2 && teamACount >= 1 && teamBCount >= 1 && allReady
 
   // Subscribe to realtime updates
   useEffect(() => {
@@ -155,6 +166,52 @@ export default function Lobby({
     }
   }, [currentPlayer])
 
+  useEffect(() => {
+    if (!currentPlayer) return
+
+    let mounted = true
+
+    const sendHeartbeat = async () => {
+      if (!mounted) return
+      await updatePlayerHeartbeat(currentPlayer.id)
+    }
+
+    sendHeartbeat()
+    const interval = setInterval(sendHeartbeat, 10_000)
+
+    return () => {
+      mounted = false
+      clearInterval(interval)
+    }
+  }, [currentPlayer])
+
+  useEffect(() => {
+    let mounted = true
+
+    const runCleanup = async () => {
+      if (!mounted) return
+      await cleanupStalePlayers(game.id, 60)
+    }
+
+    runCleanup()
+    const interval = setInterval(runCleanup, 15_000)
+
+    return () => {
+      mounted = false
+      clearInterval(interval)
+    }
+  }, [game.id])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setNowMs(Date.now())
+    }, 5_000)
+
+    return () => {
+      clearInterval(interval)
+    }
+  }, [])
+
   const handleStartGame = useCallback(async () => {
     if (!canStart || isStarting) return
 
@@ -177,6 +234,45 @@ export default function Lobby({
       toast.error(result.error || "Failed to leave game")
     }
   }, [game.id, router])
+
+  useEffect(() => {
+    const sendInstantLeave = async () => {
+      const { data } = await supabase.auth.getSession()
+      const token = data.session?.access_token
+      if (!token) {
+        void leaveGame(game.id)
+        return
+      }
+
+      void fetch("/api/leave-lobby", {
+        method: "POST",
+        keepalive: true,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ gameId: game.id }),
+      })
+    }
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "hidden") {
+        void sendInstantLeave()
+      }
+    }
+
+    const handlePageHide = () => {
+      void sendInstantLeave()
+    }
+
+    window.addEventListener("pagehide", handlePageHide)
+    document.addEventListener("visibilitychange", handleVisibilityChange)
+
+    return () => {
+      window.removeEventListener("pagehide", handlePageHide)
+      document.removeEventListener("visibilitychange", handleVisibilityChange)
+    }
+  }, [game.id])
 
   const handleDurationChange = useCallback(async (newDuration: number) => {
     setGame((prev) => ({ ...prev, duration_seconds: newDuration }))
@@ -262,7 +358,7 @@ export default function Lobby({
           </div>
           
           <PlayerList
-            players={players}
+            players={activePlayers}
             currentUserId={currentUserId}
             hostUserId={game.host_user_id}
             onTeamChange={handleTeamChange}
@@ -275,7 +371,7 @@ export default function Lobby({
         <div className="p-4 md:p-6 pt-0">
           <div className="mb-4 md:mb-5 flex items-center justify-between gap-3 rounded-xl bg-gray-50 px-4 py-3 text-sm md:text-base text-gray-600">
             <span className="font-semibold">
-              Ready up: {readyCount}/{players.length}
+              Ready up: {readyCount}/{activePlayers.length}
             </span>
             <button
               onClick={handleReadyToggle}
