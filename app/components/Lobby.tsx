@@ -255,22 +255,14 @@ export default function Lobby({
       })
     }
 
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === "hidden") {
-        void sendInstantLeave()
-      }
-    }
-
     const handlePageHide = () => {
       void sendInstantLeave()
     }
 
     window.addEventListener("pagehide", handlePageHide)
-    document.addEventListener("visibilitychange", handleVisibilityChange)
 
     return () => {
       window.removeEventListener("pagehide", handlePageHide)
-      document.removeEventListener("visibilitychange", handleVisibilityChange)
     }
   }, [game.id])
 
