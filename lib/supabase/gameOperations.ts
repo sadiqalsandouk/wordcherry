@@ -79,8 +79,7 @@ export async function submitWord(
     })
 
     if (error) {
-      console.error("Submit word error:", error)
-      return { ok: false, error: error.message || "Failed to submit word" }
+      return { ok: false, error: "Invalid word" }
     }
 
     if (!data || data.length === 0) {

@@ -12,6 +12,7 @@ import CurrentWord from "./CurrentWord"
 import SubmitButton from "./SubmitButton"
 import MultiplayerGameEnd from "./MultiplayerGameEnd"
 import { Star } from "lucide-react"
+import { sfx } from "@/app/utils/sfx"
 
 interface TileState {
   letter: string
@@ -57,6 +58,8 @@ export default function MultiplayerGame({
   
   const timerRef = useRef<NodeJS.Timeout | null>(null)
   const gameEndTimeRef = useRef<number | null>(null)
+  const lastTickRef = useRef<number | null>(null)
+  const hasPlayedEndRef = useRef(false)
 
   // Ref to store final local score for merging
   const finalLocalScoreRef = useRef<number>(0)
@@ -184,6 +187,13 @@ export default function MultiplayerGame({
       onGameEnd()
     }
   }, [isGameOver, onGameEnd])
+
+  useEffect(() => {
+    if (!isGameOver) return
+    if (hasPlayedEndRef.current) return
+    hasPlayedEndRef.current = true
+    sfx.end()
+  }, [isGameOver])
 
   // Listen for other players' final score broadcasts
   useEffect(() => {
@@ -443,58 +453,52 @@ export default function MultiplayerGame({
     const isValid = validateWord(currentWordString)
 
     if (isValid) {
-      // Submit word to server
-      const result = await submitWord(game.id, currentWordString, wordScore, roundIndex)
+      // Optimistic local update for instant feel
+      const nextTotalScore = score + wordScore
 
-      if (result.ok) {
-        // Show feedback
-        setFeedback(`+${wordScore} points!`)
-        setShowFeedback(true)
-
-        // Update local score immediately for responsiveness
-        setScore(result.newTotalScore)
-
-        // Also update in players array for team score display
-        setPlayers((prev) =>
-          prev.map((p) =>
-            p.user_id === currentUserId ? { ...p, score: result.newTotalScore } : p
-          )
+      setFeedback(`+${wordScore} points!`)
+      setShowFeedback(true)
+      setScore(nextTotalScore)
+      setPlayers((prev) =>
+        prev.map((p) =>
+          p.user_id === currentUserId ? { ...p, score: nextTotalScore } : p
         )
+      )
 
-        // Broadcast score update to other players
-        if (liveScoresChannelRef.current && liveScoresReady) {
-          console.log("Broadcasting score update:", result.newTotalScore)
-          liveScoresChannelRef.current.send({
-            type: "broadcast",
-            event: "score_update",
-            payload: {
-              playerId: currentPlayer?.id,
-              userId: currentUserId,
-              newScore: result.newTotalScore,
-              team: currentPlayer?.team,
-            },
-          }).then((result) => {
-            console.log("Score broadcast result:", result)
-          }).catch((err) => {
-            console.error("Score broadcast failed:", err)
-          })
-        } else {
-          console.warn("Live scores channel not ready:", { channel: !!liveScoresChannelRef.current, ready: liveScoresReady })
+      if (wordScore > bestWord.score) {
+        setBestWord({ word: currentWordString, score: wordScore })
+      }
+
+      // Clear word and get new letters
+      setCurrentWord([])
+      setRoundIndex((prev) => prev + 1)
+
+      // Submit to server in background (authoritative score comes from DB at game end)
+      void submitWord(game.id, currentWordString, wordScore, roundIndex).then((result) => {
+        if (!result.ok) {
+          console.warn("Submit word rejected by server:", result.error)
         }
+      })
 
-        if (wordScore > bestWord.score) {
-          setBestWord({ word: currentWordString, score: wordScore })
-        }
-
-        // Clear word and get new letters
-        setCurrentWord([])
-        setRoundIndex((prev) => prev + 1)
+      // Broadcast optimistic score update to other players
+      if (liveScoresChannelRef.current && liveScoresReady) {
+        console.log("Broadcasting score update:", nextTotalScore)
+        liveScoresChannelRef.current.send({
+          type: "broadcast",
+          event: "score_update",
+          payload: {
+            playerId: currentPlayer?.id,
+            userId: currentUserId,
+            newScore: nextTotalScore,
+            team: currentPlayer?.team,
+          },
+        }).then((result) => {
+          console.log("Score broadcast result:", result)
+        }).catch((err) => {
+          console.error("Score broadcast failed:", err)
+        })
       } else {
-        // Handle duplicate or other error
-        setFeedback(result.error || "Failed to submit")
-        setShowFeedback(true)
-        setIsShaking(true)
-        setTimeout(() => setIsShaking(false), 500)
+        console.warn("Live scores channel not ready:", { channel: !!liveScoresChannelRef.current, ready: liveScoresReady })
       }
     } else {
       setFeedback("Invalid word!")
@@ -564,6 +568,14 @@ export default function MultiplayerGame({
   const seconds = secondsLeft % 60
   const timeDisplay = `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`
   const progressPercentage = (secondsLeft / game.duration_seconds) * 100
+
+  useEffect(() => {
+    if (isGameOver || isLoadingFinalScores) return
+    if (secondsLeft <= 0 || secondsLeft > 5) return
+    if (lastTickRef.current === secondsLeft) return
+    lastTickRef.current = secondsLeft
+    sfx.tick()
+  }, [secondsLeft, isGameOver, isLoadingFinalScores])
 
   return (
     <div className="pt-4 md:pt-0">

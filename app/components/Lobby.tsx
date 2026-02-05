@@ -16,6 +16,7 @@ import { leaveGame } from "@/lib/supabase/joinGame"
 import PlayerList from "./PlayerList"
 import { Copy, Check, Play, ArrowLeft } from "lucide-react"
 import { toast } from "sonner"
+import { sfx } from "@/app/utils/sfx"
 
 const DURATION_OPTIONS = [
   { value: 30, label: "30s" },
@@ -46,6 +47,7 @@ export default function Lobby({
   const [copied, setCopied] = useState(false)
   const [isStarting, setIsStarting] = useState(false)
   const [countdownSeconds, setCountdownSeconds] = useState<number | null>(null)
+  const previousStatusRef = useRef(game.status)
 
   const isHost = currentUserId === game.host_user_id
   const currentPlayer = players.find((p) => p.user_id === currentUserId)
@@ -130,6 +132,7 @@ export default function Lobby({
             return [...prev, newPlayer]
           })
           toast.success(`${newPlayer.player_name} joined!`)
+          sfx.join()
         }
       )
       .on(
@@ -159,6 +162,7 @@ export default function Lobby({
           const oldPlayer = payload.old as GamePlayer
           setPlayers((prev) => prev.filter((p) => p.id !== oldPlayer.id))
           toast.info(`${oldPlayer.player_name} left`)
+          sfx.leave()
         }
       )
       .subscribe()
@@ -168,6 +172,13 @@ export default function Lobby({
       channelRef.current = null
     }
   }, [game.id, onGameStart, beginCountdown])
+
+  useEffect(() => {
+    if (previousStatusRef.current !== "in_progress" && game.status === "in_progress") {
+      sfx.start()
+    }
+    previousStatusRef.current = game.status
+  }, [game.status])
 
   const handleCopyCode = useCallback(async () => {
     try {

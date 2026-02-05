@@ -7,6 +7,7 @@ import NavBar from "./components/NavBar"
 import AuthProvider from "./components/AuthProvider"
 import { Toaster } from "@/components/ui/sonner"
 import AdSense from "./components/AdSense"
+import SfxProvider from "./components/SfxProvider"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -90,15 +91,17 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-wordcherryBlue min-h-screen flex flex-col`}
       >
-        <AuthProvider>
-          <div className="w-full max-w-4xl mx-auto px-2 sm:px-4 md:px-8 lg:px-12 py-2 sm:py-4 md:py-8 flex-1 flex flex-col">
-            <NavBar />
-            <main className="flex-1 flex flex-col justify-center">{children}</main>
-            <Toaster />
-            <Footer />
-            <Analytics />
-          </div>
-        </AuthProvider>
+        <SfxProvider>
+          <AuthProvider>
+            <div className="w-full max-w-4xl mx-auto px-2 sm:px-4 md:px-8 lg:px-12 py-2 sm:py-4 md:py-8 flex-1 flex flex-col">
+              <NavBar />
+              <main className="flex-1 flex flex-col justify-center">{children}</main>
+              <Toaster />
+              <Footer />
+              <Analytics />
+            </div>
+          </AuthProvider>
+        </SfxProvider>
       </body>
     </html>
   )
