@@ -10,6 +10,18 @@ export default function Footer() {
           </Link>
         </div>
         <div className="text-xs mb-2">© 2025 WordCherry. All rights reserved.</div>
+        <div className="text-xs mb-2">
+          Word list sourced from{" "}
+          <Link
+            href="https://github.com/dwyl/english-words"
+            className="text-white/60 hover:text-white transition-colors"
+            target="_blank"
+            rel="noreferrer"
+          >
+            dwyl/english-words
+          </Link>
+          .
+        </div>
         <div className="text-xs space-x-4">
           <Link href="/leaderboard" className="text-white/60 hover:text-white transition-colors">
             Leaderboard
