@@ -26,6 +26,10 @@ const DURATION_OPTIONS = [
 ]
 
 const COUNTDOWN_SECONDS = 5
+const HEARTBEAT_INTERVAL_MS = 3_000
+const CLEANUP_INTERVAL_MS = 3_000
+const STALE_PLAYER_CUTOFF_SECONDS = 8
+const STALE_PLAYER_CUTOFF_MS = STALE_PLAYER_CUTOFF_SECONDS * 1000
 
 type LobbyProps = {
   game: Game
@@ -54,13 +58,12 @@ export default function Lobby({
   const isHost = currentUserId === game.host_user_id
   const currentPlayer = players.find((p) => p.user_id === currentUserId)
   const isReady = currentPlayer?.is_ready ?? false
-  const staleCutoffMs = 60_000
   const [nowMs, setNowMs] = useState(Date.now())
   const activePlayers = players.filter((p) => {
     const lastSeen = p.last_seen_at ?? p.joined_at
     const lastSeenMs = Date.parse(lastSeen)
     if (Number.isNaN(lastSeenMs)) return true
-    return nowMs - lastSeenMs <= staleCutoffMs
+    return nowMs - lastSeenMs <= STALE_PLAYER_CUTOFF_MS
   })
   const teamACount = activePlayers.filter((p) => p.team === "A").length
   const teamBCount = activePlayers.filter((p) => p.team === "B").length
@@ -221,7 +224,7 @@ export default function Lobby({
     }
 
     sendHeartbeat()
-    const interval = setInterval(sendHeartbeat, 10_000)
+    const interval = setInterval(sendHeartbeat, HEARTBEAT_INTERVAL_MS)
 
     return () => {
       mounted = false
@@ -255,11 +258,11 @@ export default function Lobby({
 
     const runCleanup = async () => {
       if (!mounted) return
-      await cleanupStalePlayers(game.id, 60)
+      await cleanupStalePlayers(game.id, STALE_PLAYER_CUTOFF_SECONDS)
     }
 
     runCleanup()
-    const interval = setInterval(runCleanup, 15_000)
+    const interval = setInterval(runCleanup, CLEANUP_INTERVAL_MS)
 
     return () => {
       mounted = false
@@ -270,7 +273,7 @@ export default function Lobby({
   useEffect(() => {
     const interval = setInterval(() => {
       setNowMs(Date.now())
-    }, 5_000)
+    }, HEARTBEAT_INTERVAL_MS)
 
     return () => {
       clearInterval(interval)
