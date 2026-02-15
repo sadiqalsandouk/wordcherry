@@ -452,9 +452,14 @@ export default function Lobby({
         {/* Start button */}
         <div className="p-4 md:p-6 pt-0">
           <div className="mb-4 md:mb-5 flex items-center justify-between gap-3 rounded-xl bg-gray-50 px-4 py-3 text-sm md:text-base text-gray-600">
-            <span className="font-semibold">
-              Ready up: {readyCount}/{activePlayers.length}
-            </span>
+            <div>
+              <div className="font-semibold">
+                Ready up: {readyCount}/{activePlayers.length}
+              </div>
+              <div className="text-xs text-gray-500">
+                Click the Ready Up button and wait for the host to start the game
+              </div>
+            </div>
             <button
               onClick={handleReadyToggle}
               disabled={!currentPlayer}
@@ -464,7 +469,7 @@ export default function Lobby({
                   : "bg-gray-200 text-gray-600 hover:bg-gray-300"
               } ${!currentPlayer ? "cursor-not-allowed opacity-60" : ""}`}
             >
-              {isReady ? "Ready" : "Not ready"}
+              {isReady ? "Ready" : "Ready Up"}
             </button>
           </div>
           {isHost ? (
