@@ -54,6 +54,7 @@ export default function Lobby({
   const previousStatusRef = useRef(game.status)
   const leaveSentRef = useRef(false)
   const authTokenRef = useRef<string | null>(null)
+  const lastCountdownTickRef = useRef<number | null>(null)
 
   const isHost = currentUserId === game.host_user_id
   const currentPlayer = players.find((p) => p.user_id === currentUserId)
@@ -184,6 +185,17 @@ export default function Lobby({
     }
     previousStatusRef.current = game.status
   }, [game.status])
+
+  useEffect(() => {
+    if (countdownSeconds === null) {
+      lastCountdownTickRef.current = null
+      return
+    }
+    if (countdownSeconds <= 0) return
+    if (lastCountdownTickRef.current === countdownSeconds) return
+    lastCountdownTickRef.current = countdownSeconds
+    sfx.tick()
+  }, [countdownSeconds])
 
   const handleCopyCode = useCallback(async () => {
     try {

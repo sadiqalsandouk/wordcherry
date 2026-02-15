@@ -95,5 +95,21 @@ export const sfx = {
       ],
       0.03
     ),
+  submitValid: () =>
+    playSequence(
+      [
+        { freq: 740, duration: 0.035, type: "triangle", volume: 0.05 },
+        { freq: 988, duration: 0.045, type: "triangle", volume: 0.05 },
+      ],
+      0.015
+    ),
+  submitInvalid: () =>
+    playSequence(
+      [
+        { freq: 320, duration: 0.05, type: "square", volume: 0.045 },
+        { freq: 270, duration: 0.06, type: "square", volume: 0.045 },
+      ],
+      0.012
+    ),
   tick: () => playTone({ freq: 1200, duration: 0.04, type: "square", volume: 0.05 }),
 }

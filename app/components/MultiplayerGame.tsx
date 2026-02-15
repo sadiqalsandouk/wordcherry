@@ -63,6 +63,7 @@ export default function MultiplayerGame({
   const gameEndTimeRef = useRef<number | null>(null)
   const lastTickRef = useRef<number | null>(null)
   const hasPlayedEndRef = useRef(false)
+  const hasPlayedStartRef = useRef(false)
   const feedbackIdRef = useRef(0)
 
   // Ref to store final local score for merging
@@ -191,6 +192,14 @@ export default function MultiplayerGame({
       onGameEnd()
     }
   }, [isGameOver, onGameEnd])
+
+  useEffect(() => {
+    if (isGameOver) return
+    if (isLoadingFinalScores) return
+    if (hasPlayedStartRef.current) return
+    hasPlayedStartRef.current = true
+    sfx.start()
+  }, [isGameOver, isLoadingFinalScores])
 
   useEffect(() => {
     if (!isGameOver) return
@@ -459,6 +468,7 @@ export default function MultiplayerGame({
     if (isValid) {
       // Optimistic local update for instant feel
       const nextTotalScore = score + wordScore
+      sfx.submitValid()
 
       feedbackIdRef.current += 1
       setFeedback({
@@ -509,6 +519,7 @@ export default function MultiplayerGame({
         console.warn("Live scores channel not ready:", { channel: !!liveScoresChannelRef.current, ready: liveScoresReady })
       }
     } else {
+      sfx.submitInvalid()
       feedbackIdRef.current += 1
       setFeedback({
         id: feedbackIdRef.current,

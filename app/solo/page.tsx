@@ -206,6 +206,7 @@ export default function SoloGame() {
       currentWordString.length <= tiles.length
 
     if (!isValidWord) {
+      sfx.submitInvalid()
       feedbackIdRef.current += 1
       setFeedback({
         id: feedbackIdRef.current,
@@ -222,6 +223,7 @@ export default function SoloGame() {
     const nextRoundIndex = roundIndex + 1
 
     feedbackIdRef.current += 1
+    sfx.submitValid()
     setFeedback({
       id: feedbackIdRef.current,
       message: "Valid word!",
@@ -284,6 +286,7 @@ export default function SoloGame() {
       score: run.bestWordScore || 0,
     })
     setTimeBonus(0)
+    sfx.start()
     const newLetters = getSeededLetters(run.seed, run.roundIndex || 0)
     setTiles(newLetters.map((letter) => ({ letter, isUsed: false })))
     setGameKey((prev) => prev + 1)
