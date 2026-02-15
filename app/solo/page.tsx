@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import getRandomLetters from "../utils/getRandomLetters"
 import { validateWord } from "../utils/wordValidation"
 import { calculateFinalScore } from "../utils/wordScoringSystem"
@@ -28,11 +28,15 @@ export default function SoloGame() {
   const [timerState, setTimerState] = useState<Timer>(Timer.RUNNING)
   const [secondsLeft, setSecondsLeft] = useState(30)
   const [gameKey, setGameKey] = useState(0)
-  const [feedback, setFeedback] = useState<string>("")
-  const [showFeedback, setShowFeedback] = useState(false)
+  const [feedback, setFeedback] = useState<{
+    id: number
+    message: string
+    isPositive: boolean
+  } | null>(null)
   const [isShaking, setIsShaking] = useState(false)
   const [bestWord, setBestWord] = useState<{ word: string; score: number }>({ word: "", score: 0 })
   const [timeBonus, setTimeBonus] = useState<number>(0)
+  const feedbackIdRef = useRef(0)
 
   const handleTileClick = useCallback(
     (letter: string, index: number) => {
@@ -116,8 +120,12 @@ export default function SoloGame() {
       setTimeBonus(timeBonusInfo.bonus)
 
       // Show feedback for valid word
-      setFeedback("Valid word!")
-      setShowFeedback(true)
+      feedbackIdRef.current += 1
+      setFeedback({
+        id: feedbackIdRef.current,
+        message: "Valid word!",
+        isPositive: true,
+      })
 
       if (wordScore > bestWord.score) {
         setBestWord({ word: currentWordString, score: wordScore })
@@ -128,8 +136,12 @@ export default function SoloGame() {
       const newLetters = getRandomLetters(10)
       setTiles(newLetters.map((letter) => ({ letter, isUsed: false })))
     } else {
-      setFeedback("Invalid word!")
-      setShowFeedback(true)
+      feedbackIdRef.current += 1
+      setFeedback({
+        id: feedbackIdRef.current,
+        message: "Invalid word!",
+        isPositive: false,
+      })
       setIsShaking(true)
 
       setTimeout(() => {
@@ -146,8 +158,7 @@ export default function SoloGame() {
     setSecondsLeft(30)
     setScore(0)
     setCurrentWord([])
-    setFeedback("")
-    setShowFeedback(false)
+    setFeedback(null)
     setIsShaking(false)
     setBestWord({ word: "", score: 0 })
     setTimeBonus(0)
@@ -284,18 +295,18 @@ export default function SoloGame() {
               </div>
             </div>
 
-            {showFeedback && (
+            {feedback && (
               <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
                 <div
+                  key={feedback.id}
                   className={`px-6 py-2 rounded-lg font-bold text-white text-sm shadow-lg animate-fade-out ${
-                    feedback === "Valid word!" ? "bg-green-500" : "bg-red-500"
+                    feedback.isPositive ? "bg-green-500" : "bg-red-500"
                   }`}
                   onAnimationEnd={() => {
-                    setShowFeedback(false)
-                    setFeedback("")
+                    setFeedback((prev) => (prev?.id === feedback.id ? null : prev))
                   }}
                 >
-                  {feedback}
+                  {feedback.message}
                 </div>
               </div>
             )}

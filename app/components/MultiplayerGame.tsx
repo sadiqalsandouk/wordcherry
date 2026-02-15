@@ -51,8 +51,11 @@ export default function MultiplayerGame({
   const [secondsLeft, setSecondsLeft] = useState(game.duration_seconds)
   const [isGameOver, setIsGameOver] = useState(game.status === "finished")
   const [isLoadingFinalScores, setIsLoadingFinalScores] = useState(false)
-  const [feedback, setFeedback] = useState<string>("")
-  const [showFeedback, setShowFeedback] = useState(false)
+  const [feedback, setFeedback] = useState<{
+    id: number
+    message: string
+    isPositive: boolean
+  } | null>(null)
   const [isShaking, setIsShaking] = useState(false)
   const [bestWord, setBestWord] = useState<{ word: string; score: number }>({ word: "", score: 0 })
   
@@ -60,6 +63,7 @@ export default function MultiplayerGame({
   const gameEndTimeRef = useRef<number | null>(null)
   const lastTickRef = useRef<number | null>(null)
   const hasPlayedEndRef = useRef(false)
+  const feedbackIdRef = useRef(0)
 
   // Ref to store final local score for merging
   const finalLocalScoreRef = useRef<number>(0)
@@ -456,8 +460,12 @@ export default function MultiplayerGame({
       // Optimistic local update for instant feel
       const nextTotalScore = score + wordScore
 
-      setFeedback(`+${wordScore} points!`)
-      setShowFeedback(true)
+      feedbackIdRef.current += 1
+      setFeedback({
+        id: feedbackIdRef.current,
+        message: `+${wordScore} points!`,
+        isPositive: true,
+      })
       setScore(nextTotalScore)
       setPlayers((prev) =>
         prev.map((p) =>
@@ -501,8 +509,12 @@ export default function MultiplayerGame({
         console.warn("Live scores channel not ready:", { channel: !!liveScoresChannelRef.current, ready: liveScoresReady })
       }
     } else {
-      setFeedback("Invalid word!")
-      setShowFeedback(true)
+      feedbackIdRef.current += 1
+      setFeedback({
+        id: feedbackIdRef.current,
+        message: "Invalid word!",
+        isPositive: false,
+      })
       setIsShaking(true)
       setTimeout(() => setIsShaking(false), 500)
     }
@@ -672,18 +684,18 @@ export default function MultiplayerGame({
         </div>
 
         {/* Feedback */}
-        {showFeedback && (
+        {feedback && (
           <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
             <div
+              key={feedback.id}
               className={`px-6 py-2 rounded-lg font-bold text-white text-sm shadow-lg animate-fade-out ${
-                feedback.startsWith("+") ? "bg-green-500" : "bg-red-500"
+                feedback.isPositive ? "bg-green-500" : "bg-red-500"
               }`}
               onAnimationEnd={() => {
-                setShowFeedback(false)
-                setFeedback("")
+                setFeedback((prev) => (prev?.id === feedback.id ? null : prev))
               }}
             >
-              {feedback}
+              {feedback.message}
             </div>
           </div>
         )}
