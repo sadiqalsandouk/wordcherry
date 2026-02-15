@@ -532,6 +532,14 @@ export default function MultiplayerGame({
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [handleBackspace, handleLetterType, handleSubmitButton, currentWord, isGameOver])
 
+  useEffect(() => {
+    if (isGameOver || isLoadingFinalScores) return
+    if (secondsLeft <= 0 || secondsLeft > 5) return
+    if (lastTickRef.current === secondsLeft) return
+    lastTickRef.current = secondsLeft
+    sfx.tick()
+  }, [secondsLeft, isGameOver, isLoadingFinalScores])
+
   // Loading final scores
   if (isLoadingFinalScores) {
     return (
@@ -568,14 +576,6 @@ export default function MultiplayerGame({
   const seconds = secondsLeft % 60
   const timeDisplay = `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`
   const progressPercentage = (secondsLeft / game.duration_seconds) * 100
-
-  useEffect(() => {
-    if (isGameOver || isLoadingFinalScores) return
-    if (secondsLeft <= 0 || secondsLeft > 5) return
-    if (lastTickRef.current === secondsLeft) return
-    lastTickRef.current = secondsLeft
-    sfx.tick()
-  }, [secondsLeft, isGameOver, isLoadingFinalScores])
 
   return (
     <div className="pt-4 md:pt-0">
