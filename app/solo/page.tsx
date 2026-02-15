@@ -15,6 +15,7 @@ import GameOver from "../components/GameOver"
 import PauseMenu from "../components/PauseMenu"
 import { supabase } from "@/lib/supabase/supabase"
 import { usePlayerName } from "@/app/components/AuthProvider"
+import { sfx } from "@/app/utils/sfx"
 
 interface TileState {
   letter: string
@@ -50,6 +51,8 @@ export default function SoloGame() {
   const feedbackIdRef = useRef(0)
   const pendingSubmissionsRef = useRef<PendingWordSubmission[]>([])
   const isFlushingQueueRef = useRef(false)
+  const lastTickRef = useRef<number | null>(null)
+  const hasPlayedEndRef = useRef(false)
 
   const handleTileClick = useCallback(
     (letter: string, index: number) => {
@@ -346,6 +349,27 @@ export default function SoloGame() {
   const handleQuitToHome = () => {
     window.location.href = "/"
   }
+
+  useEffect(() => {
+    if (gameState !== GameState.PLAYING) {
+      lastTickRef.current = null
+      return
+    }
+    if (secondsLeft <= 0 || secondsLeft > 5) return
+    if (lastTickRef.current === secondsLeft) return
+    lastTickRef.current = secondsLeft
+    sfx.tick()
+  }, [secondsLeft, gameState])
+
+  useEffect(() => {
+    if (gameState !== GameState.ENDED) {
+      hasPlayedEndRef.current = false
+      return
+    }
+    if (hasPlayedEndRef.current) return
+    hasPlayedEndRef.current = true
+    sfx.end()
+  }, [gameState])
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
