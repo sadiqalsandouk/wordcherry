@@ -48,6 +48,8 @@ export default function Lobby({
   const [isStarting, setIsStarting] = useState(false)
   const [countdownSeconds, setCountdownSeconds] = useState<number | null>(null)
   const previousStatusRef = useRef(game.status)
+  const leaveSentRef = useRef(false)
+  const authTokenRef = useRef<string | null>(null)
 
   const isHost = currentUserId === game.host_user_id
   const currentPlayer = players.find((p) => p.user_id === currentUserId)
@@ -230,6 +232,27 @@ export default function Lobby({
   useEffect(() => {
     let mounted = true
 
+    const primeToken = async () => {
+      const { data } = await supabase.auth.getSession()
+      if (!mounted) return
+      authTokenRef.current = data.session?.access_token ?? null
+    }
+
+    void primeToken()
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      authTokenRef.current = session?.access_token ?? null
+    })
+
+    return () => {
+      mounted = false
+      listener.subscription.unsubscribe()
+    }
+  }, [])
+
+  useEffect(() => {
+    let mounted = true
+
     const runCleanup = async () => {
       if (!mounted) return
       await cleanupStalePlayers(game.id, 60)
@@ -289,33 +312,47 @@ export default function Lobby({
   }, [game.id, router])
 
   useEffect(() => {
-    const sendInstantLeave = async () => {
-      const { data } = await supabase.auth.getSession()
-      const token = data.session?.access_token
+    const sendInstantLeave = () => {
+      if (leaveSentRef.current) return
+      leaveSentRef.current = true
+
+      const token = authTokenRef.current
       if (!token) {
         void leaveGame(game.id)
         return
       }
 
-      void fetch("/api/leave-lobby", {
-        method: "POST",
-        keepalive: true,
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ gameId: game.id }),
-      })
+      const payload = JSON.stringify({ gameId: game.id, token })
+      const beacon = typeof navigator.sendBeacon === "function"
+        ? navigator.sendBeacon("/api/leave-lobby", new Blob([payload], { type: "application/json" }))
+        : false
+
+      if (!beacon) {
+        void fetch("/api/leave-lobby", {
+          method: "POST",
+          keepalive: true,
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: payload,
+        })
+      }
     }
 
     const handlePageHide = () => {
-      void sendInstantLeave()
+      sendInstantLeave()
+    }
+
+    const handleBeforeUnload = () => {
+      sendInstantLeave()
     }
 
     window.addEventListener("pagehide", handlePageHide)
+    window.addEventListener("beforeunload", handleBeforeUnload)
 
     return () => {
       window.removeEventListener("pagehide", handlePageHide)
+      window.removeEventListener("beforeunload", handleBeforeUnload)
     }
   }, [game.id])
 

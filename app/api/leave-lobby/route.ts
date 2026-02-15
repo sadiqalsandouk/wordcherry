@@ -15,13 +15,15 @@ export async function POST(req: Request) {
       )
     }
 
+    const body = await req.json().catch(() => ({} as { gameId?: string; token?: string }))
     const authHeader = req.headers.get("authorization") || req.headers.get("Authorization")
-    const token = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null
+    const headerToken = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null
+    const token = headerToken || body.token || null
     if (!token) {
-      return NextResponse.json({ error: "Missing Authorization" }, { status: 401 })
+      return NextResponse.json({ error: "Missing auth token" }, { status: 401 })
     }
 
-    const { gameId } = await req.json().catch(() => ({ gameId: null }))
+    const { gameId } = body
     if (!gameId) {
       return NextResponse.json({ error: "Missing gameId" }, { status: 400 })
     }

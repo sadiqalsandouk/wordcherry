@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next"
-import { Geist, Geist_Mono } from "next/font/google"
 import "./globals.css"
 import { Analytics } from "@vercel/analytics/next"
 import Footer from "./components/Footer"
@@ -8,16 +7,6 @@ import AuthProvider from "./components/AuthProvider"
 import { Toaster } from "@/components/ui/sonner"
 import AdSense from "./components/AdSense"
 import SfxProvider from "./components/SfxProvider"
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-})
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-})
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -88,9 +77,7 @@ export default function RootLayout({
       <head>
         <AdSense pId={process.env.NEXT_PUBLIC_GOOGLE_AD_CLIENT as string} />
       </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-wordcherryBlue min-h-screen flex flex-col`}
-      >
+      <body className="antialiased bg-wordcherryBlue min-h-screen flex flex-col">
         <SfxProvider>
           <AuthProvider>
             <div className="w-full max-w-4xl mx-auto px-2 sm:px-4 md:px-8 lg:px-12 py-2 sm:py-4 md:py-8 flex-1 flex flex-col">
