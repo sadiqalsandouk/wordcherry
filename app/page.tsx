@@ -11,188 +11,112 @@ export default function Home() {
 
         {/* FAQ Section */}
         <div className="mt-8 md:mt-10">
-          <div className="overflow-hidden rounded-xl shadow-[2px_2px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(0,0,0,0.1)]">
-            <div className="bg-wordcherryYellow py-3 px-4 text-center">
-              <h2 className="text-2xl font-bold text-wordcherryBlue">FAQ</h2>
-            </div>
+          <section className="relative overflow-hidden rounded-2xl border border-white/20 bg-gradient-to-br from-wordcherryBlue via-cyan-500 to-teal-600 p-[1px] shadow-[0_12px_35px_rgba(0,0,0,0.25)]">
+            <div className="relative overflow-hidden rounded-2xl bg-[#fef6d0] px-4 py-5 sm:px-6 sm:py-6">
+              <div className="pointer-events-none absolute -top-20 -right-16 h-44 w-44 rounded-full bg-wordcherryYellow/35 blur-2xl" />
+              <div className="pointer-events-none absolute -bottom-20 -left-10 h-52 w-52 rounded-full bg-wordcherryRed/25 blur-2xl" />
 
-            <div className="bg-[#fff7d6] p-3 space-y-2">
-              {/* How to Play FAQ */}
-              <details className="group">
-                <summary className="flex items-center justify-between cursor-pointer text-wordcherryBlue font-semibold hover:bg-wordcherryYellow/20 rounded-lg p-2 transition-colors">
-                  <span>How do I play?</span>
-                  <span className="transform transition-transform group-open:rotate-180">▼</span>
-                </summary>
-                <div className="mt-3 pl-4 border-l-2 border-wordcherryBlue/30">
-                  <div className="text-wordcherryBlue text-sm mb-3 font-bold">
-                    Build words with letter tiles to score points and extend your time!
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-3">
-                      <div className="bg-wordcherryBlue text-white font-bold text-xs rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0">
-                        1
-                      </div>
-                      <span className="text-wordcherryBlue text-sm">
-                        Start with 10 random tiles and build words to earn time
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="bg-wordcherryBlue text-white font-bold text-xs rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0">
-                        2
-                      </div>
-                      <span className="text-wordcherryBlue text-sm">
-                        Click tiles or type to build words
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="bg-wordcherryBlue text-white font-bold text-xs rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0">
-                        3
-                      </div>
-                      <span className="text-wordcherryBlue text-sm">
-                        Submit valid words to get new tiles and earn time bonuses
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="bg-wordcherryBlue text-white font-bold text-xs rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0">
-                        4
-                      </div>
-                      <span className="text-wordcherryBlue text-sm">
-                        Longer words = more points and time!
-                      </span>
-                    </div>
-                  </div>
+              <div className="relative mb-4 flex items-center justify-between gap-4">
+                <div>
+                  <p className="inline-block rounded-full bg-wordcherryBlue/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.2em] text-wordcherryBlue">
+                    Game Guide
+                  </p>
+                  <h2 className="mt-2 text-2xl font-black text-wordcherryBlue sm:text-3xl">
+                    FAQ
+                  </h2>
                 </div>
-              </details>
+                <div className="rounded-xl bg-wordcherryYellow px-3 py-2 text-xs font-bold text-wordcherryBlue shadow-[2px_2px_0_rgba(0,0,0,0.15)]">
+                  Quick Tips
+                </div>
+              </div>
 
-              {/* Scoring FAQ */}
-              <details className="group">
-                <summary className="flex items-center justify-between cursor-pointer text-wordcherryBlue font-semibold hover:bg-wordcherryYellow/20 rounded-lg p-2 transition-colors">
-                  <span>How does scoring work?</span>
-                  <span className="transform transition-transform group-open:rotate-180">▼</span>
-                </summary>
-                <div className="mt-3 pl-4 border-l-2 border-wordcherryBlue/30">
-                  <div className="space-y-4">
+              <div className="relative space-y-3">
+                <details className="group rounded-xl border border-wordcherryBlue/25 bg-white/75 backdrop-blur-sm transition-colors open:border-wordcherryBlue/45 open:bg-white">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-wordcherryBlue">
+                    <span className="font-bold">How do I play?</span>
+                    <span className="rounded-md bg-wordcherryBlue/10 px-2 py-1 text-xs font-black transition-transform group-open:rotate-45">
+                      +
+                    </span>
+                  </summary>
+                  <div className="border-t border-wordcherryBlue/15 px-4 pb-4 pt-3">
+                    <p className="mb-3 text-sm font-semibold text-wordcherryBlue">
+                      Build words with letter tiles to score points and extend your time.
+                    </p>
+                    <div className="grid gap-2 sm:grid-cols-2">
+                      <div className="rounded-lg border border-wordcherryBlue/20 bg-wordcherryYellow/20 px-3 py-2 text-sm text-wordcherryBlue">1. Start with 10 random tiles and build words to earn time.</div>
+                      <div className="rounded-lg border border-wordcherryBlue/20 bg-wordcherryYellow/20 px-3 py-2 text-sm text-wordcherryBlue">2. Click tiles or type to build words.</div>
+                      <div className="rounded-lg border border-wordcherryBlue/20 bg-wordcherryYellow/20 px-3 py-2 text-sm text-wordcherryBlue">3. Submit valid words to get new tiles and bonuses.</div>
+                      <div className="rounded-lg border border-wordcherryBlue/20 bg-wordcherryYellow/20 px-3 py-2 text-sm text-wordcherryBlue">4. Longer words give better points and more time.</div>
+                    </div>
+                  </div>
+                </details>
+
+                <details className="group rounded-xl border border-wordcherryBlue/25 bg-white/75 backdrop-blur-sm transition-colors open:border-wordcherryBlue/45 open:bg-white">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-wordcherryBlue">
+                    <span className="font-bold">How does scoring work?</span>
+                    <span className="rounded-md bg-wordcherryBlue/10 px-2 py-1 text-xs font-black transition-transform group-open:rotate-45">
+                      +
+                    </span>
+                  </summary>
+                  <div className="space-y-4 border-t border-wordcherryBlue/15 px-4 pb-4 pt-3">
                     <div>
-                      <div className="text-wordcherryBlue font-semibold text-sm mb-2">
-                        Letter Values
-                      </div>
+                      <p className="mb-2 text-sm font-bold text-wordcherryBlue">Letter Values</p>
                       <div className="grid grid-cols-2 gap-2 text-xs">
-                        <div className="bg-wordcherryYellow/20 rounded p-2 border border-wordcherryBlue/30">
-                          <div className="text-gray-600 mb-2">Common (1pt)</div>
-                          <div className="font-mono">E S I A R N T O</div>
-                        </div>
-                        <div className="bg-wordcherryYellow/20 rounded p-2 border border-wordcherryBlue/30">
-                          <div className="text-gray-600 mb-2">Uncommon (2pt)</div>
-                          <div className="font-mono">L C D U P M G</div>
-                        </div>
-                        <div className="bg-wordcherryYellow/20 rounded p-2 border border-wordcherryBlue/30">
-                          <div className="text-gray-600 mb-2">Rare (3-5pt)</div>
-                          <div className="font-mono">H B Y F V K W</div>
-                        </div>
-                        <div className="bg-wordcherryYellow/20 rounded p-2 border border-wordcherryBlue/30">
-                          <div className="text-gray-600 mb-2">Very Rare (6-8pt)</div>
-                          <div className="font-mono">Z X J Q</div>
-                        </div>
+                        <div className="rounded-lg border border-wordcherryBlue/20 bg-wordcherryYellow/20 p-2"><div className="text-gray-600">Common (1pt)</div><div className="font-mono font-bold text-wordcherryBlue">E S I A R N T O</div></div>
+                        <div className="rounded-lg border border-wordcherryBlue/20 bg-wordcherryYellow/20 p-2"><div className="text-gray-600">Uncommon (2pt)</div><div className="font-mono font-bold text-wordcherryBlue">L C D U P M G</div></div>
+                        <div className="rounded-lg border border-wordcherryBlue/20 bg-wordcherryYellow/20 p-2"><div className="text-gray-600">Rare (3-5pt)</div><div className="font-mono font-bold text-wordcherryBlue">H B Y F V K W</div></div>
+                        <div className="rounded-lg border border-wordcherryBlue/20 bg-wordcherryYellow/20 p-2"><div className="text-gray-600">Very Rare (6-8pt)</div><div className="font-mono font-bold text-wordcherryBlue">Z X J Q</div></div>
                       </div>
                     </div>
 
                     <div>
-                      <div className="text-wordcherryBlue font-semibold text-sm mb-2">
-                        Length Multipliers
-                      </div>
+                      <p className="mb-2 text-sm font-bold text-wordcherryBlue">Length Multipliers</p>
                       <div className="grid grid-cols-5 gap-1 text-xs">
-                        <div className="bg-wordcherryYellow/20 rounded p-1 border border-wordcherryBlue/30 text-center">
-                          <div className="text-gray-600">3</div>
-                          <div className="font-bold text-wordcherryBlue">0.5x</div>
-                        </div>
-                        <div className="bg-wordcherryYellow/20 rounded p-1 border border-wordcherryBlue/30 text-center">
-                          <div className="text-gray-600">4</div>
-                          <div className="font-bold text-wordcherryBlue">1x</div>
-                        </div>
-                        <div className="bg-wordcherryYellow/20 rounded p-1 border border-wordcherryBlue/30 text-center">
-                          <div className="text-gray-600">5-6</div>
-                          <div className="font-bold text-wordcherryBlue">2x</div>
-                        </div>
-                        <div className="bg-wordcherryYellow/20 rounded p-1 border border-wordcherryBlue/30 text-center">
-                          <div className="text-gray-600">7-8</div>
-                          <div className="font-bold text-wordcherryBlue">3x</div>
-                        </div>
-                        <div className="bg-wordcherryYellow/20 rounded p-1 border border-wordcherryBlue/30 text-center">
-                          <div className="text-gray-600">9+</div>
-                          <div className="font-bold text-wordcherryBlue">4x</div>
-                        </div>
+                        <div className="rounded-md border border-wordcherryBlue/20 bg-white px-1 py-1 text-center"><div className="text-gray-500">3</div><div className="font-bold text-wordcherryBlue">0.5x</div></div>
+                        <div className="rounded-md border border-wordcherryBlue/20 bg-white px-1 py-1 text-center"><div className="text-gray-500">4</div><div className="font-bold text-wordcherryBlue">1x</div></div>
+                        <div className="rounded-md border border-wordcherryBlue/20 bg-white px-1 py-1 text-center"><div className="text-gray-500">5-6</div><div className="font-bold text-wordcherryBlue">2x</div></div>
+                        <div className="rounded-md border border-wordcherryBlue/20 bg-white px-1 py-1 text-center"><div className="text-gray-500">7-8</div><div className="font-bold text-wordcherryBlue">3x</div></div>
+                        <div className="rounded-md border border-wordcherryBlue/20 bg-white px-1 py-1 text-center"><div className="text-gray-500">9+</div><div className="font-bold text-wordcherryBlue">4x</div></div>
                       </div>
                     </div>
 
-                    <div>
-                      <div className="text-wordcherryBlue font-semibold text-sm mb-2">
-                        Time Bonuses
-                      </div>
-                      <div className="bg-wordcherryYellow/20 rounded p-3 border border-wordcherryBlue/30 text-xs">
-                        <div className="text-gray-600 mb-2">
-                          Base time bonus + score-based bonus (up to 8s max)
-                        </div>
-                        <div className="space-y-1">
-                          <div className="flex justify-between">
-                            <span>3-4 letters:</span>
-                            <span className="font-bold text-wordcherryBlue">+1s base</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>5-6 letters:</span>
-                            <span className="font-bold text-wordcherryBlue">+2s base</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>7+ letters:</span>
-                            <span className="font-bold text-wordcherryBlue">+2s base</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>Score bonus:</span>
-                            <span className="font-bold text-wordcherryBlue">15% of word score</span>
-                          </div>
-                        </div>
+                    <div className="rounded-lg border border-wordcherryBlue/20 bg-wordcherryBlue/5 p-3 text-xs">
+                      <p className="mb-2 font-semibold text-wordcherryBlue">Time Bonuses</p>
+                      <div className="space-y-1 text-gray-700">
+                        <div className="flex justify-between"><span>3-4 letters</span><span className="font-bold text-wordcherryBlue">+1s base</span></div>
+                        <div className="flex justify-between"><span>5-6 letters</span><span className="font-bold text-wordcherryBlue">+2s base</span></div>
+                        <div className="flex justify-between"><span>7+ letters</span><span className="font-bold text-wordcherryBlue">+2s base</span></div>
+                        <div className="flex justify-between"><span>Score bonus</span><span className="font-bold text-wordcherryBlue">15% of word score</span></div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </details>
+                </details>
 
-              {/* Tips FAQ */}
-              <details className="group">
-                <summary className="flex items-center justify-between cursor-pointer text-wordcherryBlue font-semibold hover:bg-wordcherryYellow/20 rounded-lg p-2 transition-colors">
-                  <span>Any tips for scoring higher?</span>
-                  <span className="transform transition-transform group-open:rotate-180">▼</span>
-                </summary>
-                <div className="mt-3 pl-4 border-l-2 border-wordcherryBlue/30">
-                  <div className="space-y-3">
-                    <div className="bg-wordcherryYellow/20 rounded-lg p-3 border border-wordcherryBlue/30">
-                      <div className="font-bold text-wordcherryBlue text-sm mb-1">
-                        Target 5+ Letter Words
-                      </div>
-                      <div className="text-gray-600 text-xs">
-                        Better time bonuses and point multipliers
-                      </div>
+                <details className="group rounded-xl border border-wordcherryBlue/25 bg-white/75 backdrop-blur-sm transition-colors open:border-wordcherryBlue/45 open:bg-white">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-wordcherryBlue">
+                    <span className="font-bold">Any tips for scoring higher?</span>
+                    <span className="rounded-md bg-wordcherryBlue/10 px-2 py-1 text-xs font-black transition-transform group-open:rotate-45">
+                      +
+                    </span>
+                  </summary>
+                  <div className="grid gap-2 border-t border-wordcherryBlue/15 px-4 pb-4 pt-3 sm:grid-cols-3">
+                    <div className="rounded-lg border border-wordcherryBlue/20 bg-wordcherryYellow/20 p-3">
+                      <p className="text-sm font-bold text-wordcherryBlue">Target 5+ Letters</p>
+                      <p className="mt-1 text-xs text-gray-700">Better time bonuses and multipliers.</p>
                     </div>
-                    <div className="bg-wordcherryYellow/20 rounded-lg p-3 border border-wordcherryBlue/30">
-                      <div className="font-bold text-wordcherryBlue text-sm mb-1">
-                        Use Rare Letters
-                      </div>
-                      <div className="text-gray-600 text-xs">
-                        Q, J, X, Z give the most points and time
-                      </div>
+                    <div className="rounded-lg border border-wordcherryBlue/20 bg-wordcherryYellow/20 p-3">
+                      <p className="text-sm font-bold text-wordcherryBlue">Use Rare Letters</p>
+                      <p className="mt-1 text-xs text-gray-700">Q, J, X, Z are high-value letters.</p>
                     </div>
-                    <div className="bg-wordcherryYellow/20 rounded-lg p-3 border border-wordcherryBlue/30">
-                      <div className="font-bold text-wordcherryBlue text-sm mb-1">
-                        Avoid 3-Letter Words
-                      </div>
-                      <div className="text-gray-600 text-xs">
-                        Minimal rewards - use only these for survival
-                      </div>
+                    <div className="rounded-lg border border-wordcherryBlue/20 bg-wordcherryYellow/20 p-3">
+                      <p className="text-sm font-bold text-wordcherryBlue">Avoid 3-Letter Spam</p>
+                      <p className="mt-1 text-xs text-gray-700">Use short words mainly for survival.</p>
                     </div>
                   </div>
-                </div>
-              </details>
+                </details>
+              </div>
             </div>
-          </div>
+          </section>
         </div>
       </div>
     </div>
