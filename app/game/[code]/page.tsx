@@ -30,7 +30,7 @@ export default function GamePage() {
   
   const [state, setState] = useState<PageState>({ status: "loading" })
   const [actionLoading, setActionLoading] = useState(false)
-  const hasAttemptedJoin = useRef(false)
+  const autoJoinInFlight = useRef(false)
 
   const loadGame = useCallback(async (attemptAutoJoin: boolean = false) => {
     try {
@@ -71,18 +71,22 @@ export default function GamePage() {
       const isInGame = players.some((p) => p.user_id === currentUser.id)
 
       if (!isInGame) {
-        // Auto-join if game is in lobby and we haven't tried yet
-        if (attemptAutoJoin && game.status === "lobby" && !hasAttemptedJoin.current) {
-          hasAttemptedJoin.current = true
+        // Auto-join while in lobby. Guard only concurrent requests.
+        if (attemptAutoJoin && game.status === "lobby" && !autoJoinInFlight.current) {
+          autoJoinInFlight.current = true
           setState({ status: "joining" })
-          
-          const joinResult = await joinGame(code, playerName)
-          
-          if (joinResult.ok) {
-            // Reload game state after joining
-            await loadGame(false)
-          } else {
-            setState({ status: "error", message: joinResult.error || "Failed to join game" })
+
+          try {
+            const joinResult = await joinGame(code, playerName)
+
+            if (joinResult.ok) {
+              // Reload game state after joining
+              await loadGame(false)
+            } else {
+              setState({ status: "error", message: joinResult.error || "Failed to join game" })
+            }
+          } finally {
+            autoJoinInFlight.current = false
           }
           return
         }
@@ -149,8 +153,8 @@ export default function GamePage() {
           
           // If game was reset to lobby
           if (updatedGame.status === "lobby") {
-            // Reload to get fresh state
-            await loadGame(false)
+            // Reload and allow auto-rejoin if this client was dropped.
+            await loadGame(true)
           }
           // If game was restarted (play again)
           else if (updatedGame.status === "in_progress" && state.status === "finished") {
