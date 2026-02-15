@@ -11,10 +11,7 @@ export default function Home() {
 
         {/* FAQ Section */}
         <div className="mt-8 md:mt-10">
-          <section className="relative overflow-hidden rounded-2xl border border-white/20 bg-gradient-to-br from-wordcherryBlue via-cyan-500 to-teal-600 p-[1px] shadow-[0_12px_35px_rgba(0,0,0,0.25)]">
-            <div className="relative overflow-hidden rounded-2xl bg-[#fef6d0] px-4 py-5 sm:px-6 sm:py-6">
-              <div className="pointer-events-none absolute -top-20 -right-16 h-44 w-44 rounded-full bg-wordcherryYellow/35 blur-2xl" />
-              <div className="pointer-events-none absolute -bottom-20 -left-10 h-52 w-52 rounded-full bg-wordcherryRed/25 blur-2xl" />
+          <section className="relative overflow-hidden rounded-2xl border border-white/20 bg-wordcherryYellow px-4 py-5 shadow-[0_12px_35px_rgba(0,0,0,0.25)] sm:px-6 sm:py-6">
 
               <div className="relative mb-4 flex items-center justify-between gap-4">
                 <div>
@@ -24,9 +21,6 @@ export default function Home() {
                   <h2 className="mt-2 text-2xl font-black text-wordcherryBlue sm:text-3xl">
                     FAQ
                   </h2>
-                </div>
-                <div className="rounded-xl bg-wordcherryYellow px-3 py-2 text-xs font-bold text-wordcherryBlue shadow-[2px_2px_0_rgba(0,0,0,0.15)]">
-                  Quick Tips
                 </div>
               </div>
 
@@ -115,7 +109,6 @@ export default function Home() {
                   </div>
                 </details>
               </div>
-            </div>
           </section>
         </div>
       </div>

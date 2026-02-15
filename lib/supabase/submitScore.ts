@@ -21,6 +21,12 @@ export async function submitScore(input: SubmitScoreInput): Promise<SubmitScoreR
   if (input.bestWordScore > input.score) {
     return { ok: false, error: "Best word score cannot exceed total score." }
   }
+  if (input.gameMode !== "solo" && input.gameMode !== "multiplayer") {
+    return { ok: false, error: "Invalid game mode." }
+  }
+  if (!Number.isFinite(input.durationSeconds) || input.durationSeconds <= 0) {
+    return { ok: false, error: "Duration must be a positive number." }
+  }
 
   const { data: userRes, error: authErr1 } = await supabase.auth.getUser()
   if (authErr1 || !userRes?.user) {
@@ -37,6 +43,7 @@ export async function submitScore(input: SubmitScoreInput): Promise<SubmitScoreR
   const score = Math.floor(input.score)
   const best_word = (input.bestWord ?? "").toUpperCase()
   const best_word_score = Math.floor(input.bestWordScore)
+  const duration_seconds = Math.floor(input.durationSeconds)
 
   const is_anonymous =
     (user as any)?.is_anonymous ||
@@ -60,6 +67,8 @@ export async function submitScore(input: SubmitScoreInput): Promise<SubmitScoreR
     score,
     best_word,
     best_word_score,
+    game_mode: input.gameMode,
+    duration_seconds,
     is_anonymous,
     device_token_hash,
   })

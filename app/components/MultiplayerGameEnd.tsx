@@ -5,7 +5,7 @@ import { Trophy, Medal, Home, RotateCcw, Crown } from "lucide-react"
 import Link from "next/link"
 import Confetti from "react-confetti"
 import { useState, useEffect, useRef } from "react"
-import { submitScore } from "@/lib/supabase/submitScore"
+import { supabase } from "@/lib/supabase/supabase"
 
 type MultiplayerGameEndProps = {
   game: Game
@@ -55,18 +55,44 @@ export default function MultiplayerGameEnd({
   // Submit score to leaderboard
   useEffect(() => {
     if (currentPlayer && !didSubmitScore.current && currentPlayer.score > 0) {
+      const submitLockKey = `wordcherry:mp-submitted:${game.id}:${currentUserId}`
+      if (typeof window !== "undefined" && window.sessionStorage.getItem(submitLockKey) === "1") {
+        didSubmitScore.current = true
+        return
+      }
+
       didSubmitScore.current = true
-      submitScore({
-        gameId: game.id,
-        score: currentPlayer.score,
-        bestWord: bestWord.word || "",
-        bestWordScore: bestWord.score || 0,
-        playerName: currentPlayer.player_name,
-      }).catch((err) => {
-        console.error("Failed to submit score:", err)
-      })
+      const submit = async () => {
+        const { data } = await supabase.auth.getSession()
+        const token = data.session?.access_token
+        if (!token) return
+
+        if (typeof window !== "undefined") {
+          window.sessionStorage.setItem(submitLockKey, "1")
+        }
+
+        const res = await fetch("/api/leaderboard/submit-multiplayer", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ gameId: game.id }),
+        })
+
+        if (!res.ok && res.status !== 409) {
+          const body = await res.json().catch(() => ({ error: "Unknown error" }))
+          console.error("Failed to submit multiplayer leaderboard score:", body.error)
+          if (typeof window !== "undefined") {
+            window.sessionStorage.removeItem(submitLockKey)
+          }
+          didSubmitScore.current = false
+        }
+      }
+
+      void submit()
     }
-  }, [currentPlayer, game.id, bestWord])
+  }, [currentPlayer, game.id, currentUserId])
 
   useEffect(() => {
     setWindowSize({ width: window.innerWidth, height: window.innerHeight })

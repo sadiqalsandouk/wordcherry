@@ -17,6 +17,7 @@ export type GameOverProps = {
   handleStartGame: () => void
   score: number
   bestWord: { word: string; score: number }
+  soloRunId?: string | null
 }
 
 export type PerformanceLevel = {
@@ -36,9 +37,13 @@ export type SubmitScoreInput = {
   bestWord: string
   bestWordScore: number
   playerName: string
+  gameMode: LeaderboardMode
+  durationSeconds: number
 }
 
 export type SubmitScoreResult = { ok: true } | { ok: false; error: string }
+
+export type LeaderboardMode = "solo" | "multiplayer"
 
 export type LeaderboardEntry = {
   id: string
@@ -48,6 +53,8 @@ export type LeaderboardEntry = {
   best_word_score: number
   created_at: string
   is_anonymous: boolean
+  game_mode: LeaderboardMode
+  duration_seconds: number
 }
 
 export type LeaderboardResult =

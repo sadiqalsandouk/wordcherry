@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from "react"
 import { getLeaderboard } from "@/lib/supabase/getLeaderboard"
-import { LeaderboardEntry } from "@/app/types/types"
+import { LeaderboardEntry, LeaderboardMode } from "@/app/types/types"
 
 export default function LeaderboardPage() {
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
+  const [mode, setMode] = useState<LeaderboardMode>("solo")
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -14,7 +15,7 @@ export default function LeaderboardPage() {
       setLoading(true)
       setError(null)
 
-      const result = await getLeaderboard(10)
+      const result = await getLeaderboard(10, mode)
 
       if (result.ok) {
         setLeaderboard(result.data)
@@ -25,8 +26,8 @@ export default function LeaderboardPage() {
       setLoading(false)
     }
 
-    fetchLeaderboard()
-  }, [])
+    void fetchLeaderboard()
+  }, [mode])
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -76,10 +77,35 @@ export default function LeaderboardPage() {
   return (
     <div className="min-h-screen py-8">
       <div className="max-w-4xl mx-auto">
+        <div className="mb-6 flex items-center justify-center">
+          <div className="inline-flex rounded-xl bg-white/15 p-1 shadow-inner">
+            <button
+              onClick={() => setMode("solo")}
+              className={`cursor-pointer rounded-lg px-4 py-2 text-sm font-bold transition-colors ${
+                mode === "solo"
+                  ? "bg-wordcherryYellow text-wordcherryBlue"
+                  : "text-white hover:bg-white/15"
+              }`}
+            >
+              Solo
+            </button>
+            <button
+              onClick={() => setMode("multiplayer")}
+              className={`cursor-pointer rounded-lg px-4 py-2 text-sm font-bold transition-colors ${
+                mode === "multiplayer"
+                  ? "bg-wordcherryYellow text-wordcherryBlue"
+                  : "text-white hover:bg-white/15"
+              }`}
+            >
+              Multiplayer
+            </button>
+          </div>
+        </div>
+
         {leaderboard.length === 0 && (
           <div className="text-center py-12">
             <p className="text-wordcherryYellow/80 text-lg mb-4">
-              No scores yet! Be the first to make it to the leaderboard.
+              No {mode === "solo" ? "solo" : "multiplayer"} scores yet. Be the first.
             </p>
           </div>
         )}
@@ -87,7 +113,9 @@ export default function LeaderboardPage() {
         {leaderboard.length > 0 && (
           <div className="bg-white rounded-xl shadow-lg overflow-hidden">
             <div className="bg-wordcherryYellow text-wordcherryBlue px-6 py-4">
-              <h3 className="font-bold text-center text-xl">Top 10 Scores</h3>
+              <h3 className="font-bold text-center text-xl">
+                Top 10 {mode === "solo" ? "Solo" : "Multiplayer"} Scores
+              </h3>
             </div>
             <div className="divide-y divide-gray-200">
               {leaderboard.map((entry, index) => (
@@ -136,6 +164,11 @@ export default function LeaderboardPage() {
                       {entry.best_word_score > 0 && (
                         <div className="text-lg font-semibold text-green-600">
                           +{entry.best_word_score.toLocaleString()}
+                        </div>
+                      )}
+                      {entry.game_mode === "multiplayer" && (
+                        <div className="text-xs font-semibold text-wordcherryBlue">
+                          {entry.duration_seconds}s match
                         </div>
                       )}
                       <div className="text-sm text-gray-600">{formatDate(entry.created_at)}</div>

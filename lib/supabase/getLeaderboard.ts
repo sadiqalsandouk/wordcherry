@@ -1,11 +1,15 @@
-import type { LeaderboardResult } from "@/app/types/types"
+import type { LeaderboardMode, LeaderboardResult } from "@/app/types/types"
 import { supabase } from "./supabase"
 
-export async function getLeaderboard(limit: number = 10): Promise<LeaderboardResult> {
+export async function getLeaderboard(
+  limit: number = 10,
+  mode: LeaderboardMode = "solo"
+): Promise<LeaderboardResult> {
   try {
     const { data, error } = await supabase
       .from("leaderboard_entries")
-      .select("id, player_name, score, best_word, best_word_score, created_at, is_anonymous")
+      .select("id, player_name, score, best_word, best_word_score, created_at, is_anonymous, game_mode, duration_seconds")
+      .eq("game_mode", mode)
       .order("score", { ascending: false })
       .limit(limit)
 
@@ -20,5 +24,5 @@ export async function getLeaderboard(limit: number = 10): Promise<LeaderboardRes
 }
 
 export async function getTopScores(limit: number = 3): Promise<LeaderboardResult> {
-  return getLeaderboard(limit)
+  return getLeaderboard(limit, "solo")
 }

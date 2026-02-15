@@ -1,18 +1,15 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import Confetti from "react-confetti"
 import { GameOverProps } from "@/app/types/types"
-import { usePlayerName } from "@/app/components/AuthProvider"
-import { submitScore } from "@/lib/supabase/submitScore"
 import { getPerformanceLevel } from "@/app/utils/performanceLevel"
+import { supabase } from "@/lib/supabase/supabase"
 
-export default function GameOver({ handleStartGame, score, bestWord }: GameOverProps) {
-  const gameId = useMemo(() => crypto.randomUUID(), [])
+export default function GameOver({ handleStartGame, score, bestWord, soloRunId }: GameOverProps) {
   const [submitting, setSubmitting] = useState(false)
   const [showConfetti, setShowConfetti] = useState(false)
   const performance = getPerformanceLevel(score)
-  const { playerName, isLoading: playerNameLoading } = usePlayerName()
   const didAutoSubmit = useRef(false)
 
   useEffect(() => {
@@ -30,29 +27,38 @@ export default function GameOver({ handleStartGame, score, bestWord }: GameOverP
       score >= threshold && 
       !didAutoSubmit.current && 
       !submitting && 
-      !playerNameLoading &&
-      playerName
+      soloRunId
     ) {
       didAutoSubmit.current = true
       setSubmitting(true)
-      
-      submitScore({
-        gameId,
-        score,
-        bestWord: bestWord.word || "",
-        bestWordScore: bestWord.score || 0,
-        playerName,
-      }).then((res) => {
-        if (!res.ok) {
-          console.error("Failed to submit score to leaderboard:", res.error)
+
+      const submit = async () => {
+        try {
+          const { data } = await supabase.auth.getSession()
+          const token = data.session?.access_token
+          if (!token) return
+
+          const res = await fetch("/api/leaderboard/submit-solo", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ runId: soloRunId }),
+          })
+
+          if (!res.ok && res.status !== 409) {
+            const body = await res.json().catch(() => ({ error: "Unknown error" }))
+            console.error("Failed to submit score to leaderboard:", body.error)
+          }
+        } finally {
+          setSubmitting(false)
         }
-        setSubmitting(false)
-      }).catch((err) => {
-        console.error("Error submitting score:", err)
-        setSubmitting(false)
-      })
+      }
+
+      void submit()
     }
-  }, [score, submitting, playerNameLoading, playerName, gameId, bestWord.word, bestWord.score])
+  }, [score, submitting, soloRunId])
 
   return (
     <>

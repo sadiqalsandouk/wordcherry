@@ -1,10 +1,10 @@
 "use client"
 
 import { useState, useEffect, useCallback, useRef } from "react"
-import getRandomLetters from "../utils/getRandomLetters"
+import { getSeededLetters } from "../utils/getSeededLetters"
 import { validateWord } from "../utils/wordValidation"
 import { calculateFinalScore } from "../utils/wordScoringSystem"
-import { getTimeBonusDescription } from "../utils/timeBonusSystem"
+import { calculateTimeBonus } from "../utils/timeBonusSystem"
 import { GameState, Timer } from "../types/types"
 import TileRack from "../components/TileRack"
 import CurrentWord from "../components/CurrentWord"
@@ -13,6 +13,8 @@ import Score from "../components/Score"
 import PreStartScreen from "../components/PreStartScreen"
 import GameOver from "../components/GameOver"
 import PauseMenu from "../components/PauseMenu"
+import { supabase } from "@/lib/supabase/supabase"
+import { usePlayerName } from "@/app/components/AuthProvider"
 
 interface TileState {
   letter: string
@@ -20,7 +22,13 @@ interface TileState {
   usedInWordIndex?: number
 }
 
+interface PendingWordSubmission {
+  runId: string
+  word: string
+}
+
 export default function SoloGame() {
+  const { playerName } = usePlayerName()
   const [tiles, setTiles] = useState<TileState[]>([])
   const [currentWord, setCurrentWord] = useState<{ letter: string; tileIndex: number }[]>([])
   const [score, setScore] = useState(0)
@@ -36,7 +44,12 @@ export default function SoloGame() {
   const [isShaking, setIsShaking] = useState(false)
   const [bestWord, setBestWord] = useState<{ word: string; score: number }>({ word: "", score: 0 })
   const [timeBonus, setTimeBonus] = useState<number>(0)
+  const [soloRunId, setSoloRunId] = useState<string | null>(null)
+  const [soloSeed, setSoloSeed] = useState<string>("")
+  const [roundIndex, setRoundIndex] = useState(0)
   const feedbackIdRef = useRef(0)
+  const pendingSubmissionsRef = useRef<PendingWordSubmission[]>([])
+  const isFlushingQueueRef = useRef(false)
 
   const handleTileClick = useCallback(
     (letter: string, index: number) => {
@@ -93,49 +106,103 @@ export default function SoloGame() {
     [tiles, handleTileClick]
   )
 
-  const addTimeBonus = useCallback((bonusSeconds: number) => {
-    setSecondsLeft((prevSeconds) => {
-      // Cap maximum time at 120 seconds to prevent infinite game
-      return Math.min(prevSeconds + bonusSeconds, 120)
-    })
-  }, [])
-
   const handleTimeBonusAnimationComplete = useCallback(() => {
     setTimeBonus(0)
   }, [])
 
-  const handleSubmitButton = useCallback(() => {
-    const currentWordString = currentWord.map((tile) => tile.letter).join("")
-    const wordScore = calculateFinalScore(currentWordString)
-    const isValid = validateWord(currentWordString)
+  const getAuthToken = useCallback(async () => {
+    const { data: userRes } = await supabase.auth.getUser()
+    if (!userRes.user) {
+      await supabase.auth.signInAnonymously()
+    }
+    const { data } = await supabase.auth.getSession()
+    return data.session?.access_token ?? null
+  }, [])
 
-    if (isValid) {
-      // Calculate time bonus
-      const timeBonusInfo = getTimeBonusDescription(currentWordString)
+  const flushPendingSubmissions = useCallback(async () => {
+    if (isFlushingQueueRef.current) return
+    if (pendingSubmissionsRef.current.length === 0) return
 
-      // Add time bonus to timer
-      addTimeBonus(timeBonusInfo.bonus)
+    isFlushingQueueRef.current = true
+    try {
+      while (pendingSubmissionsRef.current.length > 0) {
+        const submission = pendingSubmissionsRef.current[0]
+        const token = await getAuthToken()
+        if (!token) break
 
-      // Show time bonus animation
-      setTimeBonus(timeBonusInfo.bonus)
+        const res = await fetch("/api/solo/submit-word", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            runId: submission.runId,
+            word: submission.word,
+          }),
+        })
 
-      // Show feedback for valid word
-      feedbackIdRef.current += 1
-      setFeedback({
-        id: feedbackIdRef.current,
-        message: "Valid word!",
-        isPositive: true,
-      })
+        const body = await res.json().catch(() => null)
+        pendingSubmissionsRef.current.shift()
 
-      if (wordScore > bestWord.score) {
-        setBestWord({ word: currentWordString, score: wordScore })
+        if (!res.ok || !body) {
+          console.error("Solo word submit failed:", body?.error || "Unknown error")
+          continue
+        }
+
+        if (body.status === "finished") {
+          const nextSeconds = Math.max(0, Math.ceil((body.remainingMs || 0) / 1000))
+          setSecondsLeft(nextSeconds)
+          setScore(body.score || 0)
+          setBestWord({
+            word: body.bestWord || "",
+            score: body.bestWordScore || 0,
+          })
+          setRoundIndex(body.roundIndex || 0)
+          setCurrentWord([])
+
+          const nextLetters = getSeededLetters(soloSeed, body.roundIndex || 0)
+          setTiles(nextLetters.map((letter) => ({ letter, isUsed: false })))
+
+          setTimerState(Timer.STOPPED)
+          setGameState(GameState.ENDED)
+          pendingSubmissionsRef.current = []
+          break
+        }
+
+        if (!body.valid) {
+          const nextSeconds = Math.max(0, Math.ceil((body.remainingMs || 0) / 1000))
+          setSecondsLeft(nextSeconds)
+          setScore(body.score || 0)
+          setBestWord({
+            word: body.bestWord || "",
+            score: body.bestWordScore || 0,
+          })
+          setRoundIndex(body.roundIndex || 0)
+          setCurrentWord([])
+
+          const nextLetters = getSeededLetters(soloSeed, body.roundIndex || 0)
+          setTiles(nextLetters.map((letter) => ({ letter, isUsed: false })))
+        }
       }
+    } finally {
+      isFlushingQueueRef.current = false
+      if (pendingSubmissionsRef.current.length > 0) {
+        void flushPendingSubmissions()
+      }
+    }
+  }, [getAuthToken, soloSeed])
 
-      setScore((prevScore) => prevScore + wordScore)
-      setCurrentWord([])
-      const newLetters = getRandomLetters(10)
-      setTiles(newLetters.map((letter) => ({ letter, isUsed: false })))
-    } else {
+  const handleSubmitButton = useCallback(async () => {
+    if (!soloRunId || !soloSeed) return
+
+    const currentWordString = currentWord.map((tile) => tile.letter).join("").toUpperCase()
+    const isValidWord =
+      validateWord(currentWordString) &&
+      currentWordString.length >= 3 &&
+      currentWordString.length <= tiles.length
+
+    if (!isValidWord) {
       feedbackIdRef.current += 1
       setFeedback({
         id: feedbackIdRef.current,
@@ -143,34 +210,118 @@ export default function SoloGame() {
         isPositive: false,
       })
       setIsShaking(true)
-
-      setTimeout(() => {
-        setIsShaking(false)
-      }, 500)
-
+      setTimeout(() => setIsShaking(false), 500)
       return
     }
-  }, [currentWord, bestWord.score, addTimeBonus])
 
-  const handleStartGame = () => {
+    const wordScore = calculateFinalScore(currentWordString)
+    const bonusSeconds = calculateTimeBonus(currentWordString)
+    const nextRoundIndex = roundIndex + 1
+
+    feedbackIdRef.current += 1
+    setFeedback({
+      id: feedbackIdRef.current,
+      message: "Valid word!",
+      isPositive: true,
+    })
+    setTimeBonus(bonusSeconds)
+
+    setScore((prev) => prev + wordScore)
+    setBestWord((prev) =>
+      wordScore > prev.score ? { word: currentWordString, score: wordScore } : prev
+    )
+    setRoundIndex(nextRoundIndex)
+    setSecondsLeft((prev) => Math.min(120, Math.max(0, prev + bonusSeconds)))
+    setCurrentWord([])
+
+    const nextLetters = getSeededLetters(soloSeed, nextRoundIndex)
+    setTiles(nextLetters.map((letter) => ({ letter, isUsed: false })))
+
+    pendingSubmissionsRef.current.push({
+      runId: soloRunId,
+      word: currentWordString,
+    })
+    void flushPendingSubmissions()
+  }, [currentWord, flushPendingSubmissions, roundIndex, soloRunId, soloSeed, tiles.length])
+
+  const handleStartGame = useCallback(async () => {
+    const token = await getAuthToken()
+    if (!token) return
+
+    const res = await fetch("/api/solo/start-run", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ playerName }),
+    })
+
+    const body = await res.json().catch(() => null)
+    if (!res.ok || !body?.run) {
+      console.error("Failed to start solo run:", body?.error || "Unknown error")
+      return
+    }
+
+    const run = body.run
+    pendingSubmissionsRef.current = []
+    isFlushingQueueRef.current = false
+    setSoloRunId(run.id)
+    setSoloSeed(run.seed)
+    setRoundIndex(run.roundIndex || 0)
     setGameState(GameState.PLAYING)
     setTimerState(Timer.RUNNING)
-    setSecondsLeft(30)
-    setScore(0)
+    setSecondsLeft(Math.max(0, Math.ceil((run.remainingMs || 0) / 1000)))
+    setScore(run.score || 0)
     setCurrentWord([])
     setFeedback(null)
     setIsShaking(false)
-    setBestWord({ word: "", score: 0 })
+    setBestWord({
+      word: run.bestWord || "",
+      score: run.bestWordScore || 0,
+    })
     setTimeBonus(0)
-    const newLetters = getRandomLetters(10)
+    const newLetters = getSeededLetters(run.seed, run.roundIndex || 0)
     setTiles(newLetters.map((letter) => ({ letter, isUsed: false })))
     setGameKey((prev) => prev + 1)
-  }
+  }, [getAuthToken, playerName])
 
   const handleEndGame = useCallback(() => {
+    const finalize = async () => {
+      if (!soloRunId) return
+      const token = await getAuthToken()
+      if (!token) return
+
+      const res = await fetch("/api/solo/finish-run", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ runId: soloRunId }),
+      })
+
+      const body = await res.json().catch(() => null)
+      if (!res.ok || !body) {
+        console.error("Failed to finalize solo run:", body?.error || "Unknown error")
+        return
+      }
+
+      setScore(body.score || 0)
+      setBestWord({
+        word: body.bestWord || "",
+        score: body.bestWordScore || 0,
+      })
+      setRoundIndex(body.roundIndex || 0)
+      setSecondsLeft(Math.max(0, Math.ceil((body.remainingMs || 0) / 1000)))
+    }
+
+    pendingSubmissionsRef.current = []
+    isFlushingQueueRef.current = false
     setGameState(GameState.ENDED)
     setTimerState(Timer.STOPPED)
-  }, [])
+    void finalize()
+  }, [getAuthToken, soloRunId])
 
   const handleTimeUpdate = useCallback(
     (newSecondsLeft: number) => {
@@ -342,7 +493,12 @@ export default function SoloGame() {
         />
       )}
       {gameState === GameState.ENDED && (
-        <GameOver score={score} handleStartGame={handleStartGame} bestWord={bestWord} />
+        <GameOver
+          score={score}
+          handleStartGame={handleStartGame}
+          bestWord={bestWord}
+          soloRunId={soloRunId}
+        />
       )}
     </div>
   )
