@@ -384,7 +384,7 @@ export default function Lobby({
   }, [game.id, game.duration_seconds])
 
   return (
-    <div className="py-8 w-full px-4 sm:px-0">
+    <div className="py-6 sm:py-8 w-full px-2 sm:px-0">
       {/* Back button */}
       <button
         onClick={handleLeaveGame}
@@ -466,25 +466,25 @@ export default function Lobby({
 
         {/* Start button */}
         <div className="p-4 md:p-6 pt-0">
-          <div className="mb-4 md:mb-5 flex items-center justify-between gap-3 rounded-xl bg-gray-50 px-4 py-3 text-sm md:text-base text-gray-600">
-            <div>
-              <div className="font-semibold">
-                Ready up: {readyCount}/{activePlayers.length}
+          <div className="mb-4 md:mb-5 flex items-center justify-between gap-3 rounded-xl bg-gray-50 px-3 md:px-4 py-3 text-sm md:text-base text-gray-600">
+            <div className="min-w-0">
+              <div className="font-semibold text-sm md:text-base">
+                Ready: {readyCount}/{activePlayers.length}
               </div>
-              <div className="text-xs text-gray-500">
-                Click the Ready Up button and wait for the host to start the game
+              <div className="text-xs text-gray-500 hidden sm:block">
+                Click Ready Up and wait for the host to start
               </div>
             </div>
             <button
               onClick={handleReadyToggle}
               disabled={!currentPlayer}
-              className={`cursor-pointer rounded-lg px-4 py-1.5 text-sm md:text-base font-semibold transition-colors ${
+              className={`cursor-pointer flex-shrink-0 rounded-lg px-3 md:px-4 py-1.5 text-sm md:text-base font-semibold transition-colors ${
                 isReady
                   ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
                   : "bg-gray-200 text-gray-600 hover:bg-gray-300"
               } ${!currentPlayer ? "cursor-not-allowed opacity-60" : ""}`}
             >
-              {isReady ? "Ready" : "Ready Up"}
+              {isReady ? "Ready ✓" : "Ready Up"}
             </button>
           </div>
           {isHost ? (

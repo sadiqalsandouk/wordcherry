@@ -33,21 +33,21 @@ export default function PlayerList({
     return (
       <div
         key={player.id}
-        className={`flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 rounded-lg text-sm md:text-base ${
+        className={`flex items-center gap-1.5 md:gap-2 px-2 md:px-4 py-2 md:py-2.5 rounded-lg text-sm md:text-base ${
           isCurrentUser
             ? "bg-wordcherryBlue/20 font-semibold border border-wordcherryBlue/30"
             : "bg-gray-200/80 border border-gray-300"
         }`}
       >
         {isHostPlayer && (
-          <Crown className="w-3.5 h-3.5 md:w-4 md:h-4 text-amber-500 flex-shrink-0" />
+          <Crown className="w-3 h-3 md:w-4 md:h-4 text-amber-500 flex-shrink-0" />
         )}
-        <span className={`truncate ${isCurrentUser ? "text-wordcherryBlue" : "text-gray-700"}`}>
+        <span className={`truncate text-xs md:text-sm ${isCurrentUser ? "text-wordcherryBlue" : "text-gray-700"}`}>
           {isCurrentUser ? `${player.player_name} (you)` : player.player_name}
         </span>
         {gameStatus === "lobby" && (
           <span
-            className={`ml-auto inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+            className={`ml-auto flex-shrink-0 inline-flex items-center gap-0.5 rounded-full px-1.5 md:px-2.5 py-0.5 text-xs font-semibold ${
               isReady ? "bg-emerald-100 text-emerald-700" : "bg-gray-100 text-gray-500"
             }`}
           >
@@ -56,11 +56,11 @@ export default function PlayerList({
             ) : (
               <Circle className="h-3.5 w-3.5" />
             )}
-            {isReady ? "Ready" : "Not ready"}
+            <span className="hidden sm:inline">{isReady ? "Ready" : "Not ready"}</span>
           </span>
         )}
         {gameStatus !== "lobby" && (
-          <span className="ml-auto font-bold text-gray-800">{player.score}</span>
+          <span className="ml-auto flex-shrink-0 font-bold text-gray-800">{player.score}</span>
         )}
       </div>
     )
