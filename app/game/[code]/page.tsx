@@ -146,8 +146,13 @@ export default function GamePage() {
   // Using the full state object caused the subscription to teardown/recreate on every
   // player score update, creating a window where the "reset to lobby" event could be
   // silently dropped, leaving non-host players stuck on the finished screen.
+  // Keep the subscription alive for lobby state too. "Play Again" fires two
+  // DB writes in sequence: status → "lobby" then status → "in_progress". If a
+  // non-host briefly lands in lobby state (because loadGame fetched during the
+  // narrow window when status was still "lobby"), they would lose this
+  // subscription and miss the "in_progress" event entirely, getting stuck.
   const subscribedGameId =
-    state.status === "in_progress" || state.status === "finished"
+    state.status === "in_progress" || state.status === "finished" || state.status === "lobby"
       ? (state as { game: Game }).game.id
       : null
 
@@ -168,14 +173,16 @@ export default function GamePage() {
         async (payload) => {
           const updatedGame = payload.new as Game
 
-          // If game was reset to lobby
+          // Game was reset to lobby (back-to-lobby or first step of play-again)
           if (updatedGame.status === "lobby") {
-            // Reload and allow auto-rejoin if this client was dropped.
             await loadGame(true)
           }
-          // If game was restarted (play again)
-          else if (updatedGame.status === "in_progress" && pageStatusRef.current === "finished") {
-            // Reload to get fresh state with new seed
+          // Game went in_progress: covers both play-again (from "finished" or
+          // briefly-entered "lobby") and the normal host-start-from-lobby path.
+          else if (
+            updatedGame.status === "in_progress" &&
+            (pageStatusRef.current === "finished" || pageStatusRef.current === "lobby")
+          ) {
             await loadGame(false)
           }
         }
@@ -249,21 +256,16 @@ export default function GamePage() {
 
   const handlePlayAgain = useCallback(async () => {
     if (state.status !== "finished" && state.status !== "in_progress") return
-    
+
     setActionLoading(true)
     try {
       const result = await playAgain(state.game.id)
-      
-      if (result.ok && result.game && result.startedAt) {
-        // Reset players scores and start game
-        const resetPlayers = state.players.map(p => ({ ...p, score: 0, best_word: null, best_word_score: 0 }))
-        setState({
-          status: "in_progress",
-          game: result.game,
-          players: resetPlayers,
-          userId: state.userId,
-          startedAt: result.startedAt,
-        })
+
+      if (result.ok) {
+        // Fetch fresh state from DB (new seed, reset scores, correct started_at).
+        // Avoids carrying stale/phantom players from the previous game into the
+        // new one — same approach used by handleBackToLobby and non-host players.
+        await loadGame(false)
       } else {
         console.error("Failed to play again:", result.error)
       }
@@ -272,7 +274,7 @@ export default function GamePage() {
     } finally {
       setActionLoading(false)
     }
-  }, [state])
+  }, [state, loadGame])
 
   // Render based on state
   if (state.status === "loading" || state.status === "joining") {
@@ -360,7 +362,13 @@ export default function GamePage() {
 
   if (state.status === "in_progress") {
     return (
+      // key={seed} ensures the component fully unmounts and remounts whenever a
+      // new game starts (playAgain generates a new seed). This resets all internal
+      // state (isGameOver, score, tiles, refs, etc.) so the new game starts clean.
+      // During the same game (in_progress → finished), the seed is unchanged so
+      // the component stays mounted — which is the desired behaviour.
       <MultiplayerGame
+        key={state.game.seed}
         game={state.game}
         players={state.players}
         currentUserId={state.userId}
@@ -375,9 +383,9 @@ export default function GamePage() {
   }
 
   if (state.status === "finished") {
-    // Will be handled by MultiplayerGameEnd component
     return (
       <MultiplayerGame
+        key={state.game.seed}
         game={state.game}
         players={state.players}
         currentUserId={state.userId}

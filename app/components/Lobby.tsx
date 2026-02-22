@@ -273,11 +273,17 @@ export default function Lobby({
       await cleanupStalePlayers(game.id, STALE_PLAYER_CUTOFF_SECONDS)
     }
 
-    runCleanup()
+    // Delay the very first cleanup by one full interval so in-flight heartbeats
+    // (including the one fired immediately on mount) can update last_seen_at
+    // before any player records are pruned. Running cleanup instantly on mount
+    // caused a race: returning players hadn't sent their first heartbeat yet,
+    // so cleanup deleted them and they had to refresh to rejoin.
+    const initialTimer = setTimeout(runCleanup, CLEANUP_INTERVAL_MS)
     const interval = setInterval(runCleanup, CLEANUP_INTERVAL_MS)
 
     return () => {
       mounted = false
+      clearTimeout(initialTimer)
       clearInterval(interval)
     }
   }, [game.id])

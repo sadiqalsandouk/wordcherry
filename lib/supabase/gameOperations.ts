@@ -394,6 +394,17 @@ export async function resetGameToLobby(gameId: string): Promise<{ ok: boolean; g
       return { ok: false, error: result.error_message || "Failed to reset game" }
     }
 
+    // Refresh every player's last_seen_at to NOW so the new lobby doesn't
+    // immediately prune them. During a game no heartbeats are sent (heartbeats
+    // only run inside Lobby.tsx), so by the time the game ends all players have
+    // a stale last_seen_at. Without this refresh, cleanupStalePlayers runs the
+    // moment the Lobby mounts and deletes everyone before heartbeats can fire.
+    await supabase
+      .from("game_players")
+      .update({ last_seen_at: new Date().toISOString() })
+      .eq("game_id", gameId)
+    // (error intentionally ignored — best-effort; cleanup will re-sync anyway)
+
     // Fetch the updated game
     const { data: gameData, error: fetchError } = await supabase
       .from("games")
