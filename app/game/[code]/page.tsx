@@ -31,6 +31,7 @@ export default function GamePage() {
   const [state, setState] = useState<PageState>({ status: "loading" })
   const [actionLoading, setActionLoading] = useState(false)
   const autoJoinInFlight = useRef(false)
+  const pageStatusRef = useRef<string>(state.status)
 
   const loadGame = useCallback(async (attemptAutoJoin: boolean = false) => {
     try {
@@ -133,12 +134,28 @@ export default function GamePage() {
     }
   }, [loadGame, playerNameLoading])
 
-  // Subscribe to game status changes (for non-hosts to get redirected on reset/replay)
+  // Keep pageStatusRef current so the subscription callback below can read the
+  // latest status without making it a reactive dependency (which would cause
+  // constant subscription teardown/recreate every time players update scores).
   useEffect(() => {
-    if (state.status !== "in_progress" && state.status !== "finished") return
-    
-    const channel = supabase.channel(`game_status_page:${state.game.id}`)
-    
+    pageStatusRef.current = state.status
+  }, [state.status])
+
+  // Subscribe to game status changes (for non-hosts to get redirected on reset/replay).
+  // IMPORTANT: Only depend on the stable gameId primitive, not the full state object.
+  // Using the full state object caused the subscription to teardown/recreate on every
+  // player score update, creating a window where the "reset to lobby" event could be
+  // silently dropped, leaving non-host players stuck on the finished screen.
+  const subscribedGameId =
+    state.status === "in_progress" || state.status === "finished"
+      ? (state as { game: Game }).game.id
+      : null
+
+  useEffect(() => {
+    if (!subscribedGameId) return
+
+    const channel = supabase.channel(`game_status_page:${subscribedGameId}`)
+
     channel
       .on(
         "postgres_changes",
@@ -146,18 +163,18 @@ export default function GamePage() {
           event: "UPDATE",
           schema: "public",
           table: "games",
-          filter: `id=eq.${state.game.id}`,
+          filter: `id=eq.${subscribedGameId}`,
         },
         async (payload) => {
           const updatedGame = payload.new as Game
-          
+
           // If game was reset to lobby
           if (updatedGame.status === "lobby") {
             // Reload and allow auto-rejoin if this client was dropped.
             await loadGame(true)
           }
           // If game was restarted (play again)
-          else if (updatedGame.status === "in_progress" && state.status === "finished") {
+          else if (updatedGame.status === "in_progress" && pageStatusRef.current === "finished") {
             // Reload to get fresh state with new seed
             await loadGame(false)
           }
@@ -168,7 +185,7 @@ export default function GamePage() {
     return () => {
       supabase.removeChannel(channel)
     }
-  }, [state, loadGame])
+  }, [subscribedGameId, loadGame])
 
   const handleGameStart = useCallback((updatedGame: Game) => {
     setState((prev) => {
@@ -210,20 +227,16 @@ export default function GamePage() {
 
   const handleBackToLobby = useCallback(async () => {
     if (state.status !== "finished" && state.status !== "in_progress") return
-    
+
     setActionLoading(true)
     try {
       const result = await resetGameToLobby(state.game.id)
-      
-      if (result.ok && result.game) {
-        // Reset players scores locally and go to lobby
-        const resetPlayers = state.players.map(p => ({ ...p, score: 0, best_word: null, best_word_score: 0 }))
-        setState({
-          status: "lobby",
-          game: result.game,
-          players: resetPlayers,
-          userId: state.userId,
-        })
+
+      if (result.ok) {
+        // Re-fetch fresh state from DB so the host sees the same clean lobby
+        // as non-host players (who also go through loadGame). Using stale
+        // state.players here could carry over phantom players or wrong scores.
+        await loadGame(false)
       } else {
         console.error("Failed to reset game:", result.error)
       }
@@ -232,7 +245,7 @@ export default function GamePage() {
     } finally {
       setActionLoading(false)
     }
-  }, [state])
+  }, [state, loadGame])
 
   const handlePlayAgain = useCallback(async () => {
     if (state.status !== "finished" && state.status !== "in_progress") return

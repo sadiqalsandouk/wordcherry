@@ -65,6 +65,7 @@ export default function MultiplayerGame({
   const hasPlayedEndRef = useRef(false)
   const hasPlayedStartRef = useRef(false)
   const feedbackIdRef = useRef(0)
+  const gameEndCalledRef = useRef(false)
 
   // Ref to store final local score for merging
   const finalLocalScoreRef = useRef<number>(0)
@@ -144,6 +145,11 @@ export default function MultiplayerGame({
 
   // Handle game end - fetch final scores then show results
   const handleGameEnd = useCallback(async () => {
+    // Guard against the interval firing multiple times before React re-renders
+    // with isLoadingFinalScores=true (which would stop the interval).
+    if (gameEndCalledRef.current) return
+    gameEndCalledRef.current = true
+
     setIsLoadingFinalScores(true)
     
     // Broadcast our final score to other players
@@ -250,13 +256,9 @@ export default function MultiplayerGame({
 
     channel
       .on("broadcast", { event: "score_update" }, (payload) => {
-        const { playerId, userId, newScore, team } = payload.payload
-        
-        console.log("Received score update:", { playerId, userId, newScore, team })
-        
+        const { playerId, userId, newScore } = payload.payload
+
         setPlayers((prev) => {
-          console.log("Current players count:", prev.length)
-          
           // First check if this player exists in our array
           const existingPlayerIndex = prev.findIndex(
             (p) => p.id === playerId || p.user_id === userId
@@ -264,38 +266,14 @@ export default function MultiplayerGame({
           
           if (existingPlayerIndex !== -1) {
             // Player found - update their score
-            console.log("Found player, updating score")
-            return prev.map((p, i) => 
+            return prev.map((p, i) =>
               i === existingPlayerIndex ? { ...p, score: newScore } : p
             )
           }
-          
-          // Player not found by ID - try to find by team
-          const teamPlayerIndex = prev.findIndex(
-            (p) => p.team === team && p.user_id !== currentUserId
-          )
-          
-          if (teamPlayerIndex !== -1) {
-            console.log("Found by team, updating score")
-            return prev.map((p, i) =>
-              i === teamPlayerIndex ? { ...p, score: newScore } : p
-            )
-          }
-          
-          // No matching player found - add a placeholder player for this team
-          console.log("No matching player found, adding placeholder for team:", team)
-          const newPlayer: GamePlayer = {
-            id: playerId || `temp-${Date.now()}`,
-            game_id: game.id,
-            user_id: userId || "",
-            player_name: `Team ${team === "A" ? "Blue" : "Red"} Player`,
-            team: team as "A" | "B",
-            score: newScore,
-            best_word: null,
-            best_word_score: 0,
-            joined_at: new Date().toISOString(),
-          }
-          return [...prev, newPlayer]
+
+          // Player not found — ignore the broadcast. Adding phantom placeholder
+          // players here caused duplicate/broken UI in the lobby after game reset.
+          return prev
         })
       })
       .subscribe((status) => {
