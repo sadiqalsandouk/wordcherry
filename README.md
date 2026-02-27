@@ -1,36 +1,30 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# WordCherry
 
-## Getting Started
+WordCherry is a fun word game where you create words from letter tiles to score points. Play solo or challenge friends in this engaging anagram puzzle game!
 
-First, run the development server:
+## About
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+WordCherry is an engaging word puzzle game where you arrange letter tiles to form valid words and rack up points. Play at your own pace in solo mode or go head-to-head against friends in multiplayer.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## How to Play
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Visit the [wordcherry.com](https://wordcherry.com) website.
+2. Choose to play solo or start a multiplayer lobby.
+3. Arrange the letter tiles to form valid words.
+4. Score points based on the words you create.
+5. See how you stack up against your friends!
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Deployment
 
-## Learn More
+The project is deployed on Vercel. You can play the game by visiting [wordcherry.com](https://wordcherry.com).
 
-To learn more about Next.js, take a look at the following resources:
+## License
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Acknowledgements
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Built with Next.js and Tailwind CSS
+- Multiplayer powered by Supabase
+- Deployed on Vercel
+- The purpose of this project was to learn more about Next.js, Supabase auth and have a playground to learn more and work on new features
