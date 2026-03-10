@@ -16,6 +16,7 @@ import PauseMenu from "../components/PauseMenu"
 import { supabase } from "@/lib/supabase/supabase"
 import { usePlayerName } from "@/app/components/AuthProvider"
 import { sfx } from "@/app/utils/sfx"
+import { haptics } from "@/app/utils/haptics"
 
 interface TileState {
   letter: string
@@ -58,6 +59,7 @@ export default function SoloGame() {
     (letter: string, index: number) => {
       if (tiles[index].isUsed) return
 
+      haptics.tap()
       setCurrentWord((prev) => [...prev, { letter, tileIndex: index }])
       setTiles((prev) =>
         prev.map((tile, i) =>
@@ -207,6 +209,7 @@ export default function SoloGame() {
 
     if (!isValidWord) {
       sfx.submitInvalid()
+      haptics.submitInvalid()
       feedbackIdRef.current += 1
       setFeedback({
         id: feedbackIdRef.current,
@@ -224,6 +227,7 @@ export default function SoloGame() {
 
     feedbackIdRef.current += 1
     sfx.submitValid()
+    haptics.submitValid()
     setFeedback({
       id: feedbackIdRef.current,
       message: "Valid word!",
@@ -287,6 +291,7 @@ export default function SoloGame() {
     })
     setTimeBonus(0)
     sfx.start()
+    haptics.start()
     const newLetters = getSeededLetters(run.seed, run.roundIndex || 0)
     setTiles(newLetters.map((letter) => ({ letter, isUsed: false })))
     setGameKey((prev) => prev + 1)
@@ -362,6 +367,7 @@ export default function SoloGame() {
     if (lastTickRef.current === secondsLeft) return
     lastTickRef.current = secondsLeft
     sfx.tick()
+    haptics.tick()
   }, [secondsLeft, gameState])
 
   useEffect(() => {
@@ -372,6 +378,7 @@ export default function SoloGame() {
     if (hasPlayedEndRef.current) return
     hasPlayedEndRef.current = true
     sfx.end()
+    haptics.end()
   }, [gameState])
 
   useEffect(() => {

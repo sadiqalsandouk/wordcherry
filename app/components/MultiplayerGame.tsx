@@ -13,6 +13,7 @@ import SubmitButton from "./SubmitButton"
 import MultiplayerGameEnd from "./MultiplayerGameEnd"
 import { Star } from "lucide-react"
 import { sfx } from "@/app/utils/sfx"
+import { haptics } from "@/app/utils/haptics"
 
 interface TileState {
   letter: string
@@ -205,6 +206,7 @@ export default function MultiplayerGame({
     if (hasPlayedStartRef.current) return
     hasPlayedStartRef.current = true
     sfx.start()
+    haptics.start()
   }, [isGameOver, isLoadingFinalScores])
 
   useEffect(() => {
@@ -212,6 +214,7 @@ export default function MultiplayerGame({
     if (hasPlayedEndRef.current) return
     hasPlayedEndRef.current = true
     sfx.end()
+    haptics.end()
   }, [isGameOver])
 
   // Listen for other players' final score broadcasts
@@ -381,6 +384,7 @@ export default function MultiplayerGame({
     (letter: string, index: number) => {
       if (tiles[index].isUsed || isGameOver) return
 
+      haptics.tap()
       setCurrentWord((prev) => [...prev, { letter, tileIndex: index }])
       setTiles((prev) =>
         prev.map((tile, i) =>
@@ -447,6 +451,7 @@ export default function MultiplayerGame({
       // Optimistic local update for instant feel
       const nextTotalScore = score + wordScore
       sfx.submitValid()
+      haptics.submitValid()
 
       feedbackIdRef.current += 1
       setFeedback({
@@ -498,6 +503,7 @@ export default function MultiplayerGame({
       }
     } else {
       sfx.submitInvalid()
+      haptics.submitInvalid()
       feedbackIdRef.current += 1
       setFeedback({
         id: feedbackIdRef.current,
@@ -539,6 +545,7 @@ export default function MultiplayerGame({
     if (lastTickRef.current === secondsLeft) return
     lastTickRef.current = secondsLeft
     sfx.tick()
+    haptics.tick()
   }, [secondsLeft, isGameOver, isLoadingFinalScores])
 
   // Loading final scores
