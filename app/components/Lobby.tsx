@@ -17,6 +17,7 @@ import PlayerList from "./PlayerList"
 import { Copy, Check, Play, ArrowLeft } from "lucide-react"
 import { toast } from "sonner"
 import { sfx } from "@/app/utils/sfx"
+import { haptics } from "@/app/utils/haptics"
 
 const DURATION_OPTIONS = [
   { value: 30, label: "30s" },
@@ -139,6 +140,7 @@ export default function Lobby({
           })
           toast.success(`${newPlayer.player_name} joined!`)
           sfx.join()
+          haptics.join()
         }
       )
       .on(
@@ -169,6 +171,7 @@ export default function Lobby({
           setPlayers((prev) => prev.filter((p) => p.id !== oldPlayer.id))
           toast.info(`${oldPlayer.player_name} left`)
           sfx.leave()
+          haptics.leave()
         }
       )
       .subscribe()
@@ -182,6 +185,7 @@ export default function Lobby({
   useEffect(() => {
     if (previousStatusRef.current !== "in_progress" && game.status === "in_progress") {
       sfx.start()
+      haptics.start()
     }
     previousStatusRef.current = game.status
   }, [game.status])
@@ -195,6 +199,7 @@ export default function Lobby({
     if (lastCountdownTickRef.current === countdownSeconds) return
     lastCountdownTickRef.current = countdownSeconds
     sfx.tick()
+    haptics.tick()
   }, [countdownSeconds])
 
   const handleCopyCode = useCallback(async () => {
