@@ -2,7 +2,8 @@ import { WebHaptics } from "web-haptics"
 
 const instance = typeof window !== "undefined" ? new WebHaptics() : null
 
-const trigger: WebHaptics["trigger"] = (...args) => instance?.trigger(...args)
+const trigger = (...args: Parameters<WebHaptics["trigger"]>): Promise<void> =>
+  instance?.trigger(...args) ?? Promise.resolve()
 
 export const haptics = {
   tap: () => trigger("selection"),
