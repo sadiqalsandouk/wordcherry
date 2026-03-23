@@ -108,6 +108,90 @@ export default function Home() {
                     </div>
                   </div>
                 </details>
+
+                <details className="group rounded-xl border border-wordcherryBlue/25 bg-white/75 backdrop-blur-sm transition-colors open:border-wordcherryBlue/45 open:bg-white">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-wordcherryBlue">
+                    <span className="font-bold">Is WordCherry free to play?</span>
+                    <span className="rounded-md bg-wordcherryBlue/10 px-2 py-1 text-xs font-black transition-transform group-open:rotate-45">
+                      +
+                    </span>
+                  </summary>
+                  <div className="border-t border-wordcherryBlue/15 px-4 pb-4 pt-3">
+                    <p className="text-sm text-wordcherryBlue/80 leading-relaxed">
+                      Yes — WordCherry is completely free. No download, no subscription, and no pay-to-win mechanics. Solo play requires no account at all. Creating a free account lets you save scores to the global leaderboard and access multiplayer lobbies.
+                    </p>
+                  </div>
+                </details>
+
+                <details className="group rounded-xl border border-wordcherryBlue/25 bg-white/75 backdrop-blur-sm transition-colors open:border-wordcherryBlue/45 open:bg-white">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-wordcherryBlue">
+                    <span className="font-bold">How does multiplayer work?</span>
+                    <span className="rounded-md bg-wordcherryBlue/10 px-2 py-1 text-xs font-black transition-transform group-open:rotate-45">
+                      +
+                    </span>
+                  </summary>
+                  <div className="border-t border-wordcherryBlue/15 px-4 pb-4 pt-3">
+                    <p className="text-sm text-wordcherryBlue/80 leading-relaxed mb-3">
+                      In multiplayer mode, all players in a lobby compete simultaneously using a shared letter pool. You can create a private lobby and share the code with friends, or join a public game. The player with the highest score when time runs out wins. Multiplayer games are live — scores update in real time so you always know where you stand.
+                    </p>
+                  </div>
+                </details>
+
+                <details className="group rounded-xl border border-wordcherryBlue/25 bg-white/75 backdrop-blur-sm transition-colors open:border-wordcherryBlue/45 open:bg-white">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-wordcherryBlue">
+                    <span className="font-bold">What word list does WordCherry use?</span>
+                    <span className="rounded-md bg-wordcherryBlue/10 px-2 py-1 text-xs font-black transition-transform group-open:rotate-45">
+                      +
+                    </span>
+                  </summary>
+                  <div className="border-t border-wordcherryBlue/15 px-4 pb-4 pt-3">
+                    <p className="text-sm text-wordcherryBlue/80 leading-relaxed">
+                      WordCherry validates words against a large English dictionary containing hundreds of thousands of entries, sourced from the open-source dwyl/english-words list. If a word is a legitimate English word, it is very likely accepted. Proper nouns and abbreviations are generally not valid.
+                    </p>
+                  </div>
+                </details>
+
+                <details className="group rounded-xl border border-wordcherryBlue/25 bg-white/75 backdrop-blur-sm transition-colors open:border-wordcherryBlue/45 open:bg-white">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-wordcherryBlue">
+                    <span className="font-bold">Can I play on mobile?</span>
+                    <span className="rounded-md bg-wordcherryBlue/10 px-2 py-1 text-xs font-black transition-transform group-open:rotate-45">
+                      +
+                    </span>
+                  </summary>
+                  <div className="border-t border-wordcherryBlue/15 px-4 pb-4 pt-3">
+                    <p className="text-sm text-wordcherryBlue/80 leading-relaxed">
+                      Yes. WordCherry is designed to work on desktop and mobile browsers. On mobile, tap tiles to select and build words. The interface adapts to smaller screens so you can play comfortably on any device without needing an app.
+                    </p>
+                  </div>
+                </details>
+
+                <details className="group rounded-xl border border-wordcherryBlue/25 bg-white/75 backdrop-blur-sm transition-colors open:border-wordcherryBlue/45 open:bg-white">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-wordcherryBlue">
+                    <span className="font-bold">How do I get on the leaderboard?</span>
+                    <span className="rounded-md bg-wordcherryBlue/10 px-2 py-1 text-xs font-black transition-transform group-open:rotate-45">
+                      +
+                    </span>
+                  </summary>
+                  <div className="border-t border-wordcherryBlue/15 px-4 pb-4 pt-3">
+                    <p className="text-sm text-wordcherryBlue/80 leading-relaxed">
+                      Create a free account and your solo and multiplayer scores will automatically be submitted to the global leaderboard. The leaderboard tracks the top 10 scores for both solo and multiplayer modes separately. Check the Leaderboard page to see where the current top players stand.
+                    </p>
+                  </div>
+                </details>
+
+                <details className="group rounded-xl border border-wordcherryBlue/25 bg-white/75 backdrop-blur-sm transition-colors open:border-wordcherryBlue/45 open:bg-white">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-wordcherryBlue">
+                    <span className="font-bold">What happens when I run out of tiles?</span>
+                    <span className="rounded-md bg-wordcherryBlue/10 px-2 py-1 text-xs font-black transition-transform group-open:rotate-45">
+                      +
+                    </span>
+                  </summary>
+                  <div className="border-t border-wordcherryBlue/15 px-4 pb-4 pt-3">
+                    <p className="text-sm text-wordcherryBlue/80 leading-relaxed">
+                      Every time you submit a valid word, the tiles you used are replaced with new random ones. You always have 10 tiles available (minus any currently selected). You will never run out of tiles — the supply is unlimited. The only thing that ends the game is the timer reaching zero.
+                    </p>
+                  </div>
+                </details>
               </div>
           </section>
         </div>

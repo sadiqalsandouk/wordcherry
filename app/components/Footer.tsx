@@ -22,9 +22,20 @@ export default function Footer() {
           </Link>
           .
         </div>
-        <div className="text-xs space-x-4">
+        <div className="text-xs space-x-4 mb-2">
+          <Link href="/about" className="text-white/60 hover:text-white transition-colors">
+            About
+          </Link>
+          <Link href="/guide" className="text-white/60 hover:text-white transition-colors">
+            Strategy Guide
+          </Link>
           <Link href="/leaderboard" className="text-white/60 hover:text-white transition-colors">
             Leaderboard
+          </Link>
+        </div>
+        <div className="text-xs space-x-4">
+          <Link href="/contact" className="text-white/60 hover:text-white transition-colors">
+            Contact
           </Link>
           <Link href="/privacy" className="text-white/60 hover:text-white transition-colors">
             Privacy Policy
