@@ -168,10 +168,15 @@ export default function Lobby({
         },
         (payload) => {
           const oldPlayer = payload.old as GamePlayer
-          setPlayers((prev) => prev.filter((p) => p.id !== oldPlayer.id))
-          toast.info(`${oldPlayer.player_name} left`)
-          sfx.leave()
-          haptics.leave()
+          setPlayers((prev) => {
+            const leaving = prev.find((p) => p.id === oldPlayer.id)
+            if (leaving) {
+              toast.info(`${leaving.player_name} left`)
+              sfx.leave()
+              haptics.leave()
+            }
+            return prev.filter((p) => p.id !== oldPlayer.id)
+          })
         }
       )
       .subscribe()
