@@ -283,6 +283,19 @@ export default function MultiplayerGame({
         console.log("Live scores channel status:", status)
         if (status === "SUBSCRIBED") {
           liveScoresReadyRef.current = true
+          // Broadcast current score immediately as a catch-up sync.
+          // On the first game the WebSocket connection is cold and the channel
+          // can take a few seconds to subscribe. Any words submitted before this
+          // point were silently dropped. Broadcasting the current score now
+          // ensures the other side gets a sync point as soon as we're ready.
+          void channel.send({
+            type: "broadcast",
+            event: "score_update",
+            payload: {
+              userId: currentUserId,
+              newScore: finalLocalScoreRef.current,
+            },
+          })
         }
       })
 
