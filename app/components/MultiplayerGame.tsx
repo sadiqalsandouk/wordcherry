@@ -245,7 +245,7 @@ export default function MultiplayerGame({
 
   // Ref to store the live scores channel and its ready state
   const liveScoresChannelRef = useRef<ReturnType<typeof supabase.channel> | null>(null)
-  const [liveScoresReady, setLiveScoresReady] = useState(false)
+  const liveScoresReadyRef = useRef(false)
 
   // Subscribe to live score broadcasts from other players
   useEffect(() => {
@@ -282,14 +282,14 @@ export default function MultiplayerGame({
       .subscribe((status) => {
         console.log("Live scores channel status:", status)
         if (status === "SUBSCRIBED") {
-          setLiveScoresReady(true)
+          liveScoresReadyRef.current = true
         }
       })
 
     liveScoresChannelRef.current = channel
 
     return () => {
-      setLiveScoresReady(false)
+      liveScoresReadyRef.current = false
       supabase.removeChannel(channel)
     }
   }, [game.id, currentUserId])
@@ -482,7 +482,7 @@ export default function MultiplayerGame({
       })
 
       // Broadcast optimistic score update to other players
-      if (liveScoresChannelRef.current && liveScoresReady) {
+      if (liveScoresChannelRef.current && liveScoresReadyRef.current) {
         console.log("Broadcasting score update:", nextTotalScore)
         liveScoresChannelRef.current.send({
           type: "broadcast",
@@ -513,7 +513,7 @@ export default function MultiplayerGame({
       setIsShaking(true)
       setTimeout(() => setIsShaking(false), 500)
     }
-  }, [currentWord, game.id, roundIndex, bestWord.score, isGameOver, currentPlayer?.id, currentUserId, liveScoresReady])
+  }, [currentWord, game.id, roundIndex, bestWord.score, isGameOver, currentPlayer?.id, currentUserId])
 
 
   // Keyboard controls
