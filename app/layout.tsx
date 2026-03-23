@@ -35,6 +35,10 @@ export const metadata: Metadata = {
   creator: "Wordcherry Team",
   publisher: "Wordcherry",
   robots: "index, follow",
+  metadataBase: new URL("https://wordcherry.com"),
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     title: "Wordcherry - Fun Word Game",
     description:

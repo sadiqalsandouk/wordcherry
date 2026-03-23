@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /account
+Disallow: /game/
+Disallow: /lobby/
+Disallow: /match/
+Disallow: /auth/
+
+Sitemap: https://wordcherry.com/sitemap.xml

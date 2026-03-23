@@ -1,9 +1,37 @@
 import { Suspense } from "react"
 import JoinForm from "./components/JoinForm"
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: "WordCherry",
+  url: "https://wordcherry.com",
+  description:
+    "WordCherry is a free browser-based word game where you build words from letter tiles to score points. Play solo or compete in real-time multiplayer.",
+  applicationCategory: "GameApplication",
+  genre: "Word Game",
+  operatingSystem: "Any",
+  browserRequirements: "Requires a modern web browser",
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "USD",
+  },
+  featureList: [
+    "Solo mode with global leaderboard",
+    "Real-time multiplayer",
+    "Letter tile scoring system",
+    "No download required",
+  ],
+}
+
 export default function Home() {
   return (
     <div className="py-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="space-y-4 sm:space-y-4 md:space-y-6">
         <Suspense fallback={<div className="h-40" />}>
           <JoinForm />
