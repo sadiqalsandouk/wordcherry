@@ -499,7 +499,7 @@ export default function MultiplayerGame({
           console.error("Score broadcast failed:", err)
         })
       } else {
-        console.warn("Live scores channel not ready:", { channel: !!liveScoresChannelRef.current, ready: liveScoresReady })
+        console.warn("Live scores channel not ready:", { channel: !!liveScoresChannelRef.current, ready: liveScoresReadyRef.current })
       }
     } else {
       sfx.submitInvalid()
