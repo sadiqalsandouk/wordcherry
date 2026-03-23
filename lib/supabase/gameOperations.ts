@@ -401,7 +401,7 @@ export async function resetGameToLobby(gameId: string): Promise<{ ok: boolean; g
     // moment the Lobby mounts and deletes everyone before heartbeats can fire.
     await supabase
       .from("game_players")
-      .update({ last_seen_at: new Date().toISOString() })
+      .update({ last_seen_at: new Date().toISOString(), is_ready: false })
       .eq("game_id", gameId)
     // (error intentionally ignored — best-effort; cleanup will re-sync anyway)
 
