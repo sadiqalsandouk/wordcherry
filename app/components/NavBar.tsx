@@ -1,16 +1,14 @@
 import Link from "next/link"
-import { Menu, X, Gamepad2, Trophy, User } from "lucide-react"
+import Image from "next/image"
+import { Gamepad2, Trophy, User } from "lucide-react"
 
 export default function NavBar() {
   return (
     <nav className="w-full p-5 border-b border-white/20">
       <div className="flex items-center justify-between">
         <div>
-          <Link
-            href="/"
-            className="text-wordcherryYellow text-center text-lg md:text-2xl font-bold drop-shadow-[0_2px_2px_rgba(0,0,0,0.25)] leading-tight"
-          >
-            WORDCHERRY
+          <Link href="/">
+            <Image src="/wordcherry-logo.svg" alt="WordCherry" width={160} height={48} className="h-12 w-auto" priority />
           </Link>
         </div>
         <div className="flex items-center space-x-6">
