@@ -33,7 +33,7 @@ export default function PlayerList({
     return (
       <div
         key={player.id}
-        className={`flex items-center gap-1.5 md:gap-2 px-2 md:px-4 py-2 md:py-2.5 rounded-lg text-sm md:text-base ${
+        className={`flex items-center gap-1.5 md:gap-2 px-2 md:px-3 py-2 md:py-2.5 rounded-lg min-w-0 w-full ${
           isCurrentUser
             ? "bg-wordcherryBlue/20 font-semibold border border-wordcherryBlue/30"
             : "bg-gray-200/80 border border-gray-300"
@@ -42,12 +42,12 @@ export default function PlayerList({
         {isHostPlayer && (
           <Crown className="w-3 h-3 md:w-4 md:h-4 text-amber-500 flex-shrink-0" />
         )}
-        <span className={`truncate text-xs md:text-sm ${isCurrentUser ? "text-wordcherryBlue" : "text-gray-700"}`}>
+        <span className={`flex-1 min-w-0 truncate text-xs md:text-sm ${isCurrentUser ? "text-wordcherryBlue" : "text-gray-700"}`}>
           {isCurrentUser ? `${player.player_name} (you)` : player.player_name}
         </span>
         {gameStatus === "lobby" && (
           <span
-            className={`ml-auto flex-shrink-0 inline-flex items-center gap-0.5 rounded-full px-1.5 md:px-2.5 py-0.5 text-xs font-semibold ${
+            className={`ml-auto flex-shrink-0 inline-flex items-center gap-0.5 rounded-full p-0.5 sm:px-2.5 sm:py-0.5 text-xs font-semibold ${
               isReady ? "bg-emerald-100 text-emerald-700" : "bg-gray-100 text-gray-500"
             }`}
           >
@@ -72,42 +72,40 @@ export default function PlayerList({
   return (
     <div className="space-y-3 md:space-y-4">
       {/* Teams container */}
-      <div className="flex">
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-0">
         {/* Blue Team */}
-        <div className="flex-1 pr-3 md:pr-4">
-          {/* Blue accent bar */}
+        <div className="flex-1 sm:pr-4">
           <div className="h-1 bg-blue-500 rounded-full mb-3" />
-          <div className="flex items-center justify-between mb-2 md:mb-3">
-            <span className="text-xs md:text-sm font-bold text-blue-600 uppercase tracking-wide">Blue Team</span>
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold text-blue-600 uppercase tracking-wide">Blue Team</span>
             {gameStatus !== "lobby" && (
-              <span className="text-sm md:text-base font-bold text-blue-600">{teamAScore}</span>
+              <span className="text-sm font-bold text-blue-600">{teamAScore}</span>
             )}
           </div>
-          <div className="space-y-1.5 md:space-y-2 h-[120px] md:h-[150px] overflow-y-auto">
+          <div className="space-y-1.5 overflow-y-auto max-h-[160px]">
             {teamAPlayers.length === 0 ? (
-              <p className="text-xs md:text-sm text-gray-400 italic py-2">No players</p>
+              <p className="text-xs text-gray-400 italic py-2">No players</p>
             ) : (
               teamAPlayers.map((p) => renderPlayer(p))
             )}
           </div>
         </div>
 
-        {/* Vertical divider */}
-        <div className="w-px bg-gray-200 mx-2" />
+        {/* Divider: horizontal on mobile, vertical on sm+ */}
+        <div className="h-px sm:h-auto sm:w-px bg-gray-200 sm:mx-2" />
 
         {/* Red Team */}
-        <div className="flex-1 pl-3 md:pl-4">
-          {/* Red accent bar */}
+        <div className="flex-1 sm:pl-4">
           <div className="h-1 bg-red-500 rounded-full mb-3" />
-          <div className="flex items-center justify-between mb-2 md:mb-3">
-            <span className="text-xs md:text-sm font-bold text-red-600 uppercase tracking-wide">Red Team</span>
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold text-red-600 uppercase tracking-wide">Red Team</span>
             {gameStatus !== "lobby" && (
-              <span className="text-sm md:text-base font-bold text-red-600">{teamBScore}</span>
+              <span className="text-sm font-bold text-red-600">{teamBScore}</span>
             )}
           </div>
-          <div className="space-y-1.5 md:space-y-2 h-[120px] md:h-[150px] overflow-y-auto">
+          <div className="space-y-1.5 overflow-y-auto max-h-[160px]">
             {teamBPlayers.length === 0 ? (
-              <p className="text-xs md:text-sm text-gray-400 italic py-2">No players</p>
+              <p className="text-xs text-gray-400 italic py-2">No players</p>
             ) : (
               teamBPlayers.map((p) => renderPlayer(p))
             )}
