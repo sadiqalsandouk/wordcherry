@@ -100,8 +100,7 @@ export default function MultiplayerGameEnd({
     // Only show confetti if player is on the winning team (not on draw)
     if (isWinner) {
       setShowConfetti(true)
-      // Quick confetti burst - 3 seconds then stop
-      const timer = setTimeout(() => setShowConfetti(false), 3000)
+      const timer = setTimeout(() => setShowConfetti(false), 8000)
       return () => clearTimeout(timer)
     }
   }, [isWinner])
