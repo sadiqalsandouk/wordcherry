@@ -27,7 +27,7 @@ export default function GamePage() {
   const params = useParams()
   const code = (params.code as string).toUpperCase()
   const { playerName, isLoading: playerNameLoading } = usePlayerName()
-  
+
   const [state, setState] = useState<PageState>({ status: "loading" })
   const [actionLoading, setActionLoading] = useState(false)
   const autoJoinInFlight = useRef(false)
@@ -37,7 +37,7 @@ export default function GamePage() {
     try {
       // Get current user
       const { data: { user } } = await supabase.auth.getUser()
-      
+
       if (!user) {
         // Try anonymous sign in
         const { data: anonData, error: anonError } = await supabase.auth.signInAnonymously()
@@ -56,7 +56,7 @@ export default function GamePage() {
 
       // Get game state
       const result = await getFullGameState(code)
-      
+
       if (!result.ok) {
         if (result.error.includes("No rows")) {
           setState({ status: "not_found" })
@@ -91,13 +91,13 @@ export default function GamePage() {
           }
           return
         }
-        
+
         // Game already started, can't join
         if (game.status !== "lobby") {
           setState({ status: "game_started" })
           return
         }
-        
+
         // Shouldn't reach here normally, but fallback to error
         setState({ status: "error", message: "Unable to join game" })
         return
@@ -200,12 +200,7 @@ export default function GamePage() {
   }, [subscribedGameId, loadGame])
 
   const handleGameStart = useCallback((updatedGame: Game) => {
-    // Transition immediately using the realtime payload so MultiplayerGame mounts
-    // without delay. Any stale players in prev.players are reconciled by
-    // MultiplayerGame's own game_room subscription (SUBSCRIBED snapshot + periodic
-    // poll), so a loadGame() round-trip here is unnecessary and harmful: it adds
-    // 2-7 s of latency between started_at being written and the component mounting,
-    // which causes the timer to start several seconds below the full game duration.
+    const startedAt = new Date().toISOString()
     setState((prev) => {
       if (prev.status === "lobby") {
         return {
@@ -213,7 +208,7 @@ export default function GamePage() {
           game: updatedGame,
           players: prev.players,
           userId: prev.userId,
-          startedAt: updatedGame.started_at!,
+          startedAt,
         }
       }
       return prev
