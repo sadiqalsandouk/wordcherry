@@ -194,14 +194,26 @@ export default function GamePage() {
     }
   }, [subscribedGameId, loadGame])
 
-  const handleGameStart = useCallback((_updatedGame: Game) => {
-    // Re-fetch the full game state from DB so the host gets the current
-    // player list (including anyone who joined after the host loaded the page).
-    // The Lobby manages its own players state internally and does NOT propagate
-    // it back here, so `prev.players` in page state would only contain players
-    // who were present at the time of the initial loadGame() call.
-    void loadGame(false)
-  }, [loadGame])
+  const handleGameStart = useCallback((updatedGame: Game) => {
+    // Transition immediately using the realtime payload so MultiplayerGame mounts
+    // without delay. Any stale players in prev.players are reconciled by
+    // MultiplayerGame's own game_room subscription (SUBSCRIBED snapshot + periodic
+    // poll), so a loadGame() round-trip here is unnecessary and harmful: it adds
+    // 2-7 s of latency between started_at being written and the component mounting,
+    // which causes the timer to start several seconds below the full game duration.
+    setState((prev) => {
+      if (prev.status === "lobby") {
+        return {
+          status: "in_progress",
+          game: updatedGame,
+          players: prev.players,
+          userId: prev.userId,
+          startedAt: updatedGame.started_at!,
+        }
+      }
+      return prev
+    })
+  }, [])
 
   const handleGameEnd = useCallback(() => {
     setState((prev) => {

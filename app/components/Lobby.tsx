@@ -77,7 +77,12 @@ export default function Lobby({
   const beginCountdown = useCallback((startAtMs: number) => {
     const tick = () => {
       const remainingMs = startAtMs - Date.now()
-      const remaining = Math.max(0, Math.ceil(remainingMs / 1000))
+      // Cap at COUNTDOWN_SECONDS so clients with a slow clock (or that receive
+      // the broadcast message late) never display a value larger than intended.
+      const remaining = Math.min(
+        COUNTDOWN_SECONDS,
+        Math.max(0, Math.ceil(remainingMs / 1000))
+      )
       setCountdownSeconds(remaining)
       if (remaining <= 0) {
         setCountdownSeconds(null)
