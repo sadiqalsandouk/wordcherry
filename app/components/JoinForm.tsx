@@ -205,7 +205,7 @@ export default function JoinForm() {
             }`}
           onClick={handleSubmit}
         >
-          {isSubmitting ? (
+          {isSubmitting || (authLoading && mode !== "solo") ? (
             <>
               <Loader2 className="w-6 h-6 animate-spin" />
               {mode === "join" ? "JOINING..." : "CREATING..."}
