@@ -193,6 +193,28 @@ export default function MultiplayerGame({
     }
   }, [game.id, isGameOver, isLoadingFinalScores, handleGameEnd])
 
+  // Re-broadcast score when page becomes visible again (handles Safari WebSocket
+  // suspension: when the tab is backgrounded the socket may be paused; on resume
+  // the other player won't have received any score updates from this player).
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (
+        document.visibilityState === "visible" &&
+        liveScoresChannelRef.current &&
+        liveScoresReadyRef.current &&
+        !isGameOver
+      ) {
+        void liveScoresChannelRef.current.send({
+          type: "broadcast",
+          event: "score_update",
+          payload: { userId: currentUserId, newScore: finalLocalScoreRef.current },
+        })
+      }
+    }
+    document.addEventListener("visibilitychange", handleVisibilityChange)
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange)
+  }, [currentUserId, isGameOver])
+
   // Notify parent when game is over (in useEffect to avoid setState during render)
   useEffect(() => {
     if (isGameOver) {
@@ -363,16 +385,51 @@ export default function MultiplayerGame({
           // Player updated (score change from DB)
           const updatedPlayer = payload.new as GamePlayer
           setPlayers((prev) =>
-            prev.map((p) => (p.id === updatedPlayer.id ? updatedPlayer : p))
+            prev.map((p) => {
+              if (p.id !== updatedPlayer.id) return p
+              // For the current player, never let the DB roll back an optimistic
+              // score that was already applied locally (e.g. if a second word was
+              // submitted before the first RPC's Postgres event arrived).
+              if (p.user_id === currentUserId) {
+                return { ...updatedPlayer, score: Math.max(updatedPlayer.score, p.score) }
+              }
+              return updatedPlayer
+            })
           )
         }
       )
-      .subscribe()
+      .subscribe(async (status) => {
+        if (status === "SUBSCRIBED") {
+          // Fetch a score snapshot to recover any DB events that fired before
+          // this channel finished subscribing (cold WebSocket on first game,
+          // slow connection, Safari socket suspension, etc.).
+          const { data } = await supabase
+            .from("game_players")
+            .select("*")
+            .eq("game_id", game.id)
+          if (data) {
+            setPlayers((prev) => {
+              const map = new Map(prev.map((p) => [p.id, p]))
+              for (const fresh of data as GamePlayer[]) {
+                const existing = map.get(fresh.id)
+                if (existing) {
+                  const resolvedScore =
+                    fresh.user_id === currentUserId
+                      ? Math.max(fresh.score, existing.score)
+                      : fresh.score
+                  map.set(fresh.id, { ...fresh, score: resolvedScore })
+                }
+              }
+              return Array.from(map.values())
+            })
+          }
+        }
+      })
 
     return () => {
       supabase.removeChannel(channel)
     }
-  }, [game.id, isGameOver, fetchFinalScores])
+  }, [game.id, isGameOver, fetchFinalScores, currentUserId])
 
   // Notify parent of player updates (deferred to avoid updating during render)
   useEffect(() => {
@@ -383,7 +440,8 @@ export default function MultiplayerGame({
   // Update local score from current player
   useEffect(() => {
     if (currentPlayer) {
-      setScore(currentPlayer.score)
+      // Never let a DB-sourced score roll back an optimistic local update
+      setScore(prev => Math.max(prev, currentPlayer.score))
       if (currentPlayer.best_word && currentPlayer.best_word_score > bestWord.score) {
         setBestWord({
           word: currentPlayer.best_word,
@@ -462,7 +520,9 @@ export default function MultiplayerGame({
 
     if (isValid) {
       // Optimistic local update for instant feel
-      const nextTotalScore = score + wordScore
+      // Use the ref (not the `score` state) so this is always the current value
+      // even if React hasn't re-rendered yet between rapid word submissions.
+      const nextTotalScore = finalLocalScoreRef.current + wordScore
       sfx.submitValid()
       haptics.submitValid()
 
