@@ -1,15 +1,23 @@
 import Link from "next/link"
+import Image from "next/image"
 
 export default function Footer() {
   return (
     <footer className="mt-16 pt-8 border-t border-white/20">
       <div className="text-center text-white/70 text-sm">
         <div className="mb-2">
-          <Link href="/" className="font-bold text-wordcherryYellow">
-            WordCherry
+          <Link href="/">
+            <Image
+              src="/wordcherry-logo.svg"
+              alt="WordCherry"
+              width={160}
+              height={48}
+              className="mx-auto h-10 w-auto"
+              priority
+            />
           </Link>
         </div>
-        <div className="text-xs mb-2">© 2025 WordCherry. All rights reserved.</div>
+        <div className="text-xs mb-2">© 2026 WordCherry. All rights reserved.</div>
         <div className="text-xs mb-2">
           Word list sourced from{" "}
           <Link
