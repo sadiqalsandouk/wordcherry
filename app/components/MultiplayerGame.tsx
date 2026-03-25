@@ -282,13 +282,14 @@ export default function MultiplayerGame({
     channel
       .on("broadcast", { event: "score_update" }, (payload) => {
         const { playerId, userId, newScore } = payload.payload
+        console.log("Received score broadcast:", { userId, newScore })
 
         setPlayers((prev) => {
           // First check if this player exists in our array
           const existingPlayerIndex = prev.findIndex(
             (p) => p.id === playerId || p.user_id === userId
           )
-          
+
           if (existingPlayerIndex !== -1) {
             // Player found - update their score
             return prev.map((p, i) =>
@@ -296,6 +297,7 @@ export default function MultiplayerGame({
             )
           }
 
+          console.warn("Score broadcast: player not found in state", { playerId, userId })
           // Player not found — ignore the broadcast. Adding phantom placeholder
           // players here caused duplicate/broken UI in the lobby after game reset.
           return prev
@@ -328,6 +330,45 @@ export default function MultiplayerGame({
       supabase.removeChannel(channel)
     }
   }, [game.id, currentUserId])
+
+  // Periodic score polling — reliable fallback for when Supabase Realtime
+  // broadcasts or Postgres change events are dropped (fire-and-forget delivery,
+  // cold WebSocket on first game, Safari socket suspension, RLS filtering, etc.).
+  // Broadcasts still fire for instant feel; polling guarantees eventual sync.
+  useEffect(() => {
+    if (isGameOver || isLoadingFinalScores) return
+
+    const syncScores = async () => {
+      const { data } = await supabase
+        .from("game_players")
+        .select("id, user_id, score")
+        .eq("game_id", game.id)
+
+      if (!data) return
+
+      setPlayers((prev) => {
+        let changed = false
+        const next = prev.map((p) => {
+          const fresh = (data as { id: string; user_id: string; score: number }[]).find(
+            (d) => d.id === p.id
+          )
+          if (!fresh) return p
+          // Never roll back the current player's optimistic score
+          const resolvedScore =
+            p.user_id === currentUserId
+              ? Math.max(fresh.score, p.score)
+              : fresh.score
+          if (resolvedScore === p.score) return p
+          changed = true
+          return { ...p, score: resolvedScore }
+        })
+        return changed ? next : prev
+      })
+    }
+
+    const interval = setInterval(syncScores, 2000)
+    return () => clearInterval(interval)
+  }, [game.id, isGameOver, isLoadingFinalScores, currentUserId])
 
   // Subscribe to game and player changes via postgres
   useEffect(() => {
@@ -418,6 +459,10 @@ export default function MultiplayerGame({
                       ? Math.max(fresh.score, existing.score)
                       : fresh.score
                   map.set(fresh.id, { ...fresh, score: resolvedScore })
+                } else {
+                  // Player exists in DB but not in our local state — add them.
+                  // This happens when initialPlayers was stale at mount time.
+                  map.set(fresh.id, fresh)
                 }
               }
               return Array.from(map.values())
