@@ -52,6 +52,7 @@ export default function Lobby({
   const [copied, setCopied] = useState(false)
   const [isStarting, setIsStarting] = useState(false)
   const [countdownSeconds, setCountdownSeconds] = useState<number | null>(null)
+  const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null)
   const previousStatusRef = useRef(game.status)
   const leaveSentRef = useRef(false)
   const authTokenRef = useRef<string | null>(null)
@@ -75,23 +76,36 @@ export default function Lobby({
     activePlayers.length >= 2 && teamACount >= 1 && teamBCount >= 1 && allReady
 
   const beginCountdown = useCallback((startAtMs: number) => {
-    const tick = () => {
-      const remainingMs = startAtMs - Date.now()
-      // Cap at COUNTDOWN_SECONDS so clients with a slow clock (or that receive
-      // the broadcast message late) never display a value larger than intended.
-      const remaining = Math.min(
-        COUNTDOWN_SECONDS,
-        Math.max(0, Math.ceil(remainingMs / 1000))
-      )
-      setCountdownSeconds(remaining)
-      if (remaining <= 0) {
-        setCountdownSeconds(null)
-      }
+    // Clear any in-flight countdown (e.g. host fires beginCountdown AND the
+    // broadcast echo also fires it — two calls must not stack intervals).
+    if (countdownIntervalRef.current) {
+      clearInterval(countdownIntervalRef.current)
+      countdownIntervalRef.current = null
     }
 
-    tick()
-    const interval = setInterval(tick, 250)
-    return () => clearInterval(interval)
+    // Derive the starting count from the remaining time, capped at
+    // COUNTDOWN_SECONDS. This handles clock drift (mobile showing "12" due to
+    // a slow clock) and late broadcast delivery gracefully, while still
+    // counting down smoothly at 1-second intervals rather than recalculating
+    // from Date.now() each tick (which caused "stuck at 5" with clock drift).
+    const msUntilStart = startAtMs - Date.now()
+    const startCount = Math.min(
+      COUNTDOWN_SECONDS,
+      Math.max(1, Math.ceil(msUntilStart / 1000))
+    )
+    setCountdownSeconds(startCount)
+
+    let count = startCount
+    countdownIntervalRef.current = setInterval(() => {
+      count -= 1
+      if (count <= 0) {
+        setCountdownSeconds(null)
+        clearInterval(countdownIntervalRef.current!)
+        countdownIntervalRef.current = null
+      } else {
+        setCountdownSeconds(count)
+      }
+    }, 1000)
   }, [])
 
   // Subscribe to realtime updates
@@ -211,6 +225,15 @@ export default function Lobby({
     sfx.tick()
     haptics.tick()
   }, [countdownSeconds])
+
+  // Clear any running countdown interval when the Lobby unmounts.
+  useEffect(() => {
+    return () => {
+      if (countdownIntervalRef.current) {
+        clearInterval(countdownIntervalRef.current)
+      }
+    }
+  }, [])
 
   const handleCopyCode = useCallback(async () => {
     try {

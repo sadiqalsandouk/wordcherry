@@ -116,14 +116,29 @@ export default function MultiplayerGame({
 
   // Calculate game end time once on mount
   useEffect(() => {
-    // Game end time = started_at + duration (using server timestamp)
-    const startTime = new Date(startedAt).getTime()
+    // Supabase Realtime delivers started_at in PostgreSQL WAL format:
+    //   "2026-03-25 21:00:05.123456+00"  (space, short tz)
+    // PostgREST direct queries return ISO 8601:
+    //   "2026-03-25T21:00:05.123456+00:00"
+    // Safari cannot parse the space-separated format — new Date(...) returns
+    // Invalid Date, getTime() returns NaN, and the timer interval's
+    // `if (!endTime) return` guard silently skips every tick.
+    // Replacing the space with 'T' makes both formats valid in all browsers.
+    const startTime = new Date(startedAt.replace(" ", "T")).getTime()
     const endTime = startTime + (game.duration_seconds * 1000)
     gameEndTimeRef.current = endTime
-    
+
     // Set initial seconds left based on server start time
     const initialLeft = Math.max(0, Math.ceil((endTime - Date.now()) / 1000))
     setSecondsLeft(initialLeft)
+    console.log("[Timer] init", {
+      startedAt,
+      startTime,
+      endTime,
+      nowMs: Date.now(),
+      elapsedSinceStartMs: Date.now() - startTime,
+      initialLeft,
+    })
   }, [startedAt, game.duration_seconds])
 
   // Broadcast final score to other players

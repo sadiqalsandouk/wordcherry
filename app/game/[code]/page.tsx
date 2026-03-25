@@ -177,11 +177,16 @@ export default function GamePage() {
           if (updatedGame.status === "lobby") {
             await loadGame(true)
           }
-          // Game went in_progress: covers both play-again (from "finished" or
-          // briefly-entered "lobby") and the normal host-start-from-lobby path.
+          // Game went in_progress from play-again (finished → in_progress).
+          // The lobby → in_progress case is handled immediately by handleGameStart
+          // via the Lobby's own subscription — do NOT call loadGame here for that
+          // path, because loadGame takes 4-7 s (auth + 2 DB calls) and the format
+          // of started_at from PostgREST differs from the Realtime payload, which
+          // would re-trigger the timer useEffect in MultiplayerGame with a stale
+          // Date.now(), causing the timer to start several seconds below full duration.
           else if (
             updatedGame.status === "in_progress" &&
-            (pageStatusRef.current === "finished" || pageStatusRef.current === "lobby")
+            pageStatusRef.current === "finished"
           ) {
             await loadGame(false)
           }
