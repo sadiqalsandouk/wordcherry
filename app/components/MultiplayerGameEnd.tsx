@@ -250,6 +250,41 @@ export default function MultiplayerGameEnd({
           </div>
         </div>
 
+        {/* Best Words */}
+        {players.some((p) => p.best_word) && (
+          <div className="p-6 border-b">
+            <h2 className="text-lg font-bold text-gray-700 mb-3 text-center">Best Words</h2>
+            <div className="space-y-2">
+              {[...players]
+                .filter((p) => p.best_word)
+                .sort((a, b) => b.best_word_score - a.best_word_score)
+                .map((player) => {
+                  const isCurrentUser = player.user_id === currentUserId
+                  return (
+                    <div
+                      key={player.id}
+                      className={`flex items-center justify-between p-2 rounded-lg ${
+                        isCurrentUser ? "bg-wordcherryYellow/50" : "bg-[#fff7d6]/70"
+                      }`}
+                    >
+                      <span
+                        className={`font-medium text-sm ${
+                          player.team === "A" ? "text-blue-600" : "text-red-600"
+                        }`}
+                      >
+                        {isCurrentUser ? "You" : player.player_name}
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-gray-700 uppercase">{player.best_word}</span>
+                        <span className="text-xs text-gray-500">+{player.best_word_score}</span>
+                      </div>
+                    </div>
+                  )
+                })}
+            </div>
+          </div>
+        )}
+
         {/* Actions */}
         <div className="p-6 space-y-3">
           {/* Host-only options */}
