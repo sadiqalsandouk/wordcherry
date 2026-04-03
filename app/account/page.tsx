@@ -6,7 +6,6 @@ import { usePlayerName } from "@/app/components/AuthProvider"
 import { getMyProfile, setMyUsername } from "@/lib/profiles"
 import { continueWithGoogle } from "@/lib/supabase/oauth"
 import { getDeviceGuest, saveDeviceGuest } from "@/lib/deviceGuest"
-import { getOrCreateDeviceToken } from "@/lib/deviceToken"
 import { toast } from "sonner"
 import GoogleButton from "../components/GoogleButton"
 
@@ -138,27 +137,6 @@ export default function AccountPage() {
       toast.success("Signed in successfully!")
     }
   }, [])
-
-  async function onClaimDeviceScores() {
-    try {
-      if (!isAuthenticated) {
-        toast("Sign in first to claim scores")
-        return
-      }
-      const token = getOrCreateDeviceToken()
-      const { data, error } = await supabase.rpc("claim_device_scores", { device_token: token })
-      if (error) throw error
-      const n = Number(data ?? 0)
-      toast(
-        n > 0
-          ? `Claimed ${n} score${n === 1 ? "" : "s"} from this device`
-          : "No guest scores to claim on this device"
-      )
-      if (n > 0 && userId) await loadGames(userId, true)
-    } catch (e: any) {
-      toast.error(e?.message || "Could not claim scores")
-    }
-  }
 
   async function onSignOut() {
     try {
@@ -353,7 +331,7 @@ export default function AccountPage() {
             {!isAuthenticated && (
               <div className="mt-6 text-center">
                 <p className="text-xs text-gray-600 mb-2">
-                  Create an account to sync your scores, view your stats and set a username.
+                  Create an account to view your stats and set a username.
                 </p>
                 <GoogleButton onClick={() => continueWithGoogle()}></GoogleButton>
               </div>
@@ -447,24 +425,6 @@ export default function AccountPage() {
                     </button>
                   </div>
                 )}
-              </div>
-            </div>
-
-            <div className="overflow-hidden rounded-xl shadow-[2px_2px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(0,0,0,0.1)] mb-6">
-              <div className="bg-wordcherryYellow py-3 px-4 text-center">
-                <h2 className="text-2xl font-bold text-wordcherryBlue">Sync Scores</h2>
-              </div>
-              <div className="bg-white p-5 space-y-3">
-                <p className="text-sm text-gray-600">
-                  If you played in guest mode on this device, you can add those scores to your
-                  account!
-                </p>
-                <button
-                  onClick={onClaimDeviceScores}
-                  className="cursor-pointer bg-wordcherryYellow text-wordcherryBlue font-bold px-4 py-2 rounded-xl shadow-[2px_2px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(0,0,0,0.1)] hover:bg-wordcherryYellow/90 hover:scale-103 active:scale-95 transition-all duration-200"
-                >
-                  Sync Scores From This Device
-                </button>
               </div>
             </div>
 
