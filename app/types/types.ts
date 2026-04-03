@@ -90,6 +90,7 @@ export type GamePlayer = {
   score: number
   best_word: string | null
   best_word_score: number
+  word_count: number
   is_ready?: boolean
   last_seen_at?: string | null
   joined_at: string

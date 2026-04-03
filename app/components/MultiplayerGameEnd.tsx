@@ -287,24 +287,27 @@ export default function MultiplayerGameEnd({
                     />
                   </div>
 
-                  {/* Best word row */}
-                  {player.best_word ? (
-                    <div className="mt-1.5 flex items-center gap-1.5">
-                      <span className="text-[10px] text-gray-400 uppercase tracking-wide font-medium shrink-0">
-                        Best
-                      </span>
-                      <span className="text-xs font-bold text-gray-700 uppercase truncate">
-                        {player.best_word}
-                      </span>
-                      <span className="text-[10px] font-semibold text-gray-400 shrink-0">
-                        +{player.best_word_score}
-                      </span>
-                    </div>
-                  ) : (
-                    <div className="mt-1.5">
+                  {/* Best word + word count row */}
+                  <div className="mt-1.5 flex items-center justify-between gap-2 min-w-0">
+                    {player.best_word ? (
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <span className="text-[10px] text-gray-400 uppercase tracking-wide font-medium shrink-0">
+                          Best
+                        </span>
+                        <span className="text-xs font-bold text-gray-700 uppercase truncate">
+                          {player.best_word}
+                        </span>
+                        <span className="text-[10px] font-semibold text-gray-400 shrink-0">
+                          +{player.best_word_score}
+                        </span>
+                      </div>
+                    ) : (
                       <span className="text-[10px] text-gray-300">No words scored</span>
-                    </div>
-                  )}
+                    )}
+                    <span className="text-[10px] text-gray-400 shrink-0 tabular-nums">
+                      {player.word_count} {player.word_count === 1 ? "word" : "words"}
+                    </span>
+                  </div>
                 </div>
               )
             })}
