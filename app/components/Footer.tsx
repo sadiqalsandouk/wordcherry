@@ -37,6 +37,9 @@ export default function Footer() {
           <Link href="/guide" className="text-white/60 hover:text-white transition-colors">
             Strategy Guide
           </Link>
+          <Link href="/blog" className="text-white/60 hover:text-white transition-colors">
+            Blog
+          </Link>
           <Link href="/leaderboard" className="text-white/60 hover:text-white transition-colors">
             Leaderboard
           </Link>
