@@ -27,6 +27,7 @@ export default function GoogleButton({
         "transition-all duration-150",
         "hover:shadow-[0_1px_2px_rgba(60,64,67,0.30),0_1px_3px_1px_rgba(60,64,67,0.15)]",
         "hover:scale-[1.02] active:scale-95",
+        "hover:cursor-pointer",
         // disabled
         "disabled:opacity-60 disabled:cursor-not-allowed",
       ].join(" ")}
