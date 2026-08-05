@@ -45,9 +45,6 @@ export default function Footer() {
           </Link>
         </div>
         <div className="text-xs space-x-4">
-          <Link href="/contact" className="text-white/60 hover:text-white transition-colors">
-            Contact
-          </Link>
           <Link href="/privacy" className="text-white/60 hover:text-white transition-colors">
             Privacy Policy
           </Link>
