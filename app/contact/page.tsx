@@ -21,53 +21,13 @@ export default function ContactPage() {
 
               <section>
                 <p className="text-gray-700 leading-relaxed">
-                  Have a question, found a bug, or just want to say something? Send an email and
-                  we will get back to you.
-                </p>
-              </section>
-
-              <section>
-                <h2 className="text-xl font-bold text-wordcherryBlue mb-3">Email</h2>
-                <p className="text-gray-700 mb-2">
-                  For anything — general questions, feedback, bug reports, or feature ideas:
-                </p>
-                <div className="bg-gray-50 p-3 rounded-lg">
-                  <a
-                    href="mailto:sadiqdotdigital@gmail.com"
-                    className="font-mono text-sm text-wordcherryBlue underline"
-                  >
-                    sadiqdotdigital@gmail.com
-                  </a>
-                </div>
-                <p className="text-sm text-gray-500 mt-2">
-                  We typically respond within 1–3 business days.
-                </p>
-              </section>
-
-              <section>
-                <h2 className="text-xl font-bold text-wordcherryBlue mb-3">Bug Reports</h2>
-                <p className="text-gray-700">
-                  If you found something broken, it helps to include your browser (e.g. Chrome on
-                  iPhone), what you were doing, and what went wrong. The more detail the better —
-                  it makes it much faster to track down and fix.
-                </p>
-              </section>
-
-              <section>
-                <h2 className="text-xl font-bold text-wordcherryBlue mb-3">Feature Ideas</h2>
-                <p className="text-gray-700">
-                  We are always open to ideas. If there is something you think would make
-                  WordCherry more fun or useful, feel free to share it. No promises, but
-                  everything gets read.
+                  There is no direct contact channel available right now. Most common questions
+                  are already answered in the FAQ and strategy guide below.
                 </p>
               </section>
 
               <section>
                 <h2 className="text-xl font-bold text-wordcherryBlue mb-3">Common Questions</h2>
-                <p className="text-gray-700 mb-3">
-                  Many questions are already answered in the FAQ on the home page and the strategy
-                  guide. Worth checking before writing in.
-                </p>
                 <div className="flex flex-wrap gap-3">
                   <Link href="/" className="text-sm text-wordcherryBlue underline">
                     FAQ

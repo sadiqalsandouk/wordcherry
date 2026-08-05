@@ -141,18 +141,6 @@ export default function PrivacyPolicy() {
                 </div>
               </section>
 
-              <section>
-                <h2 className="text-xl font-bold text-wordcherryBlue mb-3">9. Contact Us</h2>
-                <div className="text-gray-700 space-y-2">
-                  <p>
-                    If you have any questions about this privacy policy or WordCherry&apos;s data
-                    practices, please contact me at:
-                  </p>
-                  <div className="bg-gray-50 p-3 rounded-lg mt-2">
-                    <p className="font-mono text-sm">sadiqdotdigital@gmail.com</p>
-                  </div>
-                </div>
-              </section>
             </div>
 
             <div className="mt-8 pt-6 border-t border-gray-200">
